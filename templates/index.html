@@ -30,12 +30,11 @@
         </div>
       </div>
 
-      <!-- Hero-visual: echte foto van boorwerk (optie B).
-           Wil je terug naar het React Bits LightRays-effect (optie A)?
-           Vervang de <img> hieronder door <div id="hero-fx"></div>. -->
-      <div class="hero__panel hero__panel--fx reveal" data-delay="2">
-        <img class="hero__img" src="{{ url_for('static', filename='img/hero-boren.jpg') }}"
-             alt="Kernboring in beton met diamantboor en stofontwikkeling">
+      <!-- Hero-visual: React Bits LightRays-achtergrond (optie A).
+           Wil je terug naar een foto/video (optie B)? Vervang het
+           <div id="hero-fx"></div> hieronder door een <img>/<video>. -->
+      <div class="hero__panel hero__panel--fx reveal" data-delay="2" aria-hidden="true">
+        <div id="hero-fx"></div>
         <span class="crosshair"><span class="h"></span><span class="v"></span><span class="ring"></span></span>
         <span class="hero__tag">kernboring · <b>Ø&nbsp;132&nbsp;mm</b></span>
       </div>

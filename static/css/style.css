@@ -339,8 +339,8 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-4
   object-fit: cover;
   z-index: 0;
 }
-/* Subtiele verdonkering zodat het richtkruis en label leesbaar blijven */
-.hero__panel--fx::after {
+/* Subtiele verdonkering alleen bij een foto (niet bij LightRays) */
+.hero__panel--fx:has(.hero__img)::after {
   content: ""; position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(180deg, rgba(18,19,23,.12), rgba(18,19,23,.42));
   pointer-events: none;

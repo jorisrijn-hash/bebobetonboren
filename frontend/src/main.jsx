@@ -70,14 +70,14 @@ if (heroFx && !prefersReduced && !isSmall) {
     createRoot(heroFx).render(
       <LightRays
         raysOrigin="top-center"
-        raysColor="#E0402F"
-        raysSpeed={0.9}
-        lightSpread={0.8}
-        rayLength={1.5}
+        raysColor="#E84531"
+        raysSpeed={1.0}
+        lightSpread={1.0}
+        rayLength={2.0}
         followMouse={true}
-        mouseInfluence={0.12}
-        noiseAmount={0.06}
-        distortion={0.02}
+        mouseInfluence={0.15}
+        noiseAmount={0.08}
+        distortion={0.03}
       />
     );
   });
