@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BEBO Betonboren & Zagen - boren, zagen & frezen in regio Rotterdam{% endblock %}</title>
+  <meta name="description" content="{% block description %}BEBO Betonboren & Zagen: vakkundig betonboren, wand- en vloerzagen, frezen en precisiesloop in de regio Rotterdam. Schoon, recht en op maat. Vraag vrijblijvend een offerte aan.{% endblock %}">
+  <meta name="theme-color" content="#E9E8E4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- React Bits-bundel (TargetCursor + Beams). Wordt gegenereerd met
+       `npm run build` in /frontend; ontbreekt-ie, dan werkt de site gewoon door. -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='bundle/reactbits.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Herbruikbare betontextuur (feTurbulence). Vervang panelen door echte
+       BEBO-foto's: zet een <img> in .hero__panel / .regio__panel en haal .tex weg. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="beton">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="4" seed="7" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+  </svg>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav__bar">
+      <a href="{{ url_for('index') }}" class="brand" aria-label="BEBO - naar boven">
+        <span class="brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="brand__txt">
+          <span class="brand__name">BEBO</span>
+          <span class="brand__sub">betonboren &amp; zagen</span>
+        </span>
+      </a>
+
+      <nav class="nav__links" aria-label="Hoofdmenu">
+        <ul style="display:flex;gap:2.2rem;list-style:none;margin:0;padding:0;">
+          <li><a href="#diensten">Werkzaamheden</a></li>
+          <li><a href="#werkwijze">Werkwijze</a></li>
+          <li><a href="#waarom">Waarom BEBO</a></li>
+          <li><a href="#werkgebied">Werkgebied</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav__cta">
+        <a href="tel:{{ bedrijf.tel_link }}" class="nav__phone">{{ bedrijf.tel }}</a>
+        <a href="#offerte" class="btn btn--red">Offerte aanvragen <span class="arrow">→</span></a>
+      </div>
+
+      <button class="burger" id="burger" aria-label="Menu openen" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="nav__panel" id="navPanel">
+      <a href="#diensten">Werkzaamheden</a>
+      <a href="#werkwijze">Werkwijze</a>
+      <a href="#waarom">Waarom BEBO</a>
+      <a href="#werkgebied">Werkgebied</a>
+      <a href="tel:{{ bedrijf.tel_link }}">{{ bedrijf.tel }}</a>
+      <a href="#offerte" class="btn btn--red">Offerte aanvragen <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <div class="footer__col">
+        <a href="{{ url_for('index') }}" class="brand" style="margin-bottom:1.4rem;">
+          <span class="brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="brand__txt">
+            <span class="brand__name">BEBO</span>
+            <span class="brand__sub">betonboren &amp; zagen</span>
+          </span>
+        </a>
+        <p style="color:var(--ink-2);max-width:32ch;">Boren, zagen, frezen en precisiesloop in beton en steen. Schoon, recht en op maat - voor aannemers, installateurs en particulieren.</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <a href="tel:{{ bedrijf.tel_link }}">{{ bedrijf.tel }}</a>
+        <a href="mailto:{{ bedrijf.email }}">{{ bedrijf.email }}</a>
+        <p>{{ bedrijf.straat }}<br>{{ bedrijf.postcode_plaats }}</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Werkzaamheden</h4>
+        <a href="#diensten">Betonboren</a>
+        <a href="#diensten">Wand- &amp; vloerzagen</a>
+        <a href="#diensten">Sleuven &amp; frezen</a>
+        <a href="#diensten">Precisiesloop</a>
+      </div>
+    </div>
+    <div class="wrap footer__bottom">
+      <span>© {{ 2026 }} {{ bedrijf.naam }} · KvK {{ bedrijf.kvk }}</span>
+      <span>Berkel en Rodenrijs · regio Rotterdam</span>
+    </div>
+  </footer>
+
+  <div class="float" id="float">
+    <a href="https://wa.me/{{ bedrijf.whatsapp }}" class="wa" aria-label="WhatsApp" target="_blank" rel="noopener">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.16c-.24.68-1.4 1.3-1.94 1.38-.5.07-1.13.1-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.8-4.17-4.94-4.37-.15-.2-1.19-1.58-1.19-3.01 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.83 2.02.9 2.17.07.15.12.32.02.51-.09.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.29-.12.57.16.29.73 1.2 1.56 1.94 1.07.95 1.97 1.25 2.26 1.39.28.15.45.12.61-.07.16-.2.7-.82.89-1.1.19-.29.37-.24.62-.14.25.09 1.6.76 1.87.9.27.14.45.21.52.32.07.12.07.69-.17 1.37z"/></svg>
+    </a>
+    <a href="tel:{{ bedrijf.tel_link }}" aria-label="Bel BEBO">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+    </a>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='bundle/reactbits.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

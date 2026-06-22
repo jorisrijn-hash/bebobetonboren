@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="hero__loc reveal">
+          <span class="crosshair" style="width:14px;height:14px;position:relative;display:inline-block">
+            <span class="h"></span><span class="v"></span>
+          </span>
+          Berkel en Rodenrijs · <b>regio Rotterdam</b>
+        </p>
+
+        <h1 class="display reveal" data-delay="1">
+          Een gat in beton.<br>
+          Tot op de <span class="accent">millimeter</span> waar het hoort.
+        </h1>
+
+        <p class="lede hero__lede reveal" data-delay="2">
+          Boren, zagen, frezen en gericht slopen in beton en steen.
+          Schoon werk, rechte kanten en een ploeg die nakomt wat is afgesproken.
+        </p>
+
+        <div class="hero__actions reveal" data-delay="3">
+          <a href="#offerte" class="btn btn--red btn--lg">Offerte aanvragen <span class="arrow">→</span></a>
+          <a href="#diensten" class="textlink">Bekijk werkzaamheden</a>
+        </div>
+      </div>
+
+      <!-- Hero-visual: echte foto van boorwerk (optie B).
+           Wil je terug naar het React Bits LightRays-effect (optie A)?
+           Vervang de <img> hieronder door <div id="hero-fx"></div>. -->
+      <div class="hero__panel hero__panel--fx reveal" data-delay="2">
+        <img class="hero__img" src="{{ url_for('static', filename='img/hero-boren.jpg') }}"
+             alt="Kernboring in beton met diamantboor en stofontwikkeling">
+        <span class="crosshair"><span class="h"></span><span class="v"></span><span class="ring"></span></span>
+        <span class="hero__tag">kernboring · <b>Ø&nbsp;132&nbsp;mm</b></span>
+      </div>
+    </div>
+
+    <!-- Terughoudende trust-feiten -->
+    <div class="hero__facts reveal">
+      <div class="fact"><div class="n">10+</div><div class="l">jaar in beton & steen</div></div>
+      <div class="fact"><div class="n">Ø500</div><div class="l">mm max. boordiameter</div></div>
+      <div class="fact"><div class="n">Stofvrij</div><div class="l">droogboren met afzuiging</div></div>
+      <div class="fact"><div class="n">24&nbsp;u</div><div class="l">reactie op je aanvraag</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DIENSTEN ================= -->
+<section class="section" id="diensten">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow"><span class="num">01</span> Werkzaamheden</p>
+        <h2 class="display">Eén ploeg voor elke<br>doorbraak in beton.</h2>
+      </div>
+      <p class="sec-head__aside">Van een enkele kernboring tot complete sparingen en sloop - droog of nat, binnen of buiten.</p>
+    </div>
+
+    <div class="diensten">
+      {% for d in diensten %}
+      <article class="dienst reveal" data-delay="{{ loop.index0 % 3 }}">
+        <div class="dienst__top">
+          <span class="dienst__idx">{{ d.index }}</span>
+          <span class="dienst__spec">{{ d.spec }}</span>
+        </div>
+        <h3 class="display">{{ d.titel }}</h3>
+        <p>{{ d.tekst }}</p>
+        <a href="#offerte" class="dienst__mark">Aanvragen</a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= WERKWIJZE (echte sequentie → nummering terecht) ===== -->
+<section class="section werkwijze" id="werkwijze">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow"><span class="num">02</span> Werkwijze</p>
+        <h2 class="display">Van aanvraag tot<br>opgeruimde werkplek.</h2>
+      </div>
+      <p class="sec-head__aside">Vier stappen, geen verrassingen. Je weet vooraf wat er gebeurt, wat het kost en wanneer we klaar zijn.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal" data-delay="0">
+        <span class="step__n">01</span>
+        <h3 class="display">Aanvraag</h3>
+        <p>Je stuurt je vraag en locatie door. Binnen 24 uur heb je een reactie en vaak al een richtprijs.</p>
+      </div>
+      <div class="step reveal" data-delay="1">
+        <span class="step__n">02</span>
+        <h3 class="display">Inmeten & advies</h3>
+        <p>We bepalen de juiste techniek, diameter en aanpak - droog of nat, mét of zonder stofafzuiging.</p>
+      </div>
+      <div class="step reveal" data-delay="2">
+        <span class="step__n">03</span>
+        <h3 class="display">Uitvoering</h3>
+        <p>Strak en stofbeperkt op locatie, ook in bewoonde situaties. Rechte kanten, geen scheurwerk.</p>
+      </div>
+      <div class="step reveal" data-delay="3">
+        <span class="step__n">04</span>
+        <h3 class="display">Oplevering</h3>
+        <p>We ruimen op, voeren puin af en laten de werkplek netjes achter. Klaar voor de volgende ploeg.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WAAROM BEBO (proof + één quote) ================= -->
+<section class="section" id="waarom">
+  <div class="wrap proof__grid">
+    <div class="reveal">
+      <p class="eyebrow"><span class="num">03</span> Waarom BEBO</p>
+      <h2 class="display">Vakwerk dat je<br>niet hoeft over te doen.</h2>
+      <ul class="usp">
+        <li><span class="usp__plus">+</span><div><b>Schoon en stofvrij.</b> <span>Droogboren met afzuiging waar geen water mag komen.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Recht op maat.</b> <span>Diamanttechniek voor strakke kanten, zonder scheuren of breukschade.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Eén aanspreekpunt.</b> <span>Korte lijnen, duidelijke afspraken en een ploeg die op tijd staat.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Heel de regio.</b> <span>Snel ter plaatse in de Randstad-Zuid en omgeving Rotterdam.</span></div></li>
+      </ul>
+    </div>
+
+    <!-- Eén sterke quote i.p.v. logo-soup. Vervang door een echte klant. -->
+    <figure class="quote reveal" data-delay="1">
+      <img class="quote__img" src="{{ url_for('static', filename='img/ploeg.jpg') }}"
+           alt="BEBO-vakman met boormachine">
+      <div class="quote__mark">&ldquo;</div>
+      <blockquote><p>Netjes ingemeten, op tijd en zonder rommel achteraf. De doorbraak zat exact waar wij hem nodig hadden.</p></blockquote>
+      <figcaption class="quote__who">
+        <span class="line"></span>
+        <span><b>Uitvoerder</b><span>aannemersbedrijf · regio Rotterdam</span></span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= WERKGEBIED ================= -->
+<section class="section werkwijze" id="werkgebied">
+  <div class="wrap regio__grid">
+    <div class="reveal">
+      <p class="eyebrow"><span class="num">04</span> Werkgebied</p>
+      <h2 class="display">Thuis in de<br>regio Rotterdam.</h2>
+      <p class="lede" style="margin-top:1.4rem;">Gevestigd op de Industrieweg in Berkel en Rodenrijs. Snel ter plaatse in Lansingerland en de wijde omgeving.</p>
+      <div class="regio__list">
+        <span>Rotterdam</span><span>Berkel en Rodenrijs</span><span>Bergschenhoek</span>
+        <span>Bleiswijk</span><span>Pijnacker</span><span>Zoetermeer</span>
+        <span>Delft</span><span>Lansingerland</span><span>Den Haag</span><span>Randstad-Zuid</span>
+      </div>
+    </div>
+    <div class="regio__panel reveal" data-delay="1">
+      <img class="regio__img" src="{{ url_for('static', filename='img/werkgebied-beton.jpg') }}"
+           alt="Gekernde sparing in beton">
+    </div>
+  </div>
+</section>
+
+<!-- ================= OFFERTE (donkere conversiesectie) ================= -->
+<section class="section offerte" id="offerte">
+  <div id="beams-root" aria-hidden="true"></div>
+  <div class="wrap offerte__grid">
+    <div class="offerte__intro reveal">
+      <p class="eyebrow"><span class="num">05</span> Offerte</p>
+      <h2 class="display">Vertel ons wat<br>er door moet.</h2>
+      <p>Stuur je klus door - diameter, locatie en planning als je het weet. Je krijgt binnen 24 uur een reactie, vaak met een richtprijs.</p>
+
+      <div class="offerte__direct">
+        <a href="tel:{{ bedrijf.tel_link }}">
+          <span class="ico">●</span> {{ bedrijf.tel }}
+        </a>
+        <a href="https://wa.me/{{ bedrijf.whatsapp }}" target="_blank" rel="noopener">
+          <span class="ico">●</span> WhatsApp ons direct
+        </a>
+        <a href="mailto:{{ bedrijf.email }}">
+          <span class="ico">●</span> {{ bedrijf.email }}
+        </a>
+      </div>
+    </div>
+
+    <div class="reveal" data-delay="1">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash" style="margin-bottom:1.5rem;">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form class="form" action="{{ url_for('offerte') }}" method="post" novalidate>
+        <div>
+          <span class="form__chips-label">Wat moet er gebeuren? (meerdere mogelijk)</span>
+          <div class="chips" id="chips">
+            {% for d in diensten %}
+            <button type="button" class="chip" aria-pressed="false" data-value="{{ d.id }}">{{ d.titel }}</button>
+            {% endfor %}
+          </div>
+          <div id="chipInputs"></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="naam">Naam *</label>
+            <input type="text" id="naam" name="naam" placeholder="Voor- en achternaam" required>
+          </div>
+          <div class="field">
+            <label for="telefoon">Telefoon</label>
+            <input type="tel" id="telefoon" name="telefoon" placeholder="06 - ...">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="naam@bedrijf.nl">
+          </div>
+          <div class="field">
+            <label for="plaats">Plaats / locatie</label>
+            <input type="text" id="plaats" name="plaats" placeholder="Waar staat de klus?">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="omschrijving">Omschrijving</label>
+          <textarea id="omschrijving" name="omschrijving" placeholder="Bijv. kernboring Ø150 door betonvloer, 2e etage, t.b.v. ventilatie."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="planning">Gewenste planning</label>
+          <select id="planning" name="planning">
+            <option value="">Maakt niet uit / weet ik nog niet</option>
+            <option>Zo snel mogelijk</option>
+            <option>Binnen 2 weken</option>
+            <option>Binnen een maand</option>
+            <option>Later / in overleg</option>
+          </select>
+        </div>
+
+        <!-- Honeypot tegen spam -->
+        <div class="hp" aria-hidden="true">
+          <label>Laat dit leeg<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div class="form__foot">
+          <p class="form__note">Geen verplichtingen. We bellen of mailen je gewoon terug.</p>
+          <button type="submit" class="btn btn--red btn--lg">Verstuur aanvraag <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

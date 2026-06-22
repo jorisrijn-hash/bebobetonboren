@@ -1,0 +1,790 @@
+/* =========================================================================
+   BEBO Betonboren & Zagen
+   Design system - "Precisie in beton"
+
+   Toegepaste principes (de 5k-regels):
+   1. Kleur intentioneel: koel betonpalet, rood enkel als precisie-accent
+   2. Typografie = hiërarchie: Bricolage display, mixed-case, nadruk op kernwoord
+   3. Eén focuspunt per sectie, één primaire CTA-route (de offerte)
+   4. Royale witruimte: grote sectiepadding, ademende regelafstand
+   5. Trust signals terughoudend: enkele harde feiten + één quote
+   Signatuur: het rode richtkruis = het exacte punt waar geboord/gezaagd wordt
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* Koel betonpalet - bewust geen warme cream */
+  --paper:        #E9E8E4;
+  --paper-2:      #E1E0DB;
+  --concrete:     #C9C7C2;
+  --ink:          #16171B;
+  --ink-2:        #34353A;
+  --muted:        #6F7176;
+  --line:         rgba(22, 23, 27, .15);
+  --line-soft:    rgba(22, 23, 27, .08);
+  --red:          #D8201F;
+  --red-deep:     #AC1413;
+  --dark:         #18191D;
+  --dark-2:       #202127;
+  --on-dark:      #E9E8E4;
+  --on-dark-mut:  #9A9CA2;
+  --line-dark:    rgba(233, 232, 228, .14);
+
+  --maxw: 1240px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --section: clamp(5rem, 11vw, 9.5rem);
+
+  --f-display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+  --f-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --f-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: clamp(1rem, .55vw + .9rem, 1.075rem);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+::selection { background: var(--red); color: #fff; }
+
+/* --- Layout helpers ----------------------------------------------------- */
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section { padding-block: var(--section); }
+
+/* Technische label - datasheet-gevoel, geaard in mm/coördinaten */
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  margin: 0 0 1.6rem;
+}
+.eyebrow::before {
+  content: "";
+  width: 26px; height: 1px;
+  background: var(--red);
+  display: inline-block;
+}
+.eyebrow .num { color: var(--ink); }
+
+/* Display-typografie - hiërarchie i.p.v. fancy fonts */
+.display {
+  font-family: var(--f-display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1.display { font-size: clamp(2.7rem, 7.2vw, 6rem); font-weight: 800; }
+h2.display { font-size: clamp(2.1rem, 4.6vw, 3.6rem); }
+h3.display { font-size: clamp(1.35rem, 1.8vw, 1.7rem); font-weight: 600; }
+
+/* Nadruk op het kernwoord = rood (kleur + typografie in één keuze) */
+.accent { color: var(--red); }
+.lede {
+  font-size: clamp(1.08rem, 1.1vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 46ch;
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  --bg: var(--ink); --fg: var(--paper);
+  font-family: var(--f-body);
+  font-weight: 600;
+  font-size: .98rem;
+  letter-spacing: -.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  padding: 1.05rem 1.7rem;
+  background: var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+  border: 1px solid var(--bg);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform .35s var(--ease), background .35s var(--ease), gap .35s var(--ease);
+}
+.btn .arrow { transition: transform .35s var(--ease); }
+.btn:hover { gap: 1.15rem; }
+.btn:hover .arrow { transform: translateX(4px); }
+.btn--red { --bg: var(--red); --fg: #fff; }
+.btn--red:hover { background: var(--red-deep); border-color: var(--red-deep); }
+.btn--ghost {
+  --bg: transparent; --fg: var(--ink);
+  border-color: var(--line);
+}
+.btn--ghost:hover { border-color: var(--ink); }
+.btn--lg { padding: 1.2rem 2rem; font-size: 1.05rem; }
+.btn--block { width: 100%; justify-content: center; }
+
+.textlink {
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  transition: border-color .3s var(--ease);
+}
+.textlink:hover { border-color: var(--ink); }
+
+/* --- Signatuur: richtkruis (boorpunt) ----------------------------------- */
+.crosshair {
+  position: relative;
+  width: 70px; height: 70px;
+  flex: none;
+}
+.crosshair span {
+  position: absolute;
+  background: var(--red);
+}
+.crosshair .h { top: 50%; left: 0; width: 100%; height: 1.5px; transform: translateY(-50%); }
+.crosshair .v { left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.crosshair .ring {
+  position: absolute; inset: 50% auto auto 50%;
+  width: 22px; height: 22px;
+  border: 1.5px solid var(--red);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ======================================================================== */
+/* NAV                                                                      */
+/* ======================================================================== */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 80;
+  transition: background .4s var(--ease), border-color .4s var(--ease), backdrop-filter .4s;
+  border-bottom: 1px solid transparent;
+}
+.nav.is-stuck {
+  background: rgba(233, 232, 228, .82);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom-color: var(--line);
+}
+.nav__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 78px;
+}
+.brand { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
+.brand__mark {
+  width: 38px; height: 38px;
+  background: var(--red);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  padding: 7px;
+}
+.brand__mark i { background: #fff; display: block; }
+.brand__txt { line-height: 1; }
+.brand__name {
+  display: block;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.32rem;
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.brand__sub {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: .58rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+.nav__links a {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: .96rem;
+  color: var(--ink-2);
+  transition: color .3s var(--ease);
+}
+.nav__links a:hover { color: var(--ink); }
+.nav__cta { display: flex; align-items: center; gap: 1.2rem; }
+.nav__phone {
+  font-family: var(--f-mono);
+  font-size: .9rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+.nav__phone:hover { color: var(--red); }
+
+/* Mobiel menupaneel: standaard verborgen, alleen op smal scherm getoond */
+.nav__panel { display: none; }
+
+.burger {
+  display: none;
+  width: 44px; height: 44px;
+  background: none; border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.burger span {
+  position: absolute; left: 11px; right: 11px; height: 1.5px;
+  background: var(--ink);
+  transition: transform .35s var(--ease), opacity .25s;
+}
+.burger span:nth-child(1) { top: 16px; }
+.burger span:nth-child(2) { top: 21px; }
+.burger span:nth-child(3) { top: 26px; }
+body.menu-open .burger span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+body.menu-open .burger span:nth-child(2) { opacity: 0; }
+body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+/* ======================================================================== */
+/* HERO                                                                     */
+/* ======================================================================== */
+.hero {
+  position: relative;
+  padding-top: clamp(8rem, 16vh, 11rem);
+  padding-bottom: var(--section);
+}
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: end;
+}
+.hero__loc {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 2rem;
+  display: flex; align-items: center; gap: .7rem;
+}
+.hero__loc b { color: var(--ink); font-weight: 400; }
+.hero h1 { margin-bottom: 1.8rem; }
+.hero__lede { margin-bottom: 2.6rem; }
+.hero__actions { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
+
+/* Materiaalblok = betonpaneel met gegenereerde textuur (vervangbaar door foto) */
+.hero__panel {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--concrete);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.hero__panel .tex { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Variant met React Bits LightRays (of later een foto/video): donker kader */
+.hero__panel--fx { background: var(--dark); border-color: var(--ink); }
+.hero__panel .crosshair {
+  position: absolute;
+  top: 34%; left: 56%;
+  z-index: 2;
+}
+.hero__tag {
+  position: absolute;
+  left: 0; bottom: 0;
+  z-index: 2;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .6rem .9rem;
+}
+.hero__tag b { color: var(--red); }
+
+/* Echte foto's (cover) ------------------------------------------------- */
+.hero__img, .regio__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+/* Subtiele verdonkering zodat het richtkruis en label leesbaar blijven */
+.hero__panel--fx::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(18,19,23,.12), rgba(18,19,23,.42));
+  pointer-events: none;
+}
+.quote__img {
+  display: block;
+  width: calc(100% + 2 * var(--quote-pad));
+  height: clamp(170px, 22vw, 250px);
+  margin: calc(-1 * var(--quote-pad)) calc(-1 * var(--quote-pad)) var(--quote-pad);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+
+/* Doorlopende feitenbalk onder de hero - terughoudende trust */
+.hero__facts {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--line);
+  padding-top: 2.2rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.fact .n {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 2.4vw, 2.3rem);
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.fact .l {
+  font-size: .9rem;
+  color: var(--muted);
+  margin-top: .5rem;
+}
+
+/* ======================================================================== */
+/* DIENSTEN                                                                  */
+/* ======================================================================== */
+.sec-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: clamp(2.8rem, 5vw, 4.5rem);
+}
+.sec-head .lede { margin-top: 1.4rem; }
+.sec-head__aside { text-align: right; max-width: 26ch; color: var(--muted); font-size: .95rem; }
+
+.diensten {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.dienst {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: clamp(1.8rem, 2.6vw, 2.6rem);
+  background: transparent;
+  position: relative;
+  transition: background .4s var(--ease);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+.dienst:hover { background: var(--paper-2); }
+.dienst__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2.4rem;
+}
+.dienst__idx { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); }
+.dienst__spec {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: var(--red);
+}
+.dienst h3 { margin-bottom: .9rem; }
+.dienst p { color: var(--ink-2); font-size: .98rem; margin: 0; }
+.dienst__mark {
+  margin-top: auto;
+  padding-top: 1.6rem;
+  font-family: var(--f-mono);
+  font-size: .8rem;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+}
+.dienst:hover .dienst__mark { opacity: 1; transform: translateY(0); }
+.dienst__mark::before { content: "+"; color: var(--red); font-size: 1rem; }
+
+/* ======================================================================== */
+/* WERKWIJZE - een echte sequentie, dus nummering is hier terecht          */
+/* ======================================================================== */
+.werkwijze { background: var(--paper-2); }
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+.step { position: relative; padding-top: 2.4rem; }
+.step::before {
+  content: "";
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--line);
+}
+.step::after {
+  content: "";
+  position: absolute; top: 0; left: 0;
+  width: 34px; height: 2px;
+  background: var(--red);
+}
+.step__n { font-family: var(--f-mono); font-size: .82rem; color: var(--muted); }
+.step h3 { margin: .8rem 0 .7rem; }
+.step p { color: var(--ink-2); font-size: .96rem; margin: 0; }
+
+/* ======================================================================== */
+/* BEWIJS - één sterke quote, geen logo-soup                               */
+/* ======================================================================== */
+.proof__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
+}
+.usp { list-style: none; margin: 2.4rem 0 0; padding: 0; }
+.usp li {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1.3rem 0;
+  border-bottom: 1px solid var(--line);
+  align-items: flex-start;
+}
+.usp li:first-child { border-top: 1px solid var(--line); }
+.usp__plus { color: var(--red); font-family: var(--f-mono); flex: none; line-height: 1.5; }
+.usp b { font-weight: 600; }
+.usp span { color: var(--muted); }
+
+.quote {
+  --quote-pad: clamp(2.4rem, 4vw, 3.4rem);
+  background: var(--ink);
+  color: var(--on-dark);
+  padding: var(--quote-pad);
+  position: relative;
+  overflow: hidden;
+}
+.quote__mark {
+  font-family: var(--f-display);
+  font-size: 4rem;
+  line-height: .6;
+  color: var(--red);
+}
+.quote p {
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 1.9vw, 1.7rem);
+  line-height: 1.4;
+  letter-spacing: -.01em;
+  margin: 1.4rem 0 2rem;
+}
+.quote__who { display: flex; align-items: center; gap: 1rem; }
+.quote__who .line { width: 28px; height: 1px; background: var(--red); }
+.quote__who b { display: block; font-weight: 600; }
+.quote__who span { color: var(--on-dark-mut); font-size: .9rem; }
+
+/* ======================================================================== */
+/* WERKGEBIED                                                               */
+/* ======================================================================== */
+.regio__grid {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+}
+.regio__list {
+  display: flex; flex-wrap: wrap; gap: .7rem;
+  margin-top: 2.2rem;
+}
+.regio__list span {
+  font-family: var(--f-mono);
+  font-size: .82rem;
+  border: 1px solid var(--line);
+  padding: .5rem .9rem;
+  border-radius: 2px;
+  color: var(--ink-2);
+}
+.regio__panel {
+  aspect-ratio: 16 / 11;
+  background: var(--concrete);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.regio__panel .tex { position: absolute; inset: 0; }
+.regio__pin {
+  position: absolute; top: 44%; left: 48%;
+}
+
+/* ======================================================================== */
+/* OFFERTE - donkere conversiesectie, één focuspunt                        */
+/* ======================================================================== */
+.offerte {
+  background: var(--dark);
+  color: var(--on-dark);
+  position: relative;
+  overflow: hidden;
+}
+/* Laag voor de React Bits Beams-achtergrond (gevuld door de Vite-bundel) */
+#beams-root {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .55;
+}
+.offerte__grid {
+  display: grid;
+  grid-template-columns: .82fr 1.18fr;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  position: relative;
+  z-index: 1;
+}
+.offerte .eyebrow { color: var(--on-dark-mut); }
+.offerte .eyebrow .num { color: var(--on-dark); }
+.offerte h2 { color: var(--on-dark); }
+.offerte__intro p { color: var(--on-dark-mut); max-width: 38ch; margin: 1.6rem 0 0; }
+.offerte__direct {
+  margin-top: 2.6rem;
+  border-top: 1px solid var(--line-dark);
+  padding-top: 1.8rem;
+}
+.offerte__direct a {
+  display: flex; align-items: center; gap: .9rem;
+  text-decoration: none;
+  font-family: var(--f-mono);
+  font-size: .95rem;
+  padding: .55rem 0;
+  color: var(--on-dark);
+}
+.offerte__direct a:hover { color: var(--red); }
+.offerte__direct .ico { color: var(--red); width: 18px; }
+
+/* Formulier */
+.form { display: grid; gap: 1.5rem; }
+.form__chips-label {
+  font-family: var(--f-mono);
+  font-size: .74rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--on-dark-mut);
+  margin-bottom: .9rem;
+  display: block;
+}
+.chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+.chip {
+  font-family: var(--f-body);
+  font-size: .92rem;
+  font-weight: 500;
+  padding: .6rem 1.05rem;
+  border: 1px solid var(--line-dark);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--on-dark);
+  cursor: pointer;
+  transition: border-color .25s var(--ease), background .25s var(--ease), color .25s;
+}
+.chip:hover { border-color: var(--on-dark-mut); }
+.chip[aria-pressed="true"] {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.field { display: grid; gap: .55rem; }
+.field label {
+  font-family: var(--f-mono);
+  font-size: .74rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-dark-mut);
+}
+.field input,
+.field textarea,
+.field select {
+  font-family: var(--f-body);
+  font-size: 1rem;
+  background: var(--dark-2);
+  border: 1px solid var(--line-dark);
+  border-radius: 2px;
+  color: var(--on-dark);
+  padding: .95rem 1rem;
+  width: 100%;
+  transition: border-color .25s var(--ease), background .25s;
+}
+.field textarea { resize: vertical; min-height: 110px; }
+.field input::placeholder, .field textarea::placeholder { color: #62646b; }
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #25262c;
+}
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap;
+  margin-top: .4rem;
+}
+.form__note { font-size: .85rem; color: var(--on-dark-mut); max-width: 30ch; }
+.flash {
+  background: rgba(216, 32, 31, .12);
+  border: 1px solid var(--red);
+  color: #ffd9d8;
+  padding: .9rem 1.1rem;
+  border-radius: 2px;
+  font-size: .92rem;
+}
+
+/* ======================================================================== */
+/* FOOTER                                                                    */
+/* ======================================================================== */
+.footer { background: var(--paper-2); border-top: 1px solid var(--line); }
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 2.5rem;
+  padding-block: clamp(3.5rem, 6vw, 5rem);
+}
+.footer .brand__name { font-size: 1.5rem; }
+.footer__col h4 {
+  font-family: var(--f-mono);
+  font-size: .74rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1.2rem;
+}
+.footer__col a, .footer__col p { text-decoration: none; color: var(--ink-2); margin: 0 0 .55rem; display: block; }
+.footer__col a:hover { color: var(--red); }
+.footer__bottom {
+  border-top: 1px solid var(--line);
+  padding-block: 1.6rem;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  font-family: var(--f-mono);
+  font-size: .76rem;
+  color: var(--muted);
+}
+
+/* ======================================================================== */
+/* FLOATING contact - één onopvallende, vaste actie                        */
+/* ======================================================================== */
+.float {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 70;
+  display: flex; flex-direction: column; gap: .7rem;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .4s var(--ease), transform .4s var(--ease);
+  pointer-events: none;
+}
+.float.show { opacity: 1; transform: none; pointer-events: auto; }
+.float a {
+  width: 54px; height: 54px;
+  display: grid; place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  transition: transform .3s var(--ease), background .3s;
+}
+.float a:hover { transform: scale(1.07); }
+.float a.wa { background: #25D366; color: #fff; }
+.float a.wa:hover { background: #1eb858; }
+
+/* ======================================================================== */
+/* Scroll-reveal                                                            */
+/* ======================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+.reveal.in { opacity: 1; transform: none; }
+[data-delay="1"] { transition-delay: .08s; }
+[data-delay="2"] { transition-delay: .16s; }
+[data-delay="3"] { transition-delay: .24s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: .001ms !important; }
+}
+
+/* Toetsenbordfocus zichtbaar houden */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* ======================================================================== */
+/* RESPONSIVE                                                                */
+/* ======================================================================== */
+@media (max-width: 1000px) {
+  .hero__grid { grid-template-columns: 1fr; }
+  .hero__panel { aspect-ratio: 16 / 10; order: -1; }
+  .diensten { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(2, 1fr); row-gap: 2.6rem; }
+  .proof__grid, .regio__grid, .offerte__grid { grid-template-columns: 1fr; }
+  .quote { order: -1; }
+}
+
+@media (max-width: 720px) {
+  .nav__links, .nav__cta { display: none; }
+  .burger { display: block; }
+  .nav__panel {
+    position: fixed; inset: 78px 0 auto 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: 1.5rem var(--gutter) 2rem;
+    display: none;
+    flex-direction: column;
+    gap: 0;
+  }
+  body.menu-open .nav__panel { display: flex; }
+  .nav__panel a {
+    text-decoration: none; color: var(--ink);
+    font-family: var(--f-display); font-size: 1.5rem; font-weight: 600;
+    padding: .7rem 0; border-bottom: 1px solid var(--line-soft);
+  }
+  .nav__panel .btn { margin-top: 1.2rem; }
+  .hero__facts { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
+  .diensten { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .sec-head { grid-template-columns: 1fr; }
+  .sec-head__aside { text-align: left; }
+  .field-row { grid-template-columns: 1fr; }
+  .footer__grid { grid-template-columns: 1fr; gap: 2rem; }
+}

@@ -1,0 +1,110 @@
+# BEBO Betonboren & Zagen - Flask website
+
+Moderne, lead-genererende one-page site met een offerte-aanvraag als kern.
+Gebouwd op Flask + Jinja, zonder JS-framework. Klaar voor Railway.
+
+## Lokaal draaien
+```bash
+pip install -r requirements.txt
+python app.py
+# → http://127.0.0.1:5000
+```
+
+## Deploy op Railway
+1. Push deze map naar een GitHub-repo.
+2. Railway → New Project → Deploy from GitHub repo.
+3. De repo bevat een **Dockerfile**; Railway bouwt daarmee (deterministisch,
+   geen gok over taal/versie). `railway.json` forceert de Dockerfile-builder.
+   De React Bits-bundel is meegecommit, dus er is géén Node nodig op Railway.
+4. De `PORT` wordt door Railway aangeleverd; de Dockerfile bindt gunicorn daarop.
+5. Zet onder **Variables** minimaal:
+   - `SECRET_KEY` → een lange willekeurige string.
+6. Na een geslaagde build: **Settings → Networking → Generate Domain** om de
+   site publiek te maken (anders blijft de service "Unexposed").
+7. (Optioneel) e-mailnotificaties - zet ook de `SMTP_*`-vars (zie `.env.example`).
+
+> Werkt de build via Railpack i.p.v. de Dockerfile? Dan pinnen `.python-version`
+> (3.12) en de `Procfile` (`gunicorn app:app`) alsnog de juiste setup.
+
+> Let op: op Railway is de filesystem niet persistent. Wil je leads bewaren,
+> gebruik dan de SMTP-notificatie of koppel later een database/airtable.
+
+## Waar staat wat
+```
+app.py                 Flask-app + offerte-afhandeling (validatie, opslag, mail)
+templates/
+  base.html            nav, footer, zwevend belknopje, betontextuur-filter
+  index.html           hero, diensten, werkwijze, waarom, werkgebied, offerte
+  bedankt.html         bevestiging na verzenden
+  404.html
+static/css/style.css   volledige stijl (design-tokens bovenin)
+static/js/main.js      nav-scroll, mobiel menu, scroll-reveal, offerte-chips
+static/bundle/         gebouwde React Bits-bundel (gecommit; Flask serveert dit)
+frontend/              Vite + React bron voor de React Bits-effecten
+data/leads.jsonl       binnengekomen aanvragen (één JSON per regel)
+```
+
+## Inhoud aanpassen
+- **Diensten**: pas de lijst `DIENSTEN` aan in `app.py` (één bron - voedt zowel de
+  servicekaarten als de chips in het formulier).
+- **Bedrijfsgegevens**: het dict `BEDRIJF` in `app.py`.
+- **Teksten**: in `templates/index.html`.
+
+## Foto's toevoegen (sterk aangeraden)
+Nu staan er gegenereerde betonpanelen als placeholder. Vervang ze door echte
+projectfoto's voor maximale impact:
+1. Zet je foto's in `static/img/`.
+2. In `index.html`, vervang in `.hero__panel` en `.regio__panel` het
+   `<div class="tex" ...>` door bijv.:
+   ```html
+   <img src="{{ url_for('static', filename='img/jouw-foto.jpg') }}"
+        alt="Kernboring in betonvloer" style="width:100%;height:100%;object-fit:cover">
+   ```
+   en haal de `aria-hidden` weg als de foto inhoudelijk is.
+
+## Nog te doen voor livegang
+- [ ] Echte projectfoto's plaatsen (hero + werkgebied).
+- [ ] De voorbeeldquote bij "Waarom BEBO" vervangen door een **echte** klantreferentie.
+- [ ] `SECRET_KEY` + (optioneel) SMTP-variabelen instellen op Railway.
+- [ ] Eigen domein koppelen (bebobetonboren.nl).
+- [ ] Privacy/cookie-tekst toevoegen als je later tracking/analytics gebruikt.
+
+## React Bits-effecten (TargetCursor + Beams)
+Twee echte React Bits-componenten draaien als React-"eilanden" boven de
+Flask-pagina, gebouwd met Vite:
+- **TargetCursor** (gsap) - een richtkruis-cursor in BEBO-rood die op knoppen,
+  links en kaarten "lockt". Sluit aan op het richtkruis-motief van de site.
+- **Beams** (three.js / react-three-fiber) - subtiele lichtstrepen als
+  achtergrond in de donkere offerte-sectie.
+
+Beide staan **uit op mobiel en bij `prefers-reduced-motion`**. Three.js wordt
+lazy geladen (aparte chunk) en pas wanneer de offerte-sectie in beeld komt.
+
+### De bundel herbouwen (alleen nodig bij wijzigingen aan de effecten)
+```bash
+cd frontend
+npm install
+npm run build      # → schrijft naar ../static/bundle/
+```
+De gebouwde bundel staat in `static/bundle/` en is meegecommit, dus **Railway
+heeft géén Node nodig** bij deploy - Flask serveert de bundel als statische
+bestanden. Node/Vite heb je alleen lokaal nodig als je de effecten aanpast.
+
+### Tweaken / uitzetten
+- Kleur, snelheid en aantal van de effecten: `frontend/src/main.jsx`
+  (props van `<TargetCursor>` en `<Beams>`).
+- Wil je de normale muispijl houden? Zet `hideDefaultCursor={false}` in `main.jsx`.
+- BEBO-kleuren van de cursor: `frontend/src/bebo-overrides.css`.
+- Effect helemaal weg? Verwijder de twee `bundle/...`-regels uit `templates/base.html`.
+
+### Let op: bundelgrootte
+`Beams` trekt three.js mee (~235 kB gzip in een aparte chunk, alleen desktop).
+De basis-bundel (React + gsap voor de cursor) is ~92 kB gzip. Voor een
+lead-gen-site is dat de prijs van "echte" React Bits; wil je lichter, dan kan
+ik de cursor ook in vanilla JS namaken en Beams door een CSS-gradient vervangen.
+
+## Toegepaste ontwerpprincipes (de "5k"-regels)
+Kleur intentioneel (rood enkel als precisie-accent) · typografie als hiërarchie ·
+één duidelijke CTA-route (de offerte) · royale witruimte · terughoudende trust
+signals (feiten + één quote i.p.v. logo-soup). Signatuur: het rode richtkruis als
+"het exacte punt waar geboord/gezaagd wordt".

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Pagina niet gevonden - BEBO{% endblock %}
+
+{% block content %}
+<section class="hero" style="min-height:70vh;display:flex;align-items:center;">
+  <div class="wrap" style="width:100%;">
+    <div style="max-width:44rem;">
+      <p class="eyebrow"><span class="num">404</span> Niet gevonden</p>
+      <h1 class="display" style="font-size:clamp(2.4rem,5.5vw,4.4rem);margin-bottom:1.6rem;">
+        Deze pagina hebben we niet <span class="accent">aangeboord</span>.
+      </h1>
+      <p class="lede" style="margin-bottom:2.6rem;">De pagina die je zoekt bestaat niet (meer). Ga terug naar de start.</p>
+      <a href="{{ url_for('index') }}" class="btn btn--red btn--lg">Naar de homepage <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}
