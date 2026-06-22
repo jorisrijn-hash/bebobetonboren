@@ -60,24 +60,25 @@ if (beamsRoot && !prefersReduced && !isSmall) {
   }
 }
 
-/* 3) LightRays-achtergrond in het hero-paneel. Boven de vouw, dus direct
-   mounten (geen observer). ogl is licht; alleen desktop + geen reduced-motion.
-   Wil je liever een foto/video (optie B)? Vervang in templates/index.html de
-   <div id="hero-fx"> door een <img>/<video> die het paneel vult. */
-const heroFx = document.getElementById('hero-fx');
-if (heroFx && !prefersReduced && !isSmall) {
-  import('./components/LightRays.jsx').then(({ default: LightRays }) => {
-    createRoot(heroFx).render(
-      <LightRays
-        raysOrigin="top-center"
-        raysColor="#E84531"
-        raysSpeed={1.0}
-        lightSpread={1.0}
-        rayLength={2.0}
-        followMouse={true}
-        mouseInfluence={0.15}
-        noiseAmount={0.08}
-        distortion={0.03}
+/* 3) Particles ("betonstof") als volledige hero-achtergrond. Transparant
+   canvas, dus de lichte hero blijft zichtbaar en de tekst leesbaar. Boven de
+   vouw, dus direct mounten. Alleen desktop + geen reduced-motion.
+   Wil je terug naar LightRays of een foto? Zie templates/index.html. */
+const heroBg = document.getElementById('hero-bg');
+if (heroBg && !prefersReduced && !isSmall) {
+  import('./components/Particles.jsx').then(({ default: Particles }) => {
+    createRoot(heroBg).render(
+      <Particles
+        particleCount={140}
+        particleSpread={11}
+        speed={0.08}
+        particleColors={['#2a2b2e', '#6f7176', '#c8413a']}
+        moveParticlesOnHover={false}
+        alphaParticles={true}
+        particleBaseSize={80}
+        sizeRandomness={1.2}
+        cameraDistance={18}
+        disableRotation={true}
       />
     );
   });

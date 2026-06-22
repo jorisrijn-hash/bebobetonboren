@@ -4,6 +4,11 @@
 
 <!-- ================= HERO ================= -->
 <section class="hero">
+  <!-- Volledige hero-achtergrond: React Bits Particles ("betonstof").
+       Wil je een ander effect, LightRays of een foto? Zie frontend/src/main.jsx
+       (de mount) en deze sectie. -->
+  <div id="hero-bg" aria-hidden="true"></div>
+
   <div class="wrap">
     <div class="hero__grid">
       <div class="hero__copy">
@@ -30,12 +35,9 @@
         </div>
       </div>
 
-      <!-- Hero-visual: React Bits LightRays-achtergrond (optie A).
-           Wil je terug naar een foto/video (optie B)? Vervang het
-           <div id="hero-fx"></div> hieronder door een <img>/<video>. -->
-      <div class="hero__panel hero__panel--fx reveal" data-delay="2" aria-hidden="true">
-        <div id="hero-fx"></div>
-        <span class="crosshair"><span class="h"></span><span class="v"></span><span class="ring"></span></span>
+      <!-- Zwevende merk-marker over het stofveld (geen kader) -->
+      <div class="hero__marker reveal" data-delay="2" aria-hidden="true">
+        <span class="crosshair crosshair--lg"><span class="h"></span><span class="v"></span><span class="ring"></span></span>
         <span class="hero__tag">kernboring · <b>Ø&nbsp;132&nbsp;mm</b></span>
       </div>
     </div>

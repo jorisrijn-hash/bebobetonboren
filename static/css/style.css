@@ -279,9 +279,36 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-4
 /* ======================================================================== */
 .hero {
   position: relative;
+  overflow: hidden;
   padding-top: clamp(8rem, 16vh, 11rem);
   padding-bottom: var(--section);
 }
+/* Full-bleed React Bits-achtergrond (Particles), transparant canvas */
+#hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero > .wrap { position: relative; z-index: 1; }
+
+/* Zwevende merk-marker rechts (geen kader), over het stofveld */
+.hero__marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  min-height: 300px;
+}
+.hero__marker .hero__tag {
+  position: static;
+  background: var(--ink);
+  color: var(--paper);
+}
+.crosshair--lg { width: 120px; height: 120px; }
+.crosshair--lg .ring { width: 40px; height: 40px; border-width: 2px; }
+.crosshair--lg .h, .crosshair--lg .v { background: var(--red); }
 .hero__grid {
   display: grid;
   grid-template-columns: 1.15fr .85fr;
@@ -754,7 +781,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 /* ======================================================================== */
 @media (max-width: 1000px) {
   .hero__grid { grid-template-columns: 1fr; }
-  .hero__panel { aspect-ratio: 16 / 10; order: -1; }
+  .hero__marker { display: none; }
   .diensten { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: repeat(2, 1fr); row-gap: 2.6rem; }
   .proof__grid, .regio__grid, .offerte__grid { grid-template-columns: 1fr; }

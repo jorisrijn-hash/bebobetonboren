@@ -16,17 +16,6 @@
 </head>
 <body>
 
-  <!-- Herbruikbare betontextuur (feTurbulence). Vervang panelen door echte
-       BEBO-foto's: zet een <img> in .hero__panel / .regio__panel en haal .tex weg. -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <filter id="beton">
-      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="4" seed="7" stitchTiles="stitch"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer>
-      <feComposite operator="over" in2="SourceGraphic"/>
-    </filter>
-  </svg>
-
   <header class="nav" id="nav">
     <div class="wrap nav__bar">
       <a href="{{ url_for('index') }}" class="brand" aria-label="BEBO - naar boven">
