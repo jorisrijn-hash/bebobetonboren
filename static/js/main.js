@@ -11,32 +11,18 @@
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- Nav: stuck-state + floating button ---- */
-  var nav = document.getElementById('nav');
+  /* ---- Menubalk: achtergrond bij scrollen + floating contactknop ----
+     De StaggeredMenu-header wordt door React (async) gerenderd, dus we
+     zoeken 'm elke scroll opnieuw op. */
   var float = document.getElementById('float');
   function onScroll() {
     var y = window.scrollY || window.pageYOffset;
-    if (nav) nav.classList.toggle('is-stuck', y > 24);
-    if (float) float.classList.toggle('show', y > window.innerHeight * 0.6);
+    var smHeader = document.querySelector('.staggered-menu-header');
+    if (smHeader) smHeader.classList.toggle('is-scrolled', y > 24);
+    if (float) float.classList.toggle('show', y > window.innerHeight * 0.4);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  /* ---- Mobiel menu ---- */
-  var burger = document.getElementById('burger');
-  if (burger) {
-    burger.addEventListener('click', function () {
-      var open = document.body.classList.toggle('menu-open');
-      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-      burger.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
-    });
-    document.querySelectorAll('#navPanel a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        document.body.classList.remove('menu-open');
-        burger.setAttribute('aria-expanded', 'false');
-      });
-    });
-  }
 
   /* ---- Scroll-reveal ---- */
   var reveals = document.querySelectorAll('.reveal');

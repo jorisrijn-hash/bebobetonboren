@@ -16,44 +16,23 @@
 </head>
 <body>
 
-  <header class="nav" id="nav">
-    <div class="wrap nav__bar">
-      <a href="{{ url_for('index') }}" class="brand" aria-label="BEBO - naar boven">
-        <span class="brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <span class="brand__txt">
-          <span class="brand__name">BEBO</span>
-          <span class="brand__sub">betonboren &amp; zagen</span>
-        </span>
-      </a>
-
-      <nav class="nav__links" aria-label="Hoofdmenu">
-        <ul style="display:flex;gap:2.2rem;list-style:none;margin:0;padding:0;">
-          <li><a href="#diensten">Werkzaamheden</a></li>
-          <li><a href="#werkwijze">Werkwijze</a></li>
-          <li><a href="#waarom">Waarom BEBO</a></li>
-          <li><a href="#werkgebied">Werkgebied</a></li>
-        </ul>
-      </nav>
-
-      <div class="nav__cta">
-        <a href="tel:{{ bedrijf.tel_link }}" class="nav__phone">{{ bedrijf.tel }}</a>
-        <a href="#offerte" class="btn btn--red">Offerte aanvragen <span class="arrow">→</span></a>
-      </div>
-
-      <button class="burger" id="burger" aria-label="Menu openen" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-
-    <div class="nav__panel" id="navPanel">
+  <!-- Navigatie: React Bits StaggeredMenu (gemount via de bundel in main.jsx).
+       Zonder JS valt de site terug op het eenvoudige menu hieronder. -->
+  <div id="staggered-menu"
+       data-tel="{{ bedrijf.tel }}"
+       data-tel-link="{{ bedrijf.tel_link }}"
+       data-email="{{ bedrijf.email }}"
+       data-whatsapp="{{ bedrijf.whatsapp }}"></div>
+  <noscript>
+    <nav class="nav-fallback" aria-label="Menu">
       <a href="#diensten">Werkzaamheden</a>
       <a href="#werkwijze">Werkwijze</a>
       <a href="#waarom">Waarom BEBO</a>
       <a href="#werkgebied">Werkgebied</a>
-      <a href="tel:{{ bedrijf.tel_link }}">{{ bedrijf.tel }}</a>
-      <a href="#offerte" class="btn btn--red">Offerte aanvragen <span class="arrow">→</span></a>
-    </div>
-  </header>
+      <a href="#offerte">Offerte aanvragen</a>
+    </nav>
+  </noscript>
+
 
   <main>
     {% block content %}{% endblock %}

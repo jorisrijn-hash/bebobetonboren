@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import TargetCursor from './components/TargetCursor.jsx';
+import StaggeredMenu from './components/StaggeredMenu.jsx';
 import './bebo-overrides.css';
 
 /* Capabilities - we volgen het React Bits-advies: effecten uit op mobiel
@@ -7,6 +8,47 @@ import './bebo-overrides.css';
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 const isSmall = window.matchMedia('(max-width: 860px)').matches;
+
+/* 0) StaggeredMenu = de navigatie. Mount op alle schermformaten.
+   Contactgegevens komen uit data-attributen op #staggered-menu (Jinja),
+   zodat er een bron blijft. */
+const menuRoot = document.getElementById('staggered-menu');
+if (menuRoot) {
+  const tel = menuRoot.dataset.tel || '';
+  const telLink = menuRoot.dataset.telLink || '';
+  const email = menuRoot.dataset.email || '';
+  const whatsapp = menuRoot.dataset.whatsapp || '';
+
+  const items = [
+    { label: 'Werkzaamheden', ariaLabel: 'Naar werkzaamheden', link: '/#diensten' },
+    { label: 'Werkwijze', ariaLabel: 'Naar werkwijze', link: '/#werkwijze' },
+    { label: 'Waarom BEBO', ariaLabel: 'Naar waarom BEBO', link: '/#waarom' },
+    { label: 'Werkgebied', ariaLabel: 'Naar werkgebied', link: '/#werkgebied' },
+    { label: 'Offerte aanvragen', ariaLabel: 'Naar offerteformulier', link: '/#offerte' }
+  ];
+  const socialItems = [
+    { label: tel, link: 'tel:' + telLink },
+    { label: 'E-mail', link: 'mailto:' + email },
+    { label: 'WhatsApp', link: 'https://wa.me/' + whatsapp }
+  ];
+
+  createRoot(menuRoot).render(
+    <StaggeredMenu
+      position="right"
+      isFixed={true}
+      items={items}
+      socialItems={socialItems}
+      displaySocials={true}
+      displayItemNumbering={true}
+      accentColor="#D8201F"
+      colors={['#1a1b1f', '#D8201F']}
+      logoUrl="/static/img/bebo-mark.svg"
+      menuButtonColor="#16171B"
+      openMenuButtonColor="#16171B"
+      changeMenuColorOnOpen={false}
+    />
+  );
+}
 
 /* 1) Target cursor - alleen op desktop met een echte muis.
    De component zet zichzelf ook intern uit op mobiel; dit is de extra gate. */
@@ -19,7 +61,7 @@ if (!isTouch && !prefersReduced) {
   document.documentElement.classList.add('bebo-cursor-on');
   createRoot(host).render(
     <TargetCursor
-      targetSelector=".btn, .textlink, .dienst, .chip, .regio__list span, .nav__links a, .nav__phone, .float a, .offerte__direct a, .footer__col a, .brand, .field input, .field textarea, .field select"
+      targetSelector=".btn, .textlink, .dienst, .chip, .regio__list span, .sm-toggle, .sm-panel-item, .sm-socials-link, .sm-logo, .float a, .offerte__direct a, .footer__col a, .field input, .field textarea, .field select"
       spinDuration={3}
       hideDefaultCursor={true}
     />

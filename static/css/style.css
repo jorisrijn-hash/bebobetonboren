@@ -815,3 +815,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   .field-row { grid-template-columns: 1fr; }
   .footer__grid { grid-template-columns: 1fr; gap: 2rem; }
 }
+
+/* No-JS fallback-navigatie (alleen zichtbaar zonder JavaScript) */
+.nav-fallback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 1.8rem;
+  align-items: center;
+  padding: 1.1rem clamp(1.25rem, 5vw, 4rem);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--f-body);
+}
+.nav-fallback a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+.nav-fallback a:hover { color: var(--red); }
