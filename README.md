@@ -109,3 +109,4 @@ Kleur intentioneel (rood enkel als precisie-accent) · typografie als hiërarchi
 signals (feiten + één quote i.p.v. logo-soup). Signatuur: het rode richtkruis als
 "het exacte punt waar geboord/gezaagd wordt".
 # bebobetonboren
+# bebobetonboren
