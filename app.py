@@ -26,10 +26,22 @@ from flask import (
     url_for,
     flash,
     send_from_directory,
+    Response,
 )
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "verander-mij-in-productie")
+
+# Canonieke site-URL voor SEO (canonical, Open Graph, sitemap). Zet in productie
+# de env var SITE_URL op je eigen domein, bijv. https://www.bebobetonboren.nl
+SITE_URL = os.environ.get(
+    "SITE_URL", "https://bebobetonboren-production.up.railway.app"
+).rstrip("/")
+
+
+@app.context_processor
+def inject_seo_globals():
+    return {"site_url": SITE_URL}
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -146,6 +158,24 @@ def favicon():
         "favicon.ico",
         mimetype="image/vnd.microsoft.icon",
     )
+
+
+@app.route("/robots.txt")
+def robots():
+    body = "User-agent: *\nAllow: /\n\nSitemap: {}/sitemap.xml\n".format(SITE_URL)
+    return Response(body, mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        "  <url><loc>{}/</loc><changefreq>monthly</changefreq>"
+        "<priority>1.0</priority></url>\n"
+        "</urlset>\n"
+    ).format(SITE_URL)
+    return Response(body, mimetype="application/xml")
 
 
 @app.route("/")

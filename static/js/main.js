@@ -15,6 +15,7 @@
      De StaggeredMenu-header wordt door React (async) gerenderd, dus we
      zoeken 'm elke scroll opnieuw op. */
   var float = document.getElementById('float');
+  var ident = document.getElementById('ident');
   var footerEl = document.querySelector('.footer');
   function onScroll() {
     var y = window.scrollY || window.pageYOffset;
@@ -22,6 +23,7 @@
     if (smHeader) smHeader.classList.toggle('is-scrolled', y > 24);
     var atFooter = footerEl && footerEl.getBoundingClientRect().top < window.innerHeight - 40;
     if (float) float.classList.toggle('show', y > window.innerHeight * 0.4 && !atFooter);
+    if (ident) ident.classList.toggle('show', !!atFooter);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
