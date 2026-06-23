@@ -847,11 +847,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   gap: 0.5rem;
   color: var(--muted);
   text-decoration: none;
-  opacity: 0.3;
-  filter: grayscale(1);
-  transition: opacity 0.35s ease, filter 0.35s ease, color 0.35s ease;
+  opacity: 0.45;
+  transition: opacity 0.35s ease, color 0.35s ease;
 }
-.ident__cur { display: block; flex: 0 0 auto; }
+.ident__cur {
+  display: block;
+  flex: 0 0 auto;
+  height: 19px;
+  width: auto;
+  /* Blauw logo wordt grijs zodat het in de BEBO-footer inblendt */
+  filter: grayscale(1) brightness(0.55) contrast(1.05);
+  transition: filter 0.35s ease;
+}
 .ident__name {
   font-family: var(--f-mono);
   font-size: 0.72rem;
@@ -864,9 +871,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .ident:hover,
 .ident:focus-visible {
-  opacity: 0.9;
-  filter: grayscale(0.1);
+  opacity: 0.95;
   color: var(--ink);
+}
+.ident:hover .ident__cur,
+.ident:focus-visible .ident__cur {
+  filter: grayscale(1) brightness(0.4) contrast(1.1);
 }
 .ident:hover .ident__name,
 .ident:focus-visible .ident__name {

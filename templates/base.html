@@ -6,6 +6,14 @@
   <title>{% block title %}BEBO Betonboren & Zagen - boren, zagen & frezen in regio Rotterdam{% endblock %}</title>
   <meta name="description" content="{% block description %}BEBO Betonboren & Zagen: vakkundig betonboren, wand- en vloerzagen, frezen en precisiesloop in de regio Rotterdam. Schoon, recht en op maat. Vraag vrijblijvend een offerte aan.{% endblock %}">
   <meta name="theme-color" content="#E9E8E4">
+
+  <!-- Favicons (BEBO-merkteken). SVG voor moderne browsers, PNG-fallbacks,
+       apple-touch-icon voor iOS, .ico voor oudere browsers. -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/bebo-mark.svg') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -74,9 +82,7 @@
     <!-- Maker-signature ("ident"): subtiel cursor-logo, onthult "jorisvrr" bij hover -->
     <div class="wrap ident__wrap">
       <a class="ident" href="https://jorisvrrwebdev.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Website gemaakt door jorisvrr">
-        <svg class="ident__cur" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-          <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z" fill="currentColor"/>
-        </svg>
+        <img class="ident__cur" src="{{ url_for('static', filename='img/jorisvrr-cursor.png') }}" alt="" width="14" height="19">
         <span class="ident__name">jorisvrr</span>
       </a>
     </div>

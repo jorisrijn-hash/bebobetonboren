@@ -25,6 +25,7 @@ from flask import (
     redirect,
     url_for,
     flash,
+    send_from_directory,
 )
 
 app = Flask(__name__)
@@ -135,6 +136,16 @@ def _maybe_email(lead: dict) -> None:
             s.send_message(msg)
     except Exception as exc:  # noqa: BLE001 - notificatie mag de lead nooit blokkeren
         app.logger.warning("E-mailnotificatie mislukt: %s", exc)
+
+
+@app.route("/favicon.ico")
+def favicon():
+    # Browsers vragen automatisch /favicon.ico op; serveer de .ico uit static/img.
+    return send_from_directory(
+        app.static_folder + "/img",
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 
 
 @app.route("/")
