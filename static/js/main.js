@@ -15,11 +15,13 @@
      De StaggeredMenu-header wordt door React (async) gerenderd, dus we
      zoeken 'm elke scroll opnieuw op. */
   var float = document.getElementById('float');
+  var footerEl = document.querySelector('.footer');
   function onScroll() {
     var y = window.scrollY || window.pageYOffset;
     var smHeader = document.querySelector('.staggered-menu-header');
     if (smHeader) smHeader.classList.toggle('is-scrolled', y > 24);
-    if (float) float.classList.toggle('show', y > window.innerHeight * 0.4);
+    var atFooter = footerEl && footerEl.getBoundingClientRect().top < window.innerHeight - 40;
+    if (float) float.classList.toggle('show', y > window.innerHeight * 0.4 && !atFooter);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

@@ -61,7 +61,7 @@ if (!isTouch && !prefersReduced) {
   document.documentElement.classList.add('bebo-cursor-on');
   createRoot(host).render(
     <TargetCursor
-      targetSelector=".btn, .textlink, .dienst, .chip, .regio__list span, .sm-toggle, .sm-panel-item, .sm-socials-link, .sm-logo, .float a, .offerte__direct a, .footer__col a, .field input, .field textarea, .field select"
+      targetSelector=".btn, .textlink, .dienst, .chip, .regio__list span, .sm-toggle, .sm-panel-item, .sm-socials-link, .sm-logo, .float a, .offerte__direct a, .footer__col a, .ident, .field input, .field textarea, .field select"
       spinDuration={3}
       hideDefaultCursor={true}
     />

@@ -833,3 +833,43 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   font-weight: 600;
 }
 .nav-fallback a:hover { color: var(--red); }
+
+/* Maker-signature ("ident") rechtsonder in de footer */
+.ident__wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2.6rem;
+  padding-bottom: 0.2rem;
+}
+.ident {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: opacity 0.35s ease, filter 0.35s ease, color 0.35s ease;
+}
+.ident__cur { display: block; flex: 0 0 auto; }
+.ident__name {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.4s ease, opacity 0.35s ease;
+}
+.ident:hover,
+.ident:focus-visible {
+  opacity: 0.9;
+  filter: grayscale(0.1);
+  color: var(--ink);
+}
+.ident:hover .ident__name,
+.ident:focus-visible .ident__name {
+  max-width: 140px;
+  opacity: 1;
+}
