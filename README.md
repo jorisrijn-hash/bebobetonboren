@@ -108,3 +108,4 @@ Kleur intentioneel (rood enkel als precisie-accent) · typografie als hiërarchi
 één duidelijke CTA-route (de offerte) · royale witruimte · terughoudende trust
 signals (feiten + één quote i.p.v. logo-soup). Signatuur: het rode richtkruis als
 "het exacte punt waar geboord/gezaagd wordt".
+# cynicaldzn
