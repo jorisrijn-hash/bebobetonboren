@@ -53,6 +53,17 @@
 </section>
 
 <!-- ================= DIENSTEN ================= -->
+<div class="trust reveal">
+  <div class="wrap trust__row">
+    {% for u in usps %}
+    <div class="trust__item">
+      <span class="trust__label">{{ u.label }}</span>
+      <span class="trust__sub">{{ u.sub }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 <section class="section" id="diensten">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -143,6 +154,76 @@
 </section>
 
 <!-- ================= WERKGEBIED ================= -->
+<section class="section" id="sectoren">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Voor wie</p>
+        <h2 class="display">Werk voor wie<br>erop rekent.</h2>
+      </div>
+      <p class="sec-head__aside">Van een losse opdracht tot doorlopende samenwerking, voor bouw, techniek en particulier.</p>
+    </div>
+    <div class="sectoren">
+      {% for s in sectoren %}
+      <div class="sector reveal" data-delay="{{ loop.index0 % 3 }}">
+        <h3 class="sector__titel">{{ s.titel }}</h3>
+        <p>{{ s.tekst }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if reviews %}
+<section class="section werkwijze" id="reviews">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Reviews</p>
+        <h2 class="display">Wat opdrachtgevers<br>ervan vinden.</h2>
+      </div>
+      {% if review_rating %}
+      <p class="sec-head__aside"><strong>{{ review_rating.score }}/5</strong> uit {{ review_rating.aantal }} reviews op {{ review_rating.bron }}</p>
+      {% endif %}
+    </div>
+    <div class="reviews">
+      {% for r in reviews %}
+      <figure class="review reveal" data-delay="{{ loop.index0 % 3 }}">
+        {% if r.ster %}<div class="review__stars" aria-label="{{ r.ster }} van 5 sterren">{% for _ in range(r.ster) %}<span>&#9733;</span>{% endfor %}</div>{% endif %}
+        <blockquote>{{ r.tekst }}</blockquote>
+        <figcaption>{{ r.naam }}{% if r.rol %} · <span>{{ r.rol }}</span>{% endif %}</figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if cases %}
+<section class="section" id="cases">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Recent werk</p>
+        <h2 class="display">Een greep uit<br>onze projecten.</h2>
+      </div>
+    </div>
+    <div class="cases">
+      {% for c in cases %}
+      <article class="case reveal" data-delay="{{ loop.index0 % 3 }}">
+        {% if c.img %}<div class="case__img"><img src="{{ url_for('static', filename='img/' + c.img) }}" alt="{{ c.titel }}" loading="lazy"></div>{% endif %}
+        <div class="case__body">
+          {% if c.meta %}<p class="case__meta">{{ c.meta }}</p>{% endif %}
+          <h3 class="display">{{ c.titel }}</h3>
+          <p>{{ c.tekst }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <section class="section werkwijze" id="werkgebied">
   <div class="wrap regio__grid">
     <div class="reveal">

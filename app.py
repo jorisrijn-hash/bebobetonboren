@@ -114,6 +114,38 @@ BEDRIJF = {
     "kvk": "59493038",
 }
 
+# Klanttypes / sectoren. Generiek en juist voor dit type bedrijf.
+SECTOREN = [
+    {"titel": "Aannemers", "tekst": "Sparingen en doorbraken die op tijd klaar zijn, zodat jouw planning niet schuift."},
+    {"titel": "Installateurs", "tekst": "Kernboringen en sleuven voor leidingen, ventilatie en elektra, exact op maat."},
+    {"titel": "Vastgoed & beheer", "tekst": "Nette uitvoering in bewoonde en verhuurde panden, met minimale overlast."},
+    {"titel": "Particulieren", "tekst": "Van een enkele doorvoer tot een compleet trapgat, netjes opgeleverd."},
+]
+
+# Trust-strip: ALLEEN aantoonbaar juiste items tonen. Zet VCA/jaren pas aan als
+# Marco dat bevestigt (anders zijn het valse claims).
+USPS = [
+    {"label": "Regio Rotterdam", "sub": "snel ter plaatse"},
+    {"label": "Stofarm & schoon", "sub": "water- en stofafzuiging"},
+    {"label": "Puin afgevoerd", "sub": "netjes opgeleverd"},
+    {"label": "KvK " + BEDRIJF["kvk"], "sub": "geregistreerd bedrijf"},
+    # {"label": "VCA-gecertificeerd", "sub": "veilig werken"},        # aanzetten als bevestigd
+    # {"label": "15+ jaar ervaring", "sub": "vakwerk sinds 20XX"},    # aanzetten met echt getal
+]
+
+# Reviews en cases: LEEG laten tot je ECHTE content hebt. De secties renderen
+# alleen als de lijst gevuld is, dus er gaat nooit iets verzonnen live.
+# Voorbeeldstructuur:
+#   REVIEWS = [{"tekst": "Strak werk, netjes achtergelaten.", "naam": "J. de Vries",
+#               "rol": "aannemer, Rotterdam", "ster": 5}]
+REVIEWS = []
+# Aggregaat-score, bijv. {"score": "4.9", "aantal": "27", "bron": "Google"}. None = verbergen.
+REVIEW_RATING = None
+#   CASES = [{"titel": "28 sparingen in 2 dagen", "tekst": "Kantoor bleef open dankzij
+#             geluidsbeperkende technieken.", "meta": "2 dagen · centrum Rotterdam",
+#             "img": "cases/kantoor.jpg"}]  # img is optioneel (echte projectfoto)
+CASES = []
+
 
 def _save_lead(lead: dict) -> None:
     """Schrijf de lead regel-voor-regel weg (append-only, crash-bestendig)."""
@@ -274,7 +306,16 @@ def sitemap():
 
 @app.route("/")
 def index():
-    return render_template("index.html", diensten=DIENSTEN, bedrijf=BEDRIJF)
+    return render_template(
+        "index.html",
+        diensten=DIENSTEN,
+        bedrijf=BEDRIJF,
+        sectoren=SECTOREN,
+        usps=USPS,
+        reviews=REVIEWS,
+        review_rating=REVIEW_RATING,
+        cases=CASES,
+    )
 
 
 @app.route("/offerte", methods=["POST"])
