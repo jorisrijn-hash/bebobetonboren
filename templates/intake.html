@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>BEBO - Content aanleveren</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ====== Instelling voor jorisvrr: jouw e-mail voor de "Mail"-knop ====== */
+  /* (staat ook in het script onderaan als ONTVANGER) */
+
+  :root{
+    --paper:#E9E8E4; --paper-2:#E1E0DB; --field:#F4F3F0;
+    --ink:#16171B; --ink-2:#34353A; --muted:#5C5E63;
+    --red:#D8201F; --red-ink:#B51A19; --line:#D3D2CD; --line-2:#C4C3BE;
+    --f-display:"Bricolage Grotesque",system-ui,sans-serif;
+    --f-body:"Inter",system-ui,sans-serif;
+    --f-mono:"Space Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --wrap:52rem;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--f-body); font-size:16px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--red-ink)}
+  ::selection{background:var(--red); color:#fff}
+
+  .wrap{max-width:var(--wrap); margin:0 auto; padding:0 clamp(1.15rem,4vw,2rem)}
+
+  /* ---- Kop ---- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    position:sticky; top:0; z-index:20;
+  }
+  .top__in{display:flex; align-items:center; gap:.85rem; padding:1rem 0}
+  .mark{width:34px; height:34px; flex:0 0 auto; display:block}
+  .top__name{font-family:var(--f-mono); font-size:.85rem; letter-spacing:.02em; color:var(--ink)}
+  .top__name b{color:var(--red)}
+  .top__meter{margin-left:auto; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); text-align:right}
+  .top__bar{height:3px; background:var(--line); margin-top:.35rem; width:120px; overflow:hidden}
+  .top__bar i{display:block; height:100%; width:0; background:var(--red); transition:width .4s var(--ease)}
+
+  /* ---- Intro ---- */
+  .intro{padding:clamp(2.2rem,6vw,3.6rem) 0 1rem}
+  .intro h1{
+    font-family:var(--f-display); font-weight:800; letter-spacing:-.02em;
+    line-height:1.03; margin:0 0 1rem; font-size:clamp(2rem,6vw,3.2rem);
+    text-wrap:balance;
+  }
+  .intro h1 .accent{color:var(--red)}
+  .intro p{max-width:46ch; color:var(--ink-2); margin:0 0 .5rem; text-wrap:pretty}
+  .intro .hint{
+    margin-top:1.4rem; padding:.85rem 1rem; background:var(--paper-2);
+    border:1px solid var(--line-2); font-size:.92rem; color:var(--ink-2);
+  }
+  .intro .hint b{color:var(--red)}
+
+  /* ---- Secties ---- */
+  section.block{padding:2.4rem 0; border-top:1px solid var(--line)}
+  .block__head{margin-bottom:1.5rem}
+  .block__eyebrow{
+    font-family:var(--f-mono); font-size:.72rem; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted);
+    display:flex; align-items:center; gap:.6rem; margin:0 0 .5rem;
+  }
+  .block__eyebrow::before{content:""; width:22px; height:2px; background:var(--red)}
+  .block__head h2{
+    font-family:var(--f-display); font-weight:700; letter-spacing:-.02em;
+    font-size:clamp(1.5rem,3.4vw,2rem); margin:0; line-height:1.05;
+  }
+  .block__head p{color:var(--ink-2); margin:.6rem 0 0; max-width:54ch; font-size:.96rem}
+
+  /* ---- Velden ---- */
+  .grid{display:grid; gap:1.1rem 1.3rem}
+  @media(min-width:640px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
+  .field{display:flex; flex-direction:column; gap:.4rem; min-width:0}
+  .field.full{grid-column:1/-1}
+  label{
+    font-family:var(--f-mono); font-size:.74rem; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--ink); font-weight:700;
+  }
+  label .opt{color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0}
+  .help{font-size:.82rem; color:var(--muted); margin:-.1rem 0 0}
+  input[type=text], input[type=email], input[type=tel], textarea{
+    font-family:var(--f-body); font-size:1rem; color:var(--ink);
+    background:var(--field); border:1px solid var(--line-2); border-radius:2px;
+    padding:.7rem .8rem; width:100%; transition:border-color .2s, box-shadow .2s;
+  }
+  textarea{resize:vertical; min-height:4.5rem; line-height:1.5}
+  input::placeholder, textarea::placeholder{color:#8A8C92}
+  input:focus, textarea:focus{
+    outline:none; border-color:var(--red);
+    box-shadow:0 0 0 3px rgba(216,32,31,.14);
+  }
+
+  /* ---- Diensten-rijen ---- */
+  .rows{display:flex; flex-direction:column; gap:1rem}
+  .row{
+    border:1px solid var(--line-2); background:var(--paper-2);
+    padding:1.1rem 1.1rem 1.2rem; position:relative;
+  }
+  .row__top{display:flex; align-items:center; gap:.7rem; margin-bottom:.9rem}
+  .row__num{
+    font-family:var(--f-mono); font-size:.8rem; color:var(--red); font-weight:700;
+    min-width:1.6rem;
+  }
+  .row__title-input{flex:1}
+  .row__grid{display:grid; gap:.9rem}
+  @media(min-width:640px){ .row__grid{grid-template-columns:1fr 1fr} }
+  .row .full{grid-column:1/-1}
+  .row__del{
+    background:none; border:1px solid var(--line-2); color:var(--muted);
+    font-family:var(--f-mono); font-size:.72rem; padding:.35rem .6rem;
+    cursor:pointer; border-radius:2px; transition:.2s;
+  }
+  .row__del:hover{border-color:var(--red); color:var(--red)}
+
+  .btn{
+    font-family:var(--f-mono); font-size:.82rem; font-weight:700; letter-spacing:.02em;
+    cursor:pointer; border-radius:2px; padding:.7rem 1.15rem; border:1px solid var(--ink);
+    background:var(--ink); color:var(--paper); text-decoration:none;
+    display:inline-flex; align-items:center; gap:.5rem; transition:.2s var(--ease);
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn--ghost{background:transparent; color:var(--ink)}
+  .btn--ghost:hover{border-color:var(--red); color:var(--red)}
+  .btn--red{background:var(--red); border-color:var(--red); color:#fff}
+  .btn--add{margin-top:1rem}
+  .btn:focus-visible, input:focus-visible, textarea:focus-visible, .row__del:focus-visible{
+    outline:2px solid var(--red); outline-offset:2px;
+  }
+
+  /* ---- Actiebalk ---- */
+  .actions{
+    padding:2.2rem 0 1rem; border-top:1px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:.7rem; align-items:center;
+  }
+  .actions .sep{flex-basis:100%; height:0}
+  .save-note{font-size:.8rem; color:var(--muted); font-family:var(--f-mono)}
+
+  /* ---- Resultaat ---- */
+  .result{display:none; padding:1.5rem 0 3rem}
+  .result.show{display:block}
+  .result__head{display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; margin-bottom:1rem}
+  .result__head h2{font-family:var(--f-display); font-weight:700; margin:0; font-size:1.4rem}
+  pre.out{
+    background:var(--ink); color:#E9E8E4; padding:1.2rem; overflow:auto;
+    font-family:var(--f-mono); font-size:.8rem; line-height:1.6; border-radius:2px;
+    max-height:26rem; white-space:pre-wrap; word-break:break-word;
+  }
+  .tabs{display:flex; gap:.4rem; margin-bottom:.8rem}
+  .tab{
+    font-family:var(--f-mono); font-size:.76rem; padding:.4rem .8rem; cursor:pointer;
+    border:1px solid var(--line-2); background:transparent; color:var(--muted); border-radius:2px;
+  }
+  .tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+
+  footer.foot{border-top:1px solid var(--line); padding:1.6rem 0 2.4rem; color:var(--muted); font-size:.8rem; font-family:var(--f-mono)}
+
+  .send-status{font-family:var(--f-mono); font-size:.85rem; margin:1rem 0 0; min-height:1.2em}
+  .send-status.send-ok{color:#1c7c3a}
+  .send-status.send-err{color:var(--red-ink)}
+
+  .toast{
+    position:fixed; left:50%; bottom:1.4rem; transform:translateX(-50%) translateY(1rem);
+    background:var(--ink); color:var(--paper); padding:.7rem 1.1rem; border-radius:2px;
+    font-family:var(--f-mono); font-size:.82rem; opacity:0; pointer-events:none;
+    transition:opacity .3s, transform .3s var(--ease); z-index:50;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+  @media (max-width:560px){
+    .top__name-sub{display:none}
+    .top__bar{display:none}
+    .top__meter{font-size:.68rem}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top__in">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <rect width="40" height="40" fill="#D8201F"/>
+      <rect x="6" y="6" width="12" height="12" fill="#fff"/><rect x="22" y="6" width="12" height="12" fill="#fff"/>
+      <rect x="6" y="22" width="12" height="12" fill="#fff"/><rect x="22" y="22" width="12" height="12" fill="#fff"/>
+    </svg>
+    <span class="top__name"><b>BEBO</b><span class="top__name-sub"> · content aanleveren</span></span>
+    <div class="top__meter">
+      <span id="meterText">0% ingevuld</span>
+      <span class="top__bar"><i id="meterBar"></i></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="intro">
+      <h1>Vul je bedrijfsinfo in, dan zetten wij het <span class="accent">op de site</span>.</h1>
+      <p>De velden hieronder zijn alvast ingevuld met de voorbeeldtekst van de demo. Pas alles aan naar jouw bedrijf: wat klopt laat je staan, de rest verander je.</p>
+      <p>Je antwoorden worden automatisch bewaard in deze browser. Onderaan maak je er met één klik een overzicht van dat je naar ons terugstuurt.</p>
+      <div class="hint"><b>Tip.</b> Geen tijd voor alles? Vul in wat je weet. Lege velden vullen wij zelf aan en leggen we later aan je voor.</div>
+    </div>
+  </div>
+
+  <!-- 1. Bedrijf & contact -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Bedrijf &amp; contact</p>
+        <h2>De basisgegevens</h2>
+        <p>Dit komt in de koptekst, de footer en de contactknoppen te staan.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="field full">
+          <label for="naam">Bedrijfsnaam</label>
+          <input type="text" id="naam" data-key="bedrijf.naam" placeholder="Bijv. BEBO Betonboren &amp; Zagen">
+        </div>
+        <div class="field full">
+          <label for="ondertitel">Ondertitel / vak <span class="opt">(optioneel)</span></label>
+          <input type="text" id="ondertitel" data-key="bedrijf.ondertitel" placeholder="Bijv. Betonboren &amp; Zagen">
+          <p class="help">Korte omschrijving van je vak, staat klein onder de naam.</p>
+        </div>
+        <div class="field">
+          <label for="tel">Telefoonnummer</label>
+          <input type="tel" id="tel" data-key="bedrijf.tel" placeholder="010-3220232">
+        </div>
+        <div class="field">
+          <label for="whatsapp">WhatsApp-nummer <span class="opt">(optioneel)</span></label>
+          <input type="tel" id="whatsapp" data-key="bedrijf.whatsapp" placeholder="06-12345678">
+          <p class="help">Laat leeg als dit hetzelfde is als je telefoonnummer.</p>
+        </div>
+        <div class="field full">
+          <label for="email">E-mailadres</label>
+          <input type="email" id="email" data-key="bedrijf.email" placeholder="info@bedrijf.nl">
+        </div>
+        <div class="field">
+          <label for="straat">Straat + huisnummer</label>
+          <input type="text" id="straat" data-key="bedrijf.straat" placeholder="Industrieweg 69-156">
+        </div>
+        <div class="field">
+          <label for="pcplaats">Postcode + plaats</label>
+          <input type="text" id="pcplaats" data-key="bedrijf.postcode_plaats" placeholder="2651 BC Berkel en Rodenrijs">
+        </div>
+        <div class="field">
+          <label for="kvk">KvK-nummer <span class="opt">(optioneel)</span></label>
+          <input type="text" id="kvk" data-key="bedrijf.kvk" placeholder="59493038">
+        </div>
+        <div class="field">
+          <label for="uren">Openingstijden <span class="opt">(optioneel)</span></label>
+          <input type="text" id="uren" data-key="bedrijf.openingstijden" placeholder="Ma-vr 07:00-17:00">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Diensten -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Werkzaamheden</p>
+        <h2>Wat je doet</h2>
+        <p>Per dienst: de naam, een kort kenmerk (maat, bereik of specialiteit) en een omschrijving van 1 tot 2 zinnen. Voeg toe of verwijder wat niet klopt.</p>
+      </div>
+      <div class="rows" id="dienstRows"></div>
+      <button type="button" class="btn btn--ghost btn--add" id="addDienst">+ Dienst toevoegen</button>
+    </div>
+  </section>
+
+  <!-- 3. Werkgebied -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Werkgebied</p>
+        <h2>Waar je werkt</h2>
+        <p>De plaatsen en regio waar je klussen aanneemt. Dit gebruiken we ook voor de vindbaarheid in Google.</p>
+      </div>
+      <div class="grid">
+        <div class="field full">
+          <label for="plaatsen">Plaatsen / regio's</label>
+          <input type="text" id="plaatsen" data-key="werkgebied.plaatsen" placeholder="Berkel en Rodenrijs, Rotterdam, Lansingerland, Pijnacker, Delft, Den Haag, Zoetermeer">
+          <p class="help">Scheid de plaatsen met een komma.</p>
+        </div>
+        <div class="field full">
+          <label for="werkgebiedTekst">Korte zin over je werkgebied <span class="opt">(optioneel)</span></label>
+          <input type="text" id="werkgebiedTekst" data-key="werkgebied.tekst" placeholder="Gevestigd in Berkel en Rodenrijs, snel ter plaatse in de wijde omgeving.">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Waarom -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Waarom jij</p>
+        <h2>Waarom klanten voor je kiezen</h2>
+        <p>Drie sterke punten. Per punt een korte kop en een zin uitleg. Denk aan: schoon werken, op tijd zijn, ervaring, materieel, garantie.</p>
+      </div>
+      <div class="rows" id="waaromRows"></div>
+      <button type="button" class="btn btn--ghost btn--add" id="addWaarom">+ Punt toevoegen</button>
+    </div>
+  </section>
+
+  <!-- 5. Over -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Over het bedrijf</p>
+        <h2>Jouw verhaal in het kort</h2>
+        <p>Een korte omschrijving voor onderaan de site. Geen marketingtaal nodig, gewoon in je eigen woorden.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="field full">
+          <label for="over">Korte omschrijving</label>
+          <textarea id="over" data-key="over.omschrijving" placeholder="Boren, zagen, frezen en gericht slopen in beton en steen. Schoon, recht en op maat voor aannemers, installateurs en particulieren."></textarea>
+        </div>
+        <div class="field">
+          <label for="ervaring">Jaren ervaring <span class="opt">(optioneel)</span></label>
+          <input type="text" id="ervaring" data-key="over.ervaring" placeholder="Bijv. 15+ jaar">
+        </div>
+        <div class="field">
+          <label for="team">Aantal mensen / ploeg <span class="opt">(optioneel)</span></label>
+          <input type="text" id="team" data-key="over.team" placeholder="Bijv. vaste ploeg van 3">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Koptekst -->
+  <section class="block">
+    <div class="wrap">
+      <div class="block__head">
+        <p class="block__eyebrow">Koptekst</p>
+        <h2>De grote kop op de homepage <span style="font-family:var(--f-mono);font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:400;">optioneel</span></h2>
+        <p>Heb je een pakkende zin in gedachten? Zet 'm hier. Laat je het leeg, dan schrijven wij een voorstel dat je later mag afkeuren of aanpassen.</p>
+      </div>
+      <div class="grid">
+        <div class="field full">
+          <label for="kopTitel">Kop <span class="opt">(optioneel)</span></label>
+          <input type="text" id="kopTitel" data-key="kop.titel" placeholder="Een gat in beton. Tot op de millimeter waar het hoort.">
+        </div>
+        <div class="field full">
+          <label for="kopLede">Introzin onder de kop <span class="opt">(optioneel)</span></label>
+          <textarea id="kopLede" data-key="kop.lede" placeholder="Boren, zagen, frezen en gericht slopen in beton en steen. Schoon werk, rechte kanten en een ploeg die nakomt wat is afgesproken."></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Acties -->
+  <section class="wrap">
+    <div class="actions">
+      <button type="button" class="btn btn--red" id="generate">Overzicht maken</button>
+      <button type="button" class="btn btn--ghost" id="resetExample">Voorbeeld herstellen</button>
+      <button type="button" class="btn btn--ghost" id="clearAll">Alles wissen</button>
+      <div class="sep"></div>
+      <span class="save-note" id="saveNote">Automatisch bewaard in deze browser</span>
+    </div>
+  </section>
+
+  <!-- Resultaat -->
+  <section class="wrap result" id="result">
+    <div class="result__head">
+      <h2>Bijna klaar. Controleer en verstuur.</h2>
+    </div>
+    <div class="tabs">
+      <button type="button" class="tab active" data-view="tekst">Leesbaar overzicht</button>
+      <button type="button" class="tab" data-view="json">JSON (voor de developer)</button>
+    </div>
+    <pre class="out" id="outText"></pre>
+    <input type="text" id="hp_website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <div class="actions" style="border:none; padding-top:1.2rem">
+      <button type="button" class="btn btn--red" id="sendBtn">Verstuur naar jorisvrr</button>
+      <button type="button" class="btn btn--ghost" id="copyBtn">Kopieer</button>
+      <button type="button" class="btn btn--ghost" id="downloadTxt">Download .txt</button>
+      <button type="button" class="btn btn--ghost" id="downloadJson">Download .json</button>
+    </div>
+    <p id="sendStatus" class="send-status" role="status" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">Gemaakt door jorisvrr/webdev · je gegevens worden veilig verstuurd zodra je op "Verstuur" klikt.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORE_KEY = "bebo-intake-v1";
+
+  // Voorbeeldcontent (de demo). Klant bewerkt dit.
+  var VOORBEELD = {
+    bedrijf:{ naam:"BEBO Betonboren & Zagen", ondertitel:"Betonboren & Zagen",
+      tel:"010-3220232", whatsapp:"", email:"info@bebobetonboren.nl",
+      straat:"Industrieweg 69-156", postcode_plaats:"2651 BC Berkel en Rodenrijs",
+      kvk:"59493038", openingstijden:"" },
+    diensten:[
+      {titel:"Betonboren", spec:"Ø 12-500 mm", tekst:"Diamantboren voor sparingen, leidingen, ventilatie en kernen. Schoon, recht en exact op maat - ook stofvrij waar geen water mag."},
+      {titel:"Wandzagen", spec:"tot 60 cm diep", tekst:"Strakke deur- en raamsparingen en complete doorbraken in wanden van beton en steen, met nette kanten en minimale overlast."},
+      {titel:"Vloerzagen", spec:"trapgaten · sleuven", tekst:"Trapgaten, leidingsleuven, kruipluiken, dilatatievoegen en liftsparingen - recht ingezaagd en zonder scheurwerk."},
+      {titel:"Sleuven & frezen", spec:"droog of nat", tekst:"Frezen en sleuven zagen voor leidingen en kabels in ruwbouw, nieuwbouw of bewoonde situatie - netjes en stofbeperkt."},
+      {titel:"Precisiesloop", spec:"incl. puinafvoer", tekst:"Gericht verwijderen van vloeren, wanden en tegelwerk. We zagen het werk los, breken het uit en voeren het puin af."},
+      {titel:"Ankers & verlijmen", spec:"Hilti HIT-systeem", tekst:"Chemisch verankeren van stekken en ankers met hoogwaardige Hilti-producten voor een sterke, duurzame hechting."}
+    ],
+    werkgebied:{ plaatsen:"Berkel en Rodenrijs, Rotterdam, Lansingerland, Pijnacker, Delft, Den Haag, Zoetermeer", tekst:"" },
+    waarom:[
+      {kop:"Schoon en stofarm", tekst:"We werken met water- en stofafzuiging, ook in bewoonde situaties."},
+      {kop:"Recht en op maat", tekst:"Tot op de millimeter, zonder scheurwerk of nabewerking."},
+      {kop:"Ploeg die nakomt", tekst:"Afspraak is afspraak: op tijd, netjes en opgeruimd achtergelaten."}
+    ],
+    over:{ omschrijving:"", ervaring:"", team:"" },
+    kop:{ titel:"", lede:"" }
+  };
+
+  var $ = function(s,ctx){ return (ctx||document).querySelector(s); };
+  var $$ = function(s,ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(s)); };
+
+  var dienstRows = $("#dienstRows");
+  var waaromRows = $("#waaromRows");
+  var toastEl = $("#toast");
+  var saveTimer=null;
+
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add("show");
+    clearTimeout(toastEl._t); toastEl._t=setTimeout(function(){ toastEl.classList.remove("show"); },1900);
+  }
+
+  // ---- Rijen (diensten / waarom) ----
+  function dienstRow(d, i){
+    d = d||{titel:"",spec:"",tekst:""};
+    var el = document.createElement("div"); el.className="row";
+    el.innerHTML =
+      '<div class="row__top">'+
+        '<span class="row__num">'+pad(i+1)+'</span>'+
+        '<div class="field row__title-input"><input type="text" class="d-titel" placeholder="Naam van de dienst" aria-label="Naam dienst"></div>'+
+        '<button type="button" class="row__del" aria-label="Verwijder">verwijder</button>'+
+      '</div>'+
+      '<div class="row__grid">'+
+        '<div class="field"><label>Kenmerk / maat <span class="opt">(kort)</span></label><input type="text" class="d-spec" placeholder="Bijv. Ø 12-500 mm"></div>'+
+        '<div class="field"></div>'+
+        '<div class="field full"><label>Omschrijving</label><textarea class="d-tekst" placeholder="1 tot 2 zinnen over wat je precies doet."></textarea></div>'+
+      '</div>';
+    $(".d-titel",el).value=d.titel||"";
+    $(".d-spec",el).value=d.spec||"";
+    $(".d-tekst",el).value=d.tekst||"";
+    $(".row__del",el).addEventListener("click",function(){ el.remove(); renumber(); scheduleSave(); });
+    $$("input,textarea",el).forEach(function(f){ f.addEventListener("input",scheduleSave); });
+    return el;
+  }
+  function waaromRow(w, i){
+    w = w||{kop:"",tekst:""};
+    var el=document.createElement("div"); el.className="row";
+    el.innerHTML =
+      '<div class="row__top">'+
+        '<span class="row__num">'+pad(i+1)+'</span>'+
+        '<div class="field row__title-input"><input type="text" class="w-kop" placeholder="Kort sterk punt" aria-label="Sterk punt"></div>'+
+        '<button type="button" class="row__del" aria-label="Verwijder">verwijder</button>'+
+      '</div>'+
+      '<div class="row__grid"><div class="field full"><label>Uitleg <span class="opt">(1 zin)</span></label>'+
+      '<input type="text" class="w-tekst" placeholder="Bijv. We werken met stofafzuiging, ook in bewoonde huizen."></div></div>';
+    $(".w-kop",el).value=w.kop||"";
+    $(".w-tekst",el).value=w.tekst||"";
+    $(".row__del",el).addEventListener("click",function(){ el.remove(); renumber(); scheduleSave(); });
+    $$("input",el).forEach(function(f){ f.addEventListener("input",scheduleSave); });
+    return el;
+  }
+  function pad(n){ return (n<10?"0":"")+n; }
+  function renumber(){
+    $$(".row__num",dienstRows).forEach(function(n,i){ n.textContent=pad(i+1); });
+    $$(".row__num",waaromRows).forEach(function(n,i){ n.textContent=pad(i+1); });
+  }
+
+  // ---- Lezen / schrijven ----
+  function setFields(data){
+    $$("[data-key]").forEach(function(f){
+      var path=f.getAttribute("data-key").split(".");
+      var v=data; path.forEach(function(k){ v = (v==null?undefined:v[k]); });
+      f.value = (v==null?"":v);
+    });
+    dienstRows.innerHTML=""; (data.diensten||[]).forEach(function(d,i){ dienstRows.appendChild(dienstRow(d,i)); });
+    waaromRows.innerHTML=""; (data.waarom||[]).forEach(function(w,i){ waaromRows.appendChild(waaromRow(w,i)); });
+    if(!dienstRows.children.length) dienstRows.appendChild(dienstRow(null,0));
+    if(!waaromRows.children.length) waaromRows.appendChild(waaromRow(null,0));
+    updateMeter();
+  }
+  function collect(){
+    var data={ bedrijf:{}, diensten:[], werkgebied:{}, waarom:[], over:{}, kop:{} };
+    $$("[data-key]").forEach(function(f){
+      var path=f.getAttribute("data-key").split(".");
+      var obj=data; for(var i=0;i<path.length-1;i++){ obj[path[i]]=obj[path[i]]||{}; obj=obj[path[i]]; }
+      obj[path[path.length-1]] = f.value.trim();
+    });
+    $$(".row",dienstRows).forEach(function(r){
+      var t=$(".d-titel",r).value.trim(), s=$(".d-spec",r).value.trim(), x=$(".d-tekst",r).value.trim();
+      if(t||s||x) data.diensten.push({titel:t,spec:s,tekst:x});
+    });
+    $$(".row",waaromRows).forEach(function(r){
+      var k=$(".w-kop",r).value.trim(), x=$(".w-tekst",r).value.trim();
+      if(k||x) data.waarom.push({kop:k,tekst:x});
+    });
+    return data;
+  }
+
+  // ---- Opslaan ----
+  function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,400); updateMeter(); }
+  function save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(collect())); $("#saveNote").textContent="Bewaard ✓ "+time(); }
+    catch(e){ $("#saveNote").textContent="Kon niet bewaren (privémodus?)"; }
+  }
+  function load(){
+    try{ var raw=localStorage.getItem(STORE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+    return null;
+  }
+  function time(){ var d=new Date(); return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }
+
+  // ---- Voortgang ----
+  function updateMeter(){
+    var req = ["#naam","#tel","#email"];
+    var total = req.length + 1; // + minstens 1 dienst
+    var done = 0;
+    req.forEach(function(s){ if($(s).value.trim()) done++; });
+    if($(".d-titel",dienstRows) && Array.prototype.some.call(dienstRows.querySelectorAll(".d-titel"),function(i){return i.value.trim();})) done++;
+    var pct = Math.round(done/total*100);
+    $("#meterBar").style.width = pct+"%";
+    $("#meterText").textContent = pct+"% ingevuld";
+  }
+
+  // ---- Overzicht bouwen ----
+  function buildText(d){
+    var L=[]; var line=function(s){ L.push(s==null?"":s); };
+    line("BEBO - CONTENT AANLEVEREN");
+    line("Ingevuld op "+new Date().toLocaleString("nl-NL"));
+    line("");
+    line("== BEDRIJF & CONTACT =="); var b=d.bedrijf||{};
+    line("Naam:            "+(b.naam||"-"));
+    if(b.ondertitel) line("Ondertitel:      "+b.ondertitel);
+    line("Telefoon:        "+(b.tel||"-"));
+    line("WhatsApp:        "+(b.whatsapp||"(zelfde als telefoon)"));
+    line("E-mail:          "+(b.email||"-"));
+    line("Adres:           "+([b.straat,b.postcode_plaats].filter(Boolean).join(", ")||"-"));
+    if(b.kvk) line("KvK:             "+b.kvk);
+    if(b.openingstijden) line("Openingstijden:  "+b.openingstijden);
+    line("");
+    line("== WERKZAAMHEDEN ("+(d.diensten.length)+") ==");
+    d.diensten.forEach(function(s,i){
+      line((i+1)+". "+(s.titel||"(naam?)")+(s.spec?"  ["+s.spec+"]":""));
+      if(s.tekst) line("   "+s.tekst);
+    });
+    line("");
+    line("== WERKGEBIED =="); var w=d.werkgebied||{};
+    line("Plaatsen: "+(w.plaatsen||"-"));
+    if(w.tekst) line("Toelichting: "+w.tekst);
+    line("");
+    line("== WAAROM WIJ ==");
+    (d.waarom||[]).forEach(function(p){ line("- "+(p.kop||"")+(p.tekst?": "+p.tekst:"")); });
+    line("");
+    line("== OVER HET BEDRIJF =="); var o=d.over||{};
+    line(o.omschrijving||"-");
+    if(o.ervaring) line("Ervaring: "+o.ervaring);
+    if(o.team) line("Ploeg: "+o.team);
+    if((d.kop&&(d.kop.titel||d.kop.lede))){
+      line(""); line("== KOPTEKST (voorkeur klant) ==");
+      if(d.kop.titel) line("Kop: "+d.kop.titel);
+      if(d.kop.lede) line("Intro: "+d.kop.lede);
+    }
+    return L.join("\n");
+  }
+
+  var current={text:"",json:""};
+  function generate(){
+    var d=collect(); save();
+    current.text=buildText(d);
+    current.json=JSON.stringify(d,null,2);
+    showView(activeView);
+    $("#result").classList.add("show");
+    $("#result").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  var activeView="tekst";
+  function showView(v){
+    activeView=v;
+    $("#outText").textContent = v==="json"?current.json:current.text;
+    $$(".tab").forEach(function(t){ t.classList.toggle("active", t.getAttribute("data-view")===v); });
+  }
+
+  function download(name, text, type){
+    var blob=new Blob([text],{type:type}); var url=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+    a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+  }
+  function copy(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){toast("Gekopieerd");},function(){fallbackCopy(text);});
+    } else fallbackCopy(text);
+  }
+  function fallbackCopy(text){
+    var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("Gekopieerd"); }catch(e){ toast("Kopiëren lukte niet"); }
+    ta.remove();
+  }
+
+  // ---- Events ----
+  $("#addDienst").addEventListener("click",function(){ dienstRows.appendChild(dienstRow(null,dienstRows.children.length)); scheduleSave(); });
+  $("#addWaarom").addEventListener("click",function(){ waaromRows.appendChild(waaromRow(null,waaromRows.children.length)); scheduleSave(); });
+  $("#generate").addEventListener("click",generate);
+  $("#resetExample").addEventListener("click",function(){ if(confirm("Alle velden terugzetten naar de voorbeeldtekst?")){ setFields(VOORBEELD); save(); toast("Voorbeeld hersteld"); } });
+  $("#clearAll").addEventListener("click",function(){ if(confirm("Alles leegmaken en opnieuw beginnen?")){ setFields({bedrijf:{},diensten:[],werkgebied:{},waarom:[],over:{},kop:{}}); save(); toast("Leeggemaakt"); } });
+  $("#copyBtn").addEventListener("click",function(){ copy($("#outText").textContent); });
+  $("#downloadTxt").addEventListener("click",function(){ download("bebo-content.txt", current.text, "text/plain"); });
+  $("#downloadJson").addEventListener("click",function(){ download("bebo-content.json", current.json, "application/json"); });
+  $$(".tab").forEach(function(t){ t.addEventListener("click",function(){ showView(t.getAttribute("data-view")); }); });
+  $$("[data-key]").forEach(function(f){ f.addEventListener("input",scheduleSave); });
+  function sendToServer(){
+    var d = collect(); save();
+    var btn = $("#sendBtn"), status = $("#sendStatus");
+    status.className = "send-status";
+    status.textContent = "Versturen...";
+    btn.disabled = true;
+    fetch("/intake", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ website: ($("#hp_website")||{}).value || "", data: d })
+    }).then(function(r){
+      if(!r.ok) throw new Error("status "+r.status);
+      return r.json();
+    }).then(function(){
+      status.className = "send-status send-ok";
+      status.textContent = "Verzonden. We hebben je gegevens ontvangen en nemen contact met je op.";
+      btn.textContent = "Verzonden ✓";
+    }).catch(function(){
+      btn.disabled = false;
+      status.className = "send-status send-err";
+      status.textContent = "Versturen lukte niet. Download het overzicht hieronder en mail het ons, dan komt het alsnog goed.";
+    });
+  }
+
+  $("#sendBtn").addEventListener("click", sendToServer);
+
+  // ---- Start ----
+  setFields(load() || VOORBEELD);
+})();
+</script>
+</body>
+</html>

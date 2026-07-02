@@ -46,6 +46,7 @@ def inject_seo_globals():
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 LEADS_FILE = DATA_DIR / "leads.jsonl"
+INTAKE_FILE = DATA_DIR / "intake.jsonl"
 
 # Diensten die als chips in het offerteformulier verschijnen en die
 # de servicekaarten voeden. Eén bron, zodat alles consistent blijft.
@@ -150,6 +151,99 @@ def _maybe_email(lead: dict) -> None:
         app.logger.warning("E-mailnotificatie mislukt: %s", exc)
 
 
+def _save_intake(record: dict) -> None:
+    """Bewaar een content-intake (append-only)."""
+    with INTAKE_FILE.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def _format_intake(data: dict) -> str:
+    """Zet de intake om naar een leesbaar overzicht voor in de mail."""
+    b = data.get("bedrijf") or {}
+    out = []
+    add = out.append
+    add("Nieuwe content-intake via de website\n")
+    add("== BEDRIJF & CONTACT ==")
+    add("Naam:        " + (b.get("naam") or "-"))
+    if b.get("ondertitel"):
+        add("Ondertitel:  " + b["ondertitel"])
+    add("Telefoon:    " + (b.get("tel") or "-"))
+    add("WhatsApp:    " + (b.get("whatsapp") or "(zelfde als telefoon)"))
+    add("E-mail:      " + (b.get("email") or "-"))
+    adres = ", ".join(x for x in [b.get("straat"), b.get("postcode_plaats")] if x)
+    add("Adres:       " + (adres or "-"))
+    if b.get("kvk"):
+        add("KvK:         " + b["kvk"])
+    if b.get("openingstijden"):
+        add("Openingstijden: " + b["openingstijden"])
+
+    diensten = data.get("diensten") or []
+    add("\n== WERKZAAMHEDEN (%d) ==" % len(diensten))
+    for i, s in enumerate(diensten, 1):
+        spec = ("  [" + s["spec"] + "]") if s.get("spec") else ""
+        add("%d. %s%s" % (i, s.get("titel") or "(naam?)", spec))
+        if s.get("tekst"):
+            add("   " + s["tekst"])
+
+    w = data.get("werkgebied") or {}
+    add("\n== WERKGEBIED ==")
+    add("Plaatsen: " + (w.get("plaatsen") or "-"))
+    if w.get("tekst"):
+        add("Toelichting: " + w["tekst"])
+
+    add("\n== WAAROM WIJ ==")
+    for p in (data.get("waarom") or []):
+        add("- " + (p.get("kop") or "") + ((": " + p["tekst"]) if p.get("tekst") else ""))
+
+    o = data.get("over") or {}
+    add("\n== OVER ==")
+    add(o.get("omschrijving") or "-")
+    if o.get("ervaring"):
+        add("Ervaring: " + o["ervaring"])
+    if o.get("team"):
+        add("Ploeg: " + o["team"])
+
+    kop = data.get("kop") or {}
+    if kop.get("titel") or kop.get("lede"):
+        add("\n== KOPTEKST (voorkeur klant) ==")
+        if kop.get("titel"):
+            add("Kop: " + kop["titel"])
+        if kop.get("lede"):
+            add("Intro: " + kop["lede"])
+    return "\n".join(out)
+
+
+def _email_intake(data: dict) -> None:
+    """Stuur de intake automatisch door naar de developer. Faalt nooit hard.
+
+    Zet op Railway de SMTP_* env vars. Voor Gmail:
+      SMTP_HOST=smtp.gmail.com, SMTP_PORT=587, SMTP_USER=jouw@gmail.com,
+      SMTP_PASS=<Gmail app-wachtwoord>, INTAKE_MAIL_TO=jouw@gmail.com
+    """
+    host = os.environ.get("SMTP_HOST")
+    if not host:
+        return
+    try:
+        msg = EmailMessage()
+        naam = (data.get("bedrijf") or {}).get("naam") or "onbekend bedrijf"
+        msg["Subject"] = "Website-content ingevuld - " + naam
+        msg["From"] = os.environ.get("SMTP_FROM", os.environ["SMTP_USER"])
+        msg["To"] = os.environ.get("INTAKE_MAIL_TO", os.environ.get("SMTP_USER", ""))
+        msg.set_content(_format_intake(data) + "\n\n--\nDe volledige JSON zit als bijlage.")
+        msg.add_attachment(
+            json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8"),
+            maintype="application",
+            subtype="json",
+            filename="content.json",
+        )
+        with smtplib.SMTP(host, int(os.environ.get("SMTP_PORT", 587))) as s:
+            s.starttls()
+            s.login(os.environ["SMTP_USER"], os.environ["SMTP_PASS"])
+            s.send_message(msg)
+    except Exception as exc:  # noqa: BLE001 - mag de intake nooit blokkeren
+        app.logger.warning("Intake-mail mislukt: %s", exc)
+
+
 @app.route("/favicon.ico")
 def favicon():
     # Browsers vragen automatisch /favicon.ico op; serveer de .ico uit static/img.
@@ -221,6 +315,27 @@ def offerte():
     _save_lead(lead)
     _maybe_email(lead)
     return redirect(url_for("bedankt"))
+
+
+@app.route("/intake", methods=["GET", "POST"])
+def intake():
+    if request.method == "GET":
+        return render_template("intake.html")
+    # POST: JSON vanuit het formulier
+    payload = request.get_json(silent=True) or {}
+    if payload.get("website"):  # honeypot
+        return {"ok": True}
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        return {"ok": False, "error": "ongeldige invoer"}, 400
+    record = {
+        "data": data,
+        "ontvangen": datetime.datetime.now().isoformat(timespec="seconds"),
+        "bron": request.headers.get("Referer", "direct"),
+    }
+    _save_intake(record)
+    _email_intake(data)
+    return {"ok": True}
 
 
 @app.route("/bedankt")
