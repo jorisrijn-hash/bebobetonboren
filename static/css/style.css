@@ -39,7 +39,7 @@
   --f-body: 'Inter', system-ui, -apple-system, sans-serif;
   --f-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  --ease: cubic-bezier(.22, .61, .36, 1);
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * { box-sizing: border-box; }
@@ -133,11 +133,13 @@ h3.display { font-size: clamp(1.35rem, 1.8vw, 1.7rem); font-weight: 600; }
   border: 1px solid var(--bg);
   border-radius: 2px;
   cursor: pointer;
-  transition: transform .35s var(--ease), background .35s var(--ease), gap .35s var(--ease);
+  transition: transform .14s var(--ease), background .3s var(--ease);
 }
-.btn .arrow { transition: transform .35s var(--ease); }
-.btn:hover { gap: 1.15rem; }
-.btn:hover .arrow { transform: translateX(4px); }
+.btn .arrow { transition: transform .25s var(--ease); }
+.btn:active { transform: scale(.98); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover .arrow { transform: translateX(4px); }
+}
 .btn--red { --bg: var(--red); --fg: #fff; }
 .btn--red:hover { background: var(--red-deep); border-color: var(--red-deep); }
 .btn--ghost {
@@ -457,11 +459,14 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-4
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  opacity: 0;
-  transform: translateY(6px);
+  opacity: 1;
+  transform: none;
   transition: opacity .35s var(--ease), transform .35s var(--ease);
 }
-.dienst:hover .dienst__mark { opacity: 1; transform: translateY(0); }
+@media (hover: hover) and (pointer: fine) {
+  .dienst__mark { opacity: 0; transform: translateY(6px); }
+  .dienst:hover .dienst__mark { opacity: 1; transform: translateY(0); }
+}
 .dienst__mark::before { content: "+"; color: var(--red); font-size: 1rem; }
 
 /* ======================================================================== */
@@ -745,9 +750,12 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-4
   border-radius: 50%;
   text-decoration: none;
   box-shadow: 0 8px 24px rgba(0,0,0,.18);
-  transition: transform .3s var(--ease), background .3s;
+  transition: transform .2s var(--ease), background .3s;
 }
-.float a:hover { transform: scale(1.07); }
+.float a:active { transform: scale(.96); }
+@media (hover: hover) and (pointer: fine) {
+  .float a:hover { transform: scale(1.07); }
+}
 .float a.wa { background: #25D366; color: #fff; }
 .float a.wa:hover { background: #1eb858; }
 
@@ -760,7 +768,7 @@ body.menu-open .burger span:nth-child(3) { transform: translateY(-5px) rotate(-4
 .js .reveal {
   opacity: 0;
   transform: translateY(22px);
-  transition: opacity .7s var(--ease), transform .7s var(--ease);
+  transition: opacity .6s var(--ease), transform .6s var(--ease);
 }
 .js .reveal.in { opacity: 1; transform: none; }
 [data-delay="1"] { transition-delay: .08s; }
