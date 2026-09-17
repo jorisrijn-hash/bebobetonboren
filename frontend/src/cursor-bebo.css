@@ -10,10 +10,12 @@
   height: 4px;
   border-radius: 0;
   background: #D2051E;
+  transition: background-color .15s ease;
 }
 .target-cursor-corner {
   /* 12px = cornerSize in de component, zodat het vastklikken op doelen klopt */
   border: 1.5px solid #D2051E;
+  transition: border-color .15s ease;
 }
 /* Hoeken hebben één zijde nodig per richting (zoals het origineel). */
 .corner-tl { border-right: none; border-bottom: none; }
@@ -33,3 +35,7 @@ html.cursor-native .target-cursor-wrapper,
 html.cursor-away .target-cursor-wrapper {
   opacity: 0;
 }
+
+/* Op rode vlakken wit (zie cursor.jsx) */
+html.cursor-dot-light .target-cursor-dot { background: #fff; }
+html.cursor-corners-light .target-cursor-corner { border-color: #fff; }
