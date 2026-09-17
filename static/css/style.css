@@ -1290,7 +1290,9 @@ html:not(.js) .upload__drop { display: none; }
 .ident:hover .ident__cur, .ident:focus-visible .ident__cur { opacity: 1; transform: rotate(-8deg); }
 .ident:hover .ident__name, .ident:focus-visible .ident__name { max-width: 6.5rem; margin-left: .55rem; }
 .ident:hover .ident__name > span, .ident:focus-visible .ident__name > span { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
-.ft .ident { margin-left: auto; min-height: 44px; }
+/* Vaste afmeting (= opengeklapte breedte), zodat de crosshair-cursor meteen
+   het volledige vlak pakt i.p.v. alleen het logo; inhoud blijft rechts. */
+.ft .ident { margin-left: auto; width: 5.25rem; height: 44px; padding: 0 .25rem; box-sizing: content-box; }
 @media (prefers-reduced-motion: reduce) {
   .ident__cur, .ident__name, .ident__name > span { transition: none; }
   .ident:hover .ident__cur { transform: none; }
