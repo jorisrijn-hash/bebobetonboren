@@ -121,7 +121,7 @@ SERVICE_FIELDS = {
     ],
 }
 
-FORM_SERVICES = [{"id": s["id"], "title": s["title"]} for s in content.SERVICES] + [content.FORM_OTHER]
+FORM_SERVICES = [{"id": s["id"], "index": s["index"], "title": s["title"], "spec": s["spec"]} for s in content.SERVICES] + [content.FORM_OTHER]
 FORM_SERVICE_LABELS = {s["id"]: s["title"] for s in FORM_SERVICES}
 
 PHOTO_EXTENSIONS = {"jpg", "jpeg", "png", "heic", "heif", "webp"}
@@ -589,7 +589,8 @@ def offerte():
         return redirect(url_for("offerte_page") + "#formulier")
 
     if _wants_json():
-        return jsonify(ok=True, redirect=url_for("bedankt"))
+        # reference = het echte aanvraag-ID dat ook in de mail en leads.jsonl staat.
+        return jsonify(ok=True, redirect=url_for("bedankt"), reference=lead["id"])
     return redirect(url_for("bedankt"))
 
 

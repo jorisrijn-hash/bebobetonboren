@@ -65,6 +65,17 @@ Projectcase, opdrachtgevers en reviews zijn verborgen tot er echte content is. V
 `SHOW_PLACEHOLDERS=1`, `?placeholders=1` achter de URL, of lokaal in debug.
 "Ons werk" toont altijd nette placeholders zolang er geen foto's zijn.
 
+## Offerte-wizard (/offerte)
+Vijf stappen: 01 Werk · 02 Details · 03 Foto's · 04 Gegevens · 05 Controle.
+UX-patronen uit React Bits Pro (Forms 7, Wizard 2/4/5), in BEBO-stijl nagebouwd;
+de Pro-broncode is niet openbaar, dus alleen de patronen zijn overgenomen.
+- `templates/offerte.html`: alle stappen in één formulier (veldnamen ongewijzigd).
+- `static/js/offerte.js`: stapnavigatie, validatie per stap, controlestap met
+  "Wijzig", foto-upload en verzending. Alleen op /offerte geladen.
+- Invoer en foto's blijven behouden bij Volgende/Terug/Wijzig (één formulier).
+- Zonder JavaScript is het één doorlopende pagina die gewoon verzendt.
+- De bevestiging toont het echte aanvraag-ID van de server als referentie.
+
 ## Offerteformulier
 - Eerst de werkzaamheid, daarna alleen de relevante vragen, foto's en contactgegevens.
 - Foto's (JPG/PNG/HEIC, max. 10) worden in de browser verkleind en als bijlage gemaild.
