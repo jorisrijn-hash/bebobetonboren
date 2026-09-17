@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% from "_components.html" import icon, page_head %}
+
+{% block content %}
+{{ page_head("BEBO / Offerte", "Offerte aanvragen", "Vertel wat er moet gebeuren. Met een paar foto's kunnen we de klus vaak sneller inschatten.") }}
+
+<section class="section quote-page" aria-label="Offerteformulier en contact">
+  <div class="wrap quote-page__grid">
+    <div class="quote__form" id="formulier" tabindex="-1">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="form-alert" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form class="form" id="quote-form" action="{{ url_for('offerte') }}" method="post" enctype="multipart/form-data" novalidate
+            data-upload-limit-mb="{{ upload_limit_mb }}" data-max-photos="{{ max_photos }}" data-preselect="{{ preselect }}">
+
+        {# --- Stap 1: werkzaamheid ------------------------------------- #}
+        <fieldset class="form__step" aria-describedby="err-dienst">
+          <legend class="form__legend"><span class="form__n">1</span>Wat moet er gebeuren?</legend>
+          <div class="opts">
+            {% for s in form_services %}
+            <label class="opt{% if s.id == 'anders' %} opt--other{% endif %}">
+              <input type="radio" name="dienst" value="{{ s.id }}" required {% if preselect == s.id %}checked{% endif %}>
+              <span class="opt__box">
+                {% if s.id != 'anders' %}<span class="opt__n">{{ '%02d'|format(loop.index) }}</span>{% endif %}
+                <span class="opt__t">{{ s.title }}</span>
+              </span>
+            </label>
+            {% endfor %}
+          </div>
+          <p class="field__error" id="err-dienst" data-error-for="dienst"></p>
+        </fieldset>
+
+        {# --- Stap 2: details per werkzaamheid (progressive disclosure) -- #}
+        {% for sid, fields in service_fields.items() %}
+        <fieldset class="form__step form__details" data-for="{{ sid }}">
+          <legend class="form__legend"><span class="form__n">2</span>Details <span class="form__legend-sub">{{ (form_services|selectattr('id', 'equalto', sid)|first).title }}</span></legend>
+          <div class="field-grid">
+            {% for f in fields %}
+            {% set fid = sid ~ '__' ~ f.name %}
+            {% if f.type == 'radio' %}
+            <fieldset class="field field--full field--radio">
+              <legend>{{ f.label }}{% if f.optional %} <em>optioneel</em>{% endif %}</legend>
+              <div class="pills">
+                {% for o in f.options %}
+                <label class="pill"><input type="radio" name="{{ fid }}" value="{{ o }}"><span>{{ o }}</span></label>
+                {% endfor %}
+              </div>
+            </fieldset>
+            {% elif f.type == 'textarea' %}
+            <div class="field field--full">
+              <label for="{{ fid }}">{{ f.label }}{% if f.optional %} <em>optioneel</em>{% endif %}</label>
+              <textarea id="{{ fid }}" name="{{ fid }}" rows="3" placeholder="{{ f.placeholder }}" aria-describedby="err-{{ fid }}"></textarea>
+              <p class="field__error" id="err-{{ fid }}" data-error-for="{{ fid }}"></p>
+            </div>
+            {% else %}
+            <div class="field">
+              <label for="{{ fid }}">{{ f.label }}{% if f.optional %} <em>optioneel</em>{% endif %}</label>
+              <input id="{{ fid }}" name="{{ fid }}" type="{{ 'number' if f.type == 'number' else 'text' }}"{% if f.type == 'number' %} min="1" inputmode="numeric"{% endif %} placeholder="{{ f.placeholder }}">
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </fieldset>
+        {% endfor %}
+
+        {# --- Stap 3: foto's ------------------------------------------- #}
+        <fieldset class="form__step form__photos">
+          <legend class="form__legend"><span class="form__n">3</span>Foto's van de situatie <em>optioneel</em></legend>
+          <p class="form__hint">Met een paar foto's kunnen we de klus vaak sneller inschatten.</p>
+          <div class="upload" id="upload">
+            <input class="upload__input" type="file" id="fotos" name="fotos" multiple
+                   accept="image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif"
+                   aria-describedby="upload-help err-fotos">
+            <label class="upload__drop" for="fotos">
+              <span class="upload__icon" aria-hidden="true"><i></i><i></i></span>
+              <span class="upload__big">Sleep foto's hierheen</span>
+              <span class="upload__or">of <u>selecteer bestanden</u></span>
+              <span class="upload__help" id="upload-help">JPG, PNG of HEIC · max. {{ max_photos }} foto's</span>
+            </label>
+            <ul class="upload__list" aria-live="polite"></ul>
+          </div>
+          <p class="field__error" id="err-fotos" data-error-for="fotos"></p>
+        </fieldset>
+
+        {# --- Stap 4: contactgegevens ---------------------------------- #}
+        <fieldset class="form__step">
+          <legend class="form__legend"><span class="form__n">4</span>Je gegevens</legend>
+          <div class="field-grid">
+            <div class="field">
+              <label for="naam">Naam</label>
+              <input id="naam" name="naam" type="text" autocomplete="name" required aria-describedby="err-naam">
+              <p class="field__error" id="err-naam" data-error-for="naam"></p>
+            </div>
+            <div class="field">
+              <label for="bedrijf">Bedrijf <em>optioneel</em></label>
+              <input id="bedrijf" name="bedrijf" type="text" autocomplete="organization">
+            </div>
+            <div class="field">
+              <label for="telefoon">Telefoon</label>
+              <input id="telefoon" name="telefoon" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="err-telefoon">
+              <p class="field__error" id="err-telefoon" data-error-for="telefoon"></p>
+            </div>
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="err-email">
+              <p class="field__error" id="err-email" data-error-for="email"></p>
+            </div>
+            <div class="field">
+              <label for="postcode">Postcode <span class="field__sub">van de klus</span></label>
+              <input id="postcode" name="postcode" type="text" autocomplete="postal-code" required maxlength="7" placeholder="1234 AB" aria-describedby="err-postcode">
+              <p class="field__error" id="err-postcode" data-error-for="postcode"></p>
+            </div>
+            <div class="field">
+              <label for="plaats">Plaats</label>
+              <input id="plaats" name="plaats" type="text" autocomplete="address-level2" required aria-describedby="err-plaats">
+              <p class="field__error" id="err-plaats" data-error-for="plaats"></p>
+            </div>
+            <div class="field">
+              <label for="datum">Gewenste uitvoerdatum <em>optioneel</em></label>
+              <input id="datum" name="datum" type="date">
+            </div>
+            <div class="field field--full">
+              <label for="toelichting">Extra toelichting <em>optioneel</em></label>
+              <textarea id="toelichting" name="toelichting" rows="4"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="hp" aria-hidden="true">
+          <label>Laat dit veld leeg <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div class="form__status" role="alert" aria-live="assertive"></div>
+
+        <div class="form__foot">
+          <button type="submit" class="btn btn--red btn--lg form__submit">
+            <span class="form__submit-label">Offerte aanvragen</span>
+            <span class="form__spinner" aria-hidden="true"></span>
+            {{ icon('arrow') }}
+          </button>
+          <p class="form__note">Liever direct contact? Bel of app <a href="tel:{{ company.phone_tel }}">{{ company.phone }}</a>.</p>
+        </div>
+      </form>
+    </div>
+
+    <aside class="quote-aside" id="contact" aria-labelledby="contact-title">
+      <p class="label"><span class="label__tick" aria-hidden="true"></span>Contact</p>
+      <h2 id="contact-title" class="h2 h2--sm">Liever direct contact?</h2>
+      <ul class="direct">
+        <li><a href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span><small>Bel direct</small>{{ company.phone }}</span></a></li>
+        <li><a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span><small>WhatsApp</small>{{ company.phone }}</span></a></li>
+        <li><a href="mailto:{{ company.email }}">{{ icon('mail') }}<span><small>E-mail</small>{{ company.email }}</span></a></li>
+        <li><a href="{{ company.maps_url }}" target="_blank" rel="noopener">{{ icon('pin') }}<span><small>Adres</small>{{ company.street }}, {{ company.postal_code }} {{ company.city }}</span></a></li>
+      </ul>
+      <p class="quote__kvk">{{ company.name }} · KvK {{ company.kvk }}</p>
+      <p class="quote-aside__area">Werkgebied: Berkel en Rodenrijs, Rotterdam, Lansingerland, Pijnacker, Delft, Den Haag en Zoetermeer. <a class="textlink" href="{{ url_for('werkgebied') }}">Bekijk de kaart</a></p>
+    </aside>
+  </div>
+</section>
+
+{# WERKWIJZE - wat er gebeurt na de aanvraag (data: content.PROCESS) #}
+<section class="section process" id="werkwijze" aria-labelledby="werkwijze-title">
+  <header class="sec-head wrap">
+    <p class="label reveal"><span class="label__n">—</span>Werkwijze</p>
+    <h2 id="werkwijze-title" class="h2 reveal" data-delay="1">Na je aanvraag.</h2>
+  </header>
+  <ol class="steps measure-host wrap">
+    {% for step in process %}
+    <li class="step reveal" data-delay="{{ loop.index0 }}">
+      <span class="step__n">{{ step.index }}</span>
+      <h3 class="step__title">{{ step.title }}</h3>
+      <p>{{ step.text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}

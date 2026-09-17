@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_components.html" import media, icon, page_head, why_block, cta_band %}
+
+{% block content %}
+{{ page_head("BEBO / Werkzaamheden", "Zes specialismen in beton en steen.", "Boren, zagen, frezen en gericht slopen. Elke werkzaamheid heeft een eigen pagina met toepassingen en specificaties.") }}
+
+{# Redactioneel, schermbreed grid (data: content.SERVICES) #}
+<section class="section services" aria-label="Alle werkzaamheden">
+  <div class="svc-grid wrap">
+    {% for s in services %}
+    <article class="svc svc--{{ loop.index }}" id="{{ s.id }}" aria-labelledby="svc-{{ s.id }}">
+      <a class="svc__media reveal-mask" href="{{ url_for('dienst', slug=s.id) }}" tabindex="-1" aria-hidden="true">
+        {{ media(s.media, ratio=s.media.ratio, title=s.title, code="SERVICE / " ~ s.index, sizes="(min-width: 1000px) 60vw, 100vw") }}
+      </a>
+      <div class="svc__body">
+        <p class="svc__id reveal">{{ s.index }} / {{ s.title }}</p>
+        <h2 class="svc__title reveal" id="svc-{{ s.id }}"><a href="{{ url_for('dienst', slug=s.id) }}">{{ s.title }}</a></h2>
+        <p class="svc__spec measure-host">
+          <span class="svc__spec-key">{{ s.spec_key }}</span>
+          <span class="svc__spec-val">{{ s.spec }}</span>
+          <span class="svc__rule" aria-hidden="true"></span>
+        </p>
+        <p class="svc__text reveal">{{ s.text }}</p>
+        <div class="svc__links">
+          <a class="svc__link" href="{{ url_for('dienst', slug=s.id) }}">Bekijk {{ s.title|lower }} {{ icon('arrow') }}</a>
+          <a class="svc__link svc__link--quiet" href="{{ url_for('offerte_page', dienst=s.id) }}">Offerte<span class="visually-hidden"> voor {{ s.title|lower }}</span></a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{{ why_block(why, experience, compact=True) }}
+{{ cta_band(company) }}
+{% endblock %}

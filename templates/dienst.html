@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% from "_components.html" import media, icon, diagram, why_block, cta_band %}
+{% block content %}
+{% set s = service %}
+<article class="sp sp--{{ s.layout }}" aria-labelledby="sp-title">
+
+  {# 01 · HERO - drie compositievarianten (content.SERVICE_DETAILS.layout) #}
+  <header class="sp-hero">
+    <div class="sp-hero__copy">
+      <p class="label reveal"><span class="label__n">{{ s.index }}</span>Werkzaamheid</p>
+      <h1 id="sp-title" class="h1 sp-hero__title reveal" data-delay="1">{{ s.title }}</h1>
+      <p class="sp-spec measure-host reveal" data-delay="1">
+        <span class="sp-spec__key">{{ s.spec_key }}</span>
+        <span class="sp-spec__val">{{ s.spec }}</span>
+        <span class="svc__rule" aria-hidden="true"></span>
+      </p>
+      <p class="sp-hero__text reveal" data-delay="2">{{ s.text }}</p>
+      <div class="hero__actions reveal" data-delay="3">
+        <a class="btn btn--red btn--lg" href="{{ url_for('offerte_page', dienst=s.id) }}">Offerte aanvragen {{ icon('arrow') }}</a>
+        <a class="btn btn--ghost btn--lg" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>
+      </div>
+    </div>
+    <div class="sp-hero__media reveal-mask">
+      {# CLIENT ASSET REQUIRED
+         Content: BEBO-foto van {{ s.title|lower }} in uitvoering
+         Zet content.SERVICES[{{ s.id }}].media.src; bestandsnaam bijv. bebo-{{ s.id }}-project.jpg #}
+      {{ media(s.media, ratio=("21:9" if s.layout == 'c' else "4:5"), title=s.title ~ " / hoofdbeeld", code="SERVICE / " ~ s.index, eager=True) }}
+    </div>
+  </header>
+
+  {# 02 · TOEPASSING - schematisch + bevestigde toepassingen #}
+  <section class="section sp-app" aria-labelledby="app-title">
+    <div class="wrap sp-app__grid">
+      <div class="sp-app__visual reveal">{{ diagram(s.diagram, s) }}</div>
+      <div class="sp-app__body">
+        <p class="label reveal"><span class="label__n">02</span>Toepassing</p>
+        <h2 id="app-title" class="h2 h2--sm reveal" data-delay="1">{{ s.applications_label }}</h2>
+        <ul class="apps reveal" data-delay="1">
+          {% for a in s.applications %}<li><span class="apps__n">{{ '%02d'|format(loop.index) }}</span>{{ a }}</li>{% endfor %}
+        </ul>
+        {% if s.situations %}
+        <h3 class="sp-sub">Situaties</h3>
+        <ul class="chips-static">{% for x in s.situations %}<li>{{ x }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if s.steps %}
+        <h3 class="sp-sub">Werkwijze</h3>
+        <ol class="chips-static chips-static--steps">{% for x in s.steps %}<li><span>{{ loop.index }}</span>{{ x }}</li>{% endfor %}</ol>
+        {% endif %}
+        <dl class="facts reveal" data-delay="2">
+          {% for k, v in s.facts %}<div><dt>{{ k }}</dt><dd>{{ v }}</dd></div>{% endfor %}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  {# 03 · WERK - grote beelden, schermbreed #}
+  <section class="sp-work" aria-label="Werk in beeld: {{ s.title|lower }}">
+    <div class="sp-work__grid">
+      <figure class="sp-work__a reveal-mask">
+        {{ media(none, ratio="16:10", title=s.title ~ " / werk in uitvoering", code="WERK / " ~ s.index ~ "A") }}
+      </figure>
+      <figure class="sp-work__b reveal-mask" data-delay="1">
+        {{ media(s.detail_media, ratio="4:5", title=s.title ~ " / detail", code="WERK / " ~ s.index ~ "B") }}
+      </figure>
+    </div>
+    <p class="sp-work__cap wrap"><span>Werk / {{ s.title }}</span><span>Projectbeelden worden aangeleverd</span></p>
+  </section>
+
+  {# 04 · WAAROM BEBO (compact) #}
+  {{ why_block(why, experience, compact=True, num="04") }}
+
+  {# 05 · GERELATEERDE WERKZAAMHEDEN #}
+  <section class="section related" aria-labelledby="rel-title">
+    <header class="sec-head wrap">
+      <p class="label reveal"><span class="label__n">05</span>Ook</p>
+      <h2 id="rel-title" class="h2 h2--sm reveal" data-delay="1">Gerelateerde werkzaamheden.</h2>
+      <p class="sec-head__aside reveal"><a class="textlink" href="{{ url_for('werkzaamheden') }}">Alle werkzaamheden {{ icon('arrow') }}</a></p>
+    </header>
+    <ul class="related__list wrap">
+      {% for r in related %}
+      <li class="reveal" data-delay="{{ loop.index0 }}">
+        <a class="related__card" href="{{ url_for('dienst', slug=r.id) }}">
+          <span class="related__n">{{ r.index }}</span>
+          <span class="related__t">{{ r.title }}</span>
+          <span class="related__s">{{ r.spec }}</span>
+          <span class="related__go" aria-hidden="true">{{ icon('arrow') }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {# 06 · CTA #}
+  {{ cta_band(company, service=s, title=s.title ~ " nodig?") }}
+</article>
+{% endblock %}

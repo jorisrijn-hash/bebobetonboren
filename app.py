@@ -31,6 +31,7 @@ from pathlib import Path
 
 from flask import (
     Flask,
+    abort,
     Response,
     flash,
     jsonify,
@@ -156,6 +157,8 @@ def inject_globals():
         "noindex": NOINDEX,
         "company": content.COMPANY,
         "services": content.SERVICES,
+        "hq_geo": content.HQ,
+        "all_work_areas": content.WORK_AREAS,
         "static_v": static_v,
         "current_year": datetime.date.today().year,
     }
@@ -348,14 +351,53 @@ def webmanifest():
                                mimetype="application/manifest+json")
 
 
+# ---------------------------------------------------------------------------
+# Pagina's: één bron voor routes, navigatie-status, SEO en sitemap
+# ---------------------------------------------------------------------------
+SITE_NAME = content.COMPANY["name"]
+
+
+def _page(title, description, nav, breadcrumbs=None, og_type="website"):
+    """Metadata per pagina. title is de volledige <title>."""
+    return {
+        "title": title,
+        "description": description,
+        "nav": nav,
+        "breadcrumbs": breadcrumbs or [],
+        "og_type": og_type,
+    }
+
+
+def public_routes():
+    """Alle openbare URL's (sitemap). Placeholder- of interne routes horen hier niet."""
+    urls = ["/", url_for("werkzaamheden"), url_for("werkgebied"), url_for("offerte_page")]
+    urls += [url_for("dienst", slug=s["id"]) for s in content.SERVICES]
+    return urls
+
+
+def _map_data():
+    return {"hq": content.HQ, "places": content.WORK_AREAS}
+
+
+def _common():
+    return {
+        "why": content.WHY,
+        "experience": content.EXPERIENCE,
+        "work_areas": content.WORK_AREAS,
+        "hq": content.HQ,
+        "map_data": _map_data(),
+        "show_placeholders": show_placeholders(),
+    }
+
+
 @app.route("/robots.txt")
 def robots():
     if NOINDEX:
         body = "User-agent: *\nDisallow: /\n"
     else:
         body = (
-            "User-agent: *\nAllow: /\nDisallow: /intake\nDisallow: /offerte\n"
-            "Disallow: /bedankt\n\nSitemap: {}/sitemap.xml\n".format(SITE_URL)
+            "User-agent: *\nAllow: /\nDisallow: /intake\nDisallow: /bedankt\n\n"
+            "Sitemap: {}/sitemap.xml\n".format(SITE_URL)
         )
     return Response(body, mimetype="text/plain")
 
@@ -363,67 +405,109 @@ def robots():
 @app.route("/sitemap.xml")
 def sitemap():
     today = datetime.date.today().isoformat()
+    rows = "".join(
+        "  <url><loc>{}{}</loc><lastmod>{}</lastmod></url>\n".format(SITE_URL, u, today)
+        for u in public_routes()
+    )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        "  <url><loc>{}/</loc><lastmod>{}</lastmod></url>\n"
-        "</urlset>\n"
-    ).format(SITE_URL, today)
+        + rows + "</urlset>\n"
+    )
     return Response(body, mimetype="application/xml")
-
-
-def _area_map(width=560, height=470, pad_x=130, pad_y=60):
-    """Projecteer de plaatsen van het werkgebied op een schematisch vlak.
-    Equirectangulair met cos(breedtegraad)-correctie; genoeg voor een schema."""
-    import math
-
-    areas = content.WORK_AREAS
-    base = next(a for a in areas if a.get("base"))
-    kx = math.cos(math.radians(base["lat"]))
-    pts = [((a["lon"] - base["lon"]) * kx, base["lat"] - a["lat"]) for a in areas]
-    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-    scale = min((width - 2 * pad_x) / (max(xs) - min(xs)), (height - 2 * pad_y) / (max(ys) - min(ys)))
-    cx = (max(xs) + min(xs)) / 2
-    cy = (max(ys) + min(ys)) / 2
-    out = []
-    for a, (x, y) in zip(areas, pts):
-        out.append({
-            "name": a["name"],
-            "base": a.get("base", False),
-            "label": a.get("label", "right"),
-            "x": round(width / 2 + (x - cx) * scale, 1),
-            "y": round(height / 2 + (y - cy) * scale, 1),
-        })
-    # Schaalstok: 5 km ≈ 5 / 111.32 graden breedte.
-    scale_5km = round(5 / 111.32 * scale, 1)
-    return {"width": width, "height": height, "points": out, "scale_5km": scale_5km}
 
 
 @app.route("/")
 def index():
-    placeholders = show_placeholders()
     return render_template(
         "index.html",
+        page=_page(
+            "BEBO Betonboren & Zagen | Berkel en Rodenrijs & regio Rotterdam",
+            "BEBO Betonboren & Zagen uit Berkel en Rodenrijs: betonboren, wand- en vloerzagen, "
+            "frezen en precisiesloop in Rotterdam en regio. Schoon werk, strak resultaat.",
+            nav="home",
+        ),
         hero_intro=content.HERO_INTRO,
         projects=content.PROJECTS,
         cases=content.CASES,
         case_template=content.CASE_TEMPLATE,
-        why=content.WHY,
-        experience=content.EXPERIENCE,
-        process=content.PROCESS,
-        work_areas=content.WORK_AREAS,
-        area_map=_area_map(),
-        upload_limit_mb=4 if EPHEMERAL_FS else max(1, app.config["MAX_CONTENT_LENGTH"] // (1024 * 1024) - 1),
         client_logos=content.CLIENT_LOGOS,
         reviews=content.REVIEWS,
         review_rating=content.REVIEW_RATING,
         placeholder_logo_slots=content.PLACEHOLDER_LOGO_SLOTS,
         placeholder_review_slots=content.PLACEHOLDER_REVIEW_SLOTS,
-        show_placeholders=placeholders,
+        **_common(),
+    )
+
+
+@app.route("/werkzaamheden")
+def werkzaamheden():
+    return render_template(
+        "werkzaamheden.html",
+        page=_page(
+            "Werkzaamheden | BEBO Betonboren & Zagen",
+            "Betonboren, wandzagen, vloerzagen, sleuven & frezen, precisiesloop en ankers & "
+            "verlijmen in beton en steen. BEBO uit Berkel en Rodenrijs.",
+            nav="werkzaamheden",
+            breadcrumbs=[("Werkzaamheden", None)],
+        ),
+        **_common(),
+    )
+
+
+@app.route("/werkzaamheden/<slug>")
+def dienst(slug):
+    service = content.SERVICE_BY_ID.get(slug)
+    if not service:
+        abort(404)
+    related = [content.SERVICE_BY_ID[r] for r in service["related"]]
+    return render_template(
+        "dienst.html",
+        page=_page(
+            "{} | {}".format(service["title"], SITE_NAME),
+            service["meta_description"],
+            nav="werkzaamheden",
+            breadcrumbs=[("Werkzaamheden", url_for("werkzaamheden")), (service["title"], None)],
+        ),
+        service=service,
+        related=related,
+        **_common(),
+    )
+
+
+@app.route("/werkgebied")
+def werkgebied():
+    return render_template(
+        "werkgebied.html",
+        page=_page(
+            "Werkgebied | BEBO Betonboren & Zagen",
+            "BEBO Betonboren & Zagen werkt vanuit Berkel en Rodenrijs in Rotterdam, "
+            "Lansingerland, Pijnacker, Delft, Den Haag en Zoetermeer.",
+            nav="werkgebied",
+            breadcrumbs=[("Werkgebied", None)],
+        ),
+        **_common(),
+    )
+
+
+@app.route("/offerte", methods=["GET"])
+def offerte_page():
+    return render_template(
+        "offerte.html",
+        page=_page(
+            "Offerte aanvragen | BEBO Betonboren & Zagen",
+            "Vraag een offerte aan voor betonboren, zagen, frezen, precisiesloop of ankers. "
+            "Stuur foto's mee, dan kunnen we de klus sneller inschatten.",
+            nav="offerte",
+            breadcrumbs=[("Offerte aanvragen", None)],
+        ),
+        process=content.PROCESS,
         form_services=FORM_SERVICES,
         service_fields=SERVICE_FIELDS,
         max_photos=MAX_PHOTOS,
+        upload_limit_mb=4 if EPHEMERAL_FS else max(1, app.config["MAX_CONTENT_LENGTH"] // (1024 * 1024) - 1),
         preselect=request.args.get("dienst", ""),
+        **_common(),
     )
 
 
@@ -435,16 +519,16 @@ def offerte():
             return jsonify(ok=True, redirect=url_for("bedankt"))
         return redirect(url_for("bedankt"))
 
-    dienst, details, contact, photos, errors = _validate_offerte()
+    dienst_id, details, contact, photos, errors = _validate_offerte()
     if errors:
         if _wants_json():
             return jsonify(ok=False, errors=errors), 400
         flash("Niet alle velden zijn goed ingevuld: " + " ".join(errors.values()), "error")
-        return redirect(url_for("index") + "#offerte")
+        return redirect(url_for("offerte_page") + "#formulier")
 
     lead = {
         "id": datetime.datetime.now().strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6],
-        "dienst": dienst,
+        "dienst": dienst_id,
         "details": details,
         "contact": contact,
         "fotos": [p["filename"] for p in photos],
@@ -460,7 +544,7 @@ def offerte():
         if _wants_json():
             return jsonify(ok=False, error=message), 503
         flash(message, "error")
-        return redirect(url_for("index") + "#offerte")
+        return redirect(url_for("offerte_page") + "#formulier")
 
     if _wants_json():
         return jsonify(ok=True, redirect=url_for("bedankt"))
@@ -473,7 +557,7 @@ def too_large(_e):
     if _wants_json():
         return jsonify(ok=False, errors={"fotos": message}), 413
     flash(message, "error")
-    return redirect(url_for("index") + "#offerte")
+    return redirect(url_for("offerte_page") + "#formulier")
 
 
 # ---------------------------------------------------------------------------
@@ -584,12 +668,14 @@ def intake():
 
 @app.route("/bedankt")
 def bedankt():
-    return render_template("bedankt.html")
+    return render_template("bedankt.html", page=_page(
+        "Aanvraag ontvangen | BEBO Betonboren & Zagen", "Je offerteaanvraag is ontvangen.", nav=None))
 
 
 @app.errorhandler(404)
 def not_found(_e):
-    return render_template("404.html"), 404
+    return render_template("404.html", page=_page(
+        "Pagina niet gevonden | BEBO Betonboren & Zagen", "Deze pagina bestaat niet.", nav=None)), 404
 
 
 if __name__ == "__main__":

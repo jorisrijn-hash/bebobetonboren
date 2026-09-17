@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% from "_components.html" import icon %}
-{% block title %}Pagina niet gevonden | BEBO Betonboren & Zagen{% endblock %}
 {% block robots %}noindex, follow{% endblock %}
 
 {% block content %}
@@ -11,7 +10,7 @@
     <p class="lead">De pagina die je zoekt is verplaatst of bestaat niet (meer).</p>
     <div class="hero__actions">
       <a href="{{ url_for('index') }}" class="btn btn--red btn--lg">Naar de homepage {{ icon('arrow') }}</a>
-      <a href="{{ url_for('index') }}#offerte" class="btn btn--ghost btn--lg">Offerte aanvragen</a>
+      <a href="{{ url_for('offerte_page') }}" class="btn btn--ghost btn--lg">Offerte aanvragen</a>
     </div>
   </div>
 </section>

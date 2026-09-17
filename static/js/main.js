@@ -72,32 +72,61 @@
       if (e.shiftKey && (i <= 0)) { e.preventDefault(); items[items.length - 1].focus(); }
       else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
     });
-    window.matchMedia('(min-width: 1041px)').addEventListener('change', function (mq) {
+    window.matchMedia('(min-width: 1101px)').addEventListener('change', function (mq) {
       if (mq.matches && burger.getAttribute('aria-expanded') === 'true') closeMenu(false);
     });
   }
 
-  /* Actieve sectie in de navigatie + mobiele balk */
-  var navLinks = document.querySelectorAll('[data-nav]');
-  var mbarQuote = document.querySelector('[data-mbar="offerte"]');
-  if ('IntersectionObserver' in window) {
-    var sections = ['werk', 'werkzaamheden', 'waarom', 'werkgebied', 'contact']
-      .map(function (id) { return document.getElementById(id); })
-      .filter(Boolean);
-    if (sections.length) {
-      var spy = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          var id = entry.target.id;
-          navLinks.forEach(function (a) {
-            var on = a.getAttribute('data-nav') === id;
-            a.classList.toggle('is-active', on);
-            if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
-          });
-          if (mbarQuote) mbarQuote.classList.toggle('is-current', id === 'contact');
-        });
-      }, { rootMargin: '-45% 0px -50% 0px' });
-      sections.forEach(function (s) { spy.observe(s); });
+  /* Dropdown "Werkzaamheden" (desktop): klik, hover met muis, Esc */
+  var dropItem = document.querySelector('.nav__item--drop');
+  if (dropItem) {
+    var dropBtn = dropItem.querySelector('.nav__drop-btn');
+    var drop = dropItem.querySelector('.drop');
+    var closeTimer = null;
+    var setDrop = function (open) {
+      clearTimeout(closeTimer);
+      dropBtn.setAttribute('aria-expanded', String(open));
+      drop.hidden = !open;
+      dropItem.classList.toggle('is-open', open);
+    };
+    dropBtn.addEventListener('click', function () {
+      setDrop(dropBtn.getAttribute('aria-expanded') !== 'true');
+      if (!drop.hidden) { var first = drop.querySelector('a'); if (first) first.focus(); }
+    });
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      dropItem.addEventListener('mouseenter', function () { setDrop(true); });
+      dropItem.addEventListener('mouseleave', function () { closeTimer = setTimeout(function () { setDrop(false); }, 160); });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !drop.hidden) { setDrop(false); dropBtn.focus(); }
+    });
+    document.addEventListener('click', function (e) { if (!dropItem.contains(e.target)) setDrop(false); });
+    dropItem.addEventListener('focusout', function (e) { if (!dropItem.contains(e.relatedTarget)) setDrop(false); });
+  }
+
+  /* Kaart (Leaflet + PDOK) pas laden als hij bijna in beeld is */
+  var mapEls = document.querySelectorAll('[data-bebo-map]');
+  var mainScript = document.querySelector('script[data-map-js]');
+  if (mapEls.length && mainScript) {
+    var mapLoaded = false;
+    var loadMap = function () {
+      if (mapLoaded) return;
+      mapLoaded = true;
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = mainScript.getAttribute('data-map-css');
+      document.head.appendChild(link);
+      import(mainScript.getAttribute('data-map-js')).catch(function () {
+        mapEls.forEach(function (el) { el.classList.add('is-failed'); });
+      });
+    };
+    if ('IntersectionObserver' in window) {
+      var mio = new IntersectionObserver(function (entries) {
+        if (entries.some(function (en) { return en.isIntersecting; })) { mio.disconnect(); loadMap(); }
+      }, { rootMargin: '400px 0px' });
+      mapEls.forEach(function (el) { mio.observe(el); });
+    } else {
+      loadMap();
     }
   }
 
@@ -125,6 +154,7 @@
   var form = document.getElementById('quote-form');
   if (!form) return;
 
+  var errorFields = {}; // vooraf, want preselect() hieronder roept clearError() aan
   var status = form.querySelector('.form__status');
   var submitBtn = form.querySelector('.form__submit');
   var submitLabel = form.querySelector('.form__submit-label');
@@ -159,18 +189,6 @@
   }
   showDetails(selectedService());
   if (form.dataset.preselect) preselect(form.dataset.preselect);
-
-  // "Offerte aanvragen" bij een dienst: kies die dienst en spring naar het formulier.
-  document.querySelectorAll('[data-service]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      preselect(link.getAttribute('data-service'));
-      var target = document.getElementById('offerte');
-      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      target.focus({ preventScroll: true });
-      if (history.replaceState) history.replaceState(null, '', '#offerte');
-    });
-  });
 
   // Gewenste uitvoerdatum niet in het verleden.
   var dateInput = form.querySelector('#datum');
@@ -294,7 +312,6 @@
   }
 
   /* 3c. Validatie */
-  var errorFields = {};
   function errorEl(name) { return form.querySelector('[data-error-for="' + name + '"]'); }
   function fieldsFor(name) { return form.querySelectorAll('[name="' + name + '"]'); }
 

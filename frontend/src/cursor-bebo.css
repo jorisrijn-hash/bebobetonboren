@@ -1,0 +1,35 @@
+/* BEBO-thematisering van React Bits TargetCursor.
+   De component zelf blijft ongewijzigd; kleur/formaat sturen we hier bij. */
+
+.target-cursor-wrapper {
+  mix-blend-mode: normal;
+  transition: opacity .15s ease;
+}
+.target-cursor-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 0;
+  background: #D2051E;
+}
+.target-cursor-corner {
+  /* 12px = cornerSize in de component, zodat het vastklikken op doelen klopt */
+  border: 1.5px solid #D2051E;
+}
+/* Hoeken hebben één zijde nodig per richting (zoals het origineel). */
+.corner-tl { border-right: none; border-bottom: none; }
+.corner-tr { border-left: none; border-bottom: none; }
+.corner-br { border-left: none; border-top: none; }
+.corner-bl { border-right: none; border-top: none; }
+
+/* Native pijl verbergen, behalve waar invoer of slepen dat nodig heeft. */
+html.bebo-cursor-on:not(.cursor-native),
+html.bebo-cursor-on:not(.cursor-native) body,
+html.bebo-cursor-on:not(.cursor-native) a,
+html.bebo-cursor-on:not(.cursor-native) button,
+html.bebo-cursor-on:not(.cursor-native) label {
+  cursor: none;
+}
+html.cursor-native .target-cursor-wrapper,
+html.cursor-away .target-cursor-wrapper {
+  opacity: 0;
+}

@@ -83,3 +83,208 @@
 {%- elif name == 'arrow' %}<svg class="ico ico--arrow" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 12h15M13 6l6 6-6 6"/></svg>
 {%- endif %}
 {%- endmacro %}
+
+{# ======================================================================
+   PAGINA-ONDERDELEN (multi-page)
+   ====================================================================== #}
+
+{# Paginakop voor subpagina's #}
+{% macro page_head(code, title, lede=None, aside=None) -%}
+<header class="page-head wrap">
+  <p class="label reveal"><span class="label__tick" aria-hidden="true"></span>{{ code }}</p>
+  <div class="page-head__grid">
+    <h1 class="h1 page-head__title reveal" data-delay="1">{{ title }}</h1>
+    {% if lede %}<p class="page-head__lede reveal" data-delay="2">{{ lede }}</p>{% endif %}
+  </div>
+  {% if aside %}<p class="page-head__aside reveal" data-delay="2">{{ aside }}</p>{% endif %}
+</header>
+{%- endmacro %}
+
+{# Schematische tekening per dienst. Alleen bevestigde maten; "niet op schaal". #}
+{% macro diagram(kind, service) -%}
+<figure class="dg" aria-labelledby="dg-cap-{{ service.id }}">
+  <svg viewBox="0 0 480 340" role="img" aria-label="Schematische weergave {{ service.title|lower }}">
+    <defs>
+      <pattern id="hatch-{{ service.id }}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <path d="M0 0V8" class="dg-hatch"/>
+      </pattern>
+    </defs>
+    {% if kind == 'bore' %}
+      {# Doorsnede vloer met kernboring + bovenaanzicht met diameter #}
+      <rect x="30" y="150" width="250" height="70" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <rect x="120" y="150" width="70" height="70" class="dg-void"/>
+      <path d="M120 150V220M190 150V220" class="dg-red dg-draw"/>
+      <path d="M155 70V130M143 118L155 130L167 118" class="dg-line"/>
+      <text x="155" y="58" text-anchor="middle" class="dg-t">diamantboor</text>
+      <text x="30" y="246" class="dg-t dg-t--muted">doorsnede</text>
+      <circle cx="385" cy="185" r="62" class="dg-red dg-draw"/>
+      <path d="M323 185H447M323 175V195M447 175V195" class="dg-line"/>
+      <rect x="341" y="262" width="88" height="24" class="dg-tag"/>
+      <text x="385" y="279" text-anchor="middle" class="dg-t dg-t--tag">Ø 12–900 mm</text>
+      <text x="385" y="110" text-anchor="middle" class="dg-t dg-t--muted">bovenaanzicht</text>
+    {% elif kind == 'wall' %}
+      {# Aanzicht wand met sparing + doorsnede met zaagdiepte #}
+      <rect x="30" y="40" width="230" height="260" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <rect x="95" y="110" width="90" height="190" class="dg-void"/>
+      <path d="M95 300V110H185V300" class="dg-red dg-draw"/>
+      <text x="140" y="32" text-anchor="middle" class="dg-t dg-t--muted">aanzicht · sparing</text>
+      <rect x="320" y="60" width="70" height="240" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <path d="M300 180H420" class="dg-red dg-draw"/>
+      <path d="M320 150H390M320 142V158M390 142V158" class="dg-line"/>
+      <rect x="306" y="206" width="98" height="24" class="dg-tag"/>
+      <text x="355" y="223" text-anchor="middle" class="dg-t dg-t--tag">tot 60 cm diep</text>
+      <text x="355" y="52" text-anchor="middle" class="dg-t dg-t--muted">doorsnede</text>
+    {% elif kind == 'floor' %}
+      {# Bovenaanzicht vloer met trapgat en sleuf #}
+      <rect x="30" y="40" width="420" height="250" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <rect x="70" y="80" width="140" height="170" class="dg-void"/>
+      <path d="M70 80H210V250H70Z" class="dg-red dg-draw"/>
+      <path d="M85 230H195M85 210H195M85 190H195M85 170H195M85 150H195" class="dg-line dg-line--thin"/>
+      <rect x="260" y="150" width="160" height="16" class="dg-void"/>
+      <path d="M260 150H420V166H260Z" class="dg-red dg-draw"/>
+      <rect x="92" y="298" width="96" height="24" class="dg-tag"/>
+      <text x="140" y="315" text-anchor="middle" class="dg-t dg-t--tag">trapgat</text>
+      <rect x="292" y="182" width="96" height="24" class="dg-tag"/>
+      <text x="340" y="199" text-anchor="middle" class="dg-t dg-t--tag">sleuf</text>
+      <text x="30" y="30" class="dg-t dg-t--muted">bovenaanzicht vloer</text>
+    {% elif kind == 'groove' %}
+      {# Doorsnede met gefreesde sleuf en leiding/kabel #}
+      <rect x="30" y="120" width="420" height="140" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <rect x="205" y="120" width="70" height="60" class="dg-void"/>
+      <path d="M205 120V180H275V120" class="dg-red dg-draw"/>
+      <circle cx="240" cy="158" r="16" class="dg-line"/>
+      <path d="M240 60V104M228 92L240 104L252 92" class="dg-line"/>
+      <text x="240" y="48" text-anchor="middle" class="dg-t">leiding / kabel</text>
+      <rect x="192" y="276" width="96" height="24" class="dg-tag"/>
+      <text x="240" y="293" text-anchor="middle" class="dg-t dg-t--tag">droog of nat</text>
+      <text x="30" y="110" class="dg-t dg-t--muted">doorsnede · sleuf</text>
+    {% elif kind == 'demolition' %}
+      {# Drie stappen: loszagen, uitbreken, puin afvoeren #}
+      {% for i in range(3) %}
+      {% set x = 20 + i * 155 %}
+      <rect x="{{ x }}" y="90" width="130" height="130" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      {% if i == 0 %}
+      <path d="M{{ x + 35 }} 90V220M{{ x + 95 }} 90V220" class="dg-red dg-draw"/>
+      {% elif i == 1 %}
+      <rect x="{{ x + 35 }}" y="90" width="60" height="130" class="dg-void"/>
+      <rect x="{{ x + 42 }}" y="70" width="60" height="130" class="dg-piece"/>
+      {% else %}
+      <rect x="{{ x + 35 }}" y="90" width="60" height="130" class="dg-void"/>
+      <path d="M{{ x + 65 }} 240V290M{{ x + 53 }} 278L{{ x + 65 }} 290L{{ x + 77 }} 278" class="dg-red"/>
+      {% endif %}
+      <text x="{{ x }}" y="70" class="dg-t dg-t--muted">{{ '%02d'|format(i + 1) }}</text>
+      <text x="{{ x }}" y="{{ 250 if i < 2 else 320 }}" class="dg-t">{{ service.steps[i] }}</text>
+      {% endfor %}
+    {% elif kind == 'anchor' %}
+      {# Doorsnede met boorgat, stek en injectiemortel #}
+      <rect x="30" y="140" width="420" height="160" fill="url(#hatch-{{ service.id }})" class="dg-solid"/>
+      <rect x="220" y="140" width="40" height="120" class="dg-void"/>
+      <rect x="226" y="140" width="28" height="120" class="dg-resin"/>
+      <path d="M240 40V250" class="dg-rod"/>
+      <path d="M220 140V260H260V140" class="dg-red dg-draw"/>
+      <text x="275" y="80" class="dg-t">stek / anker</text>
+      <path d="M270 76H250" class="dg-line"/>
+      <rect x="296" y="200" width="130" height="24" class="dg-tag"/>
+      <text x="361" y="217" text-anchor="middle" class="dg-t dg-t--tag">Hilti HIT-systeem</text>
+      <path d="M296 212H262" class="dg-line"/>
+      <text x="30" y="130" class="dg-t dg-t--muted">doorsnede · chemisch verankerd</text>
+    {% endif %}
+  </svg>
+  <figcaption id="dg-cap-{{ service.id }}" class="dg__cap"><span>{{ service.index }} / {{ service.title }}</span><span>Schematisch · niet op schaal</span></figcaption>
+</figure>
+{%- endmacro %}
+
+{# Waarom BEBO (bevestigde punten). compact=True voor dienstpagina's. #}
+{% macro why_block(why, experience, compact=False, num="—", heading_level=2) -%}
+<section class="section why{% if compact %} why--compact{% endif %}" id="waarom" aria-labelledby="waarom-title">
+  <div class="wrap why__grid">
+    {% if not compact %}
+    <div class="why__visual reveal-mask">
+      {# CLIENT ASSET REQUIRED
+         Content: BEBO op de bouwplaats (ploeg/machine in actie, liefst met zichtbare water- of stofafzuiging)
+         Oriëntatie: liggend · Ratio: 4:3 · Minimale breedte: 2000px #}
+      {{ media(none, ratio="4:3", title="Werkplaats / ploeg", code="BEBO / SITE") }}
+      <div class="why__pins" aria-hidden="true">
+        {% for w in why %}<span class="why__pin why__pin--{{ loop.index }}">{{ w.index }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="why__body">
+      <header class="why__head">
+        <p class="label reveal"><span class="label__n">{{ num }}</span>Waarom BEBO</p>
+        <h{{ heading_level }} id="waarom-title" class="h2 reveal" data-delay="1">Waar je op kunt rekenen.</h{{ heading_level }}>
+      </header>
+      <ol class="why__list">
+        {% for w in why %}
+        <li class="why__item reveal" data-delay="{{ loop.index }}">
+          <span class="why__n" aria-hidden="true">{{ w.index }} /</span>
+          <div>
+            <h{{ heading_level + 1 }} class="why__title">{{ w.title }}</h{{ heading_level + 1 }}>
+            <p>{{ w.text }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="xp reveal">
+        <span class="xp__value">{{ experience.value }}</span>
+        <span class="xp__label">{{ experience.label }}</span>
+      </p>
+    </div>
+  </div>
+</section>
+{%- endmacro %}
+
+{# Echte kaart (Leaflet + PDOK). variant: "full" (werkgebied) of "compact" (home). #}
+{% macro area_map(work_areas, hq, map_data, variant="full") -%}
+<div class="amap amap--{{ variant }}">
+  <div class="amap__panel">
+    <div class="amap__hq">
+      <span class="amap__code">BEBO / Basis</span>
+      <strong>{{ hq.street }}</strong>
+      <span>{{ hq.postal }}</span>
+      <span class="amap__coords">{{ hq.coords }}</span>
+      <button type="button" class="amap__btn" data-map-focus="__hq" aria-pressed="false">Toon op kaart</button>
+    </div>
+    <div class="amap__places">
+      <p class="amap__code">Werkgebied / {{ work_areas|length }} plaatsen</p>
+      <ul>
+        {% for a in work_areas %}
+        <li>
+          <button type="button" data-map-focus="{{ a.name }}" aria-pressed="false">
+            <span class="amap__n">{{ '%02d'|format(loop.index) }}</span>{{ a.name }}
+          </button>
+        </li>
+        {% endfor %}
+      </ul>
+      <button type="button" class="amap__reset" data-map-reset>Hele werkgebied</button>
+    </div>
+    <p class="amap__note">De plaatsen tonen waar BEBO actief is; de lijnen zijn indicatief en geen harde grens.</p>
+  </div>
+  <div class="amap__canvas bebo-map" data-bebo-map="map-data" data-panel-side="{{ 'left' if variant == 'full' else 'none' }}"
+       role="region" aria-label="Kaart van het werkgebied rond Berkel en Rodenrijs" tabindex="0">
+    <div class="amap__loading" aria-hidden="true"><span></span>Kaart laden</div>
+    <noscript><p class="amap__noscript">De kaart vraagt JavaScript. Werkgebied: {{ work_areas|map(attribute='name')|join(', ') }}.</p></noscript>
+  </div>
+  <p class="amap__hint">Zoom met + en −, of klik een plaats in de lijst.</p>
+</div>
+<script type="application/json" id="map-data">{{ map_data|tojson }}</script>
+{%- endmacro %}
+
+{# Offerte-CTA (alle pagina's behalve /offerte) #}
+{% macro cta_band(company, service=None, title="Klus in beton of steen?") -%}
+<section class="cta-band" aria-labelledby="cta-title">
+  <div class="wrap cta-band__grid">
+    <div>
+      <p class="label label--dark"><span class="label__tick" aria-hidden="true"></span>Offerte</p>
+      <h2 id="cta-title" class="h2 cta-band__title">{{ title }}</h2>
+    </div>
+    <div class="cta-band__body">
+      <p>Vertel wat er moet gebeuren. Met een paar foto's kunnen we de klus vaak sneller inschatten.</p>
+      <div class="cta-band__actions">
+        <a class="btn btn--red btn--lg" href="{{ url_for('offerte_page', dienst=service.id) if service else url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
+        <a class="btn btn--line btn--lg" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endmacro %}

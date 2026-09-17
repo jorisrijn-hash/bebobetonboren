@@ -148,19 +148,111 @@ SERVICE_BY_ID = {s["id"]: s for s in SERVICES}
 FORM_OTHER = {"id": "anders", "title": "Anders / weet ik niet"}
 
 # ---------------------------------------------------------------------------
-# Werkgebied (bevestigd). lat/lon = openbare plaatscoördinaten, alleen gebruikt
-# voor het schematische kaartje. Geen afstanden of reistijden claimen.
-# label: plaats van het naamlabel t.o.v. de stip (left/right/top/bottom/bottom-left).
+# Detailpagina's per dienst
 # ---------------------------------------------------------------------------
+# applications: letterlijk afgeleid uit de bevestigde omschrijving hierboven.
+#   Geen nieuwe toepassingen of capaciteiten toevoegen zonder bevestiging.
+# diagram: welke schematische tekening de pagina toont (alleen bevestigde maten).
+# layout: compositievariant van de pagina-hero (a / b / c), zodat pagina's
+#   niet gekloond aanvoelen.
+SERVICE_DETAILS = {
+    "betonboren": {
+        "layout": "a",
+        "diagram": "bore",
+        "applications_label": "Voor",
+        "applications": ["Sparingen", "Leidingen", "Ventilatie", "Kernen"],
+        "facts": [("Methode", "Diamantboren"), ("Diameter", "Ø 12–900 mm"), ("Ook", "stofvrij waar geen water mag")],
+        "related": ["wandzagen", "vloerzagen", "ankers-verlijmen"],
+        "meta_description": "Betonboren Ø 12–900 mm: diamantboren voor sparingen, leidingen, ventilatie en kernen. BEBO Betonboren & Zagen uit Berkel en Rodenrijs.",
+    },
+    "wandzagen": {
+        "layout": "b",
+        "diagram": "wall",
+        "applications_label": "Voor",
+        "applications": ["Deursparingen", "Raamsparingen", "Complete doorbraken"],
+        "facts": [("Zaagdiepte", "tot 60 cm diep"), ("Materiaal", "beton en steen"), ("Resultaat", "nette kanten, minimale overlast")],
+        "related": ["vloerzagen", "precisiesloop", "betonboren"],
+        "meta_description": "Wandzagen tot 60 cm diep: deur- en raamsparingen en complete doorbraken in wanden van beton en steen. BEBO Betonboren & Zagen.",
+    },
+    "vloerzagen": {
+        "layout": "c",
+        "diagram": "floor",
+        "applications_label": "Voor",
+        "applications": ["Trapgaten", "Leidingsleuven", "Kruipluiken", "Dilatatievoegen", "Liftsparingen"],
+        "facts": [("Toepassing", "trapgaten · sleuven"), ("Resultaat", "recht ingezaagd, zonder scheurwerk")],
+        "related": ["wandzagen", "sleuven-frezen", "precisiesloop"],
+        "meta_description": "Vloerzagen voor trapgaten, leidingsleuven, kruipluiken, dilatatievoegen en liftsparingen. BEBO Betonboren & Zagen, Berkel en Rodenrijs.",
+    },
+    "sleuven-frezen": {
+        "layout": "a",
+        "diagram": "groove",
+        "applications_label": "Voor",
+        "applications": ["Leidingen", "Kabels"],
+        "situations": ["Ruwbouw", "Nieuwbouw", "Bewoonde situaties"],
+        "facts": [("Uitvoering", "droog of nat"), ("Resultaat", "netjes en stofbeperkt")],
+        "related": ["vloerzagen", "betonboren", "wandzagen"],
+        "meta_description": "Sleuven en frezen voor leidingen en kabels, droog of nat, in ruwbouw, nieuwbouw of bewoonde situaties. BEBO Betonboren & Zagen.",
+    },
+    "precisiesloop": {
+        "layout": "b",
+        "diagram": "demolition",
+        "applications_label": "Verwijderen van",
+        "applications": ["Vloeren", "Wanden", "Tegelwerk"],
+        "steps": ["Loszagen", "Uitbreken", "Puin afvoeren"],
+        "facts": [("Afvoer", "incl. puinafvoer")],
+        "related": ["wandzagen", "vloerzagen", "sleuven-frezen"],
+        "meta_description": "Precisiesloop van vloeren, wanden en tegelwerk: we zagen het werk los, breken het uit en voeren het puin af. BEBO Betonboren & Zagen.",
+    },
+    "ankers-verlijmen": {
+        "layout": "c",
+        "diagram": "anchor",
+        "applications_label": "Chemisch verankeren van",
+        "applications": ["Stekken", "Ankers"],
+        "facts": [("Systeem", "Hilti HIT-systeem"), ("Doel", "sterke, duurzame hechting")],
+        "related": ["betonboren", "wandzagen"],
+        "meta_description": "Ankers en verlijmen: chemisch verankeren van stekken en ankers met het Hilti HIT-systeem. BEBO Betonboren & Zagen, Berkel en Rodenrijs.",
+    },
+}
+for _s in SERVICES:
+    _s.update(SERVICE_DETAILS[_s["id"]])
+    # Extra media-slot voor de detailpagina (werk in uitvoering).
+    _s.setdefault("detail_media", {"src": None, "alt": "", "ratio": "4:5", "position": "50% 50%"})
+
+# ---------------------------------------------------------------------------
+# Werkgebied (bevestigd): alleen deze plaatsen.
+# Coördinaten: PDOK Locatieserver (Kadaster), woonplaats-centroïden;
+# Lansingerland = gemeente-centroïde. Geen afstanden, reistijden of grenzen.
+# ---------------------------------------------------------------------------
+HQ = {
+    "name": "BEBO / basis",
+    "street": COMPANY["street"],
+    "postal": "{} {}".format(COMPANY["postal_code"], COMPANY["city"]),
+    "lat": 51.98169851,
+    "lon": 4.45390567,
+    "route_url": COMPANY["maps_url"],
+}
 WORK_AREAS = [
-    {"name": "Berkel en Rodenrijs", "base": True, "lat": 51.9930, "lon": 4.4750, "label": "bottom-left"},
-    {"name": "Rotterdam", "lat": 51.9244, "lon": 4.4777, "label": "right"},
-    {"name": "Lansingerland", "lat": 52.0050, "lon": 4.5250, "label": "bottom"},
-    {"name": "Pijnacker", "lat": 52.0195, "lon": 4.4290, "label": "top"},
-    {"name": "Delft", "lat": 52.0116, "lon": 4.3571, "label": "left"},
-    {"name": "Den Haag", "lat": 52.0705, "lon": 4.3007, "label": "left"},
-    {"name": "Zoetermeer", "lat": 52.0607, "lon": 4.4940, "label": "right"},
+    {"name": "Berkel en Rodenrijs", "base": True, "lat": 52.00049043, "lon": 4.46903273},
+    {"name": "Rotterdam", "lat": 51.92248806, "lon": 4.48653571},
+    {"name": "Lansingerland", "lat": 52.00400827, "lon": 4.50610722},
+    {"name": "Pijnacker", "lat": 52.01506166, "lon": 4.43644719},
+    {"name": "Delft", "lat": 51.99845672, "lon": 4.36310563},
+    {"name": "Den Haag", "lat": 52.07207291, "lon": 4.29300083},
+    {"name": "Zoetermeer", "lat": 52.06091036, "lon": 4.48977382},
 ]
+
+
+def _dms(value: float, pos: str, neg: str) -> str:
+    hemi = pos if value >= 0 else neg
+    value = abs(value)
+    d = int(value)
+    m = int((value - d) * 60)
+    sec = (value - d - m / 60) * 3600
+    return "{}°{:02d}′{:04.1f}″ {}".format(d, m, sec, hemi)
+
+
+# Technische coördinaat van de vestiging (metadata in hero/kaart).
+HQ["coords"] = "{} · {}".format(_dms(HQ["lat"], "N", "Z"), _dms(HQ["lon"], "O", "W"))
 
 # ---------------------------------------------------------------------------
 # Waarom BEBO (bevestigd) + ervaring
@@ -222,33 +314,34 @@ PROCESS = [
 # Content: echte BEBO-projectfoto's (geen stockbeelden).
 # Zet per item "src" (pad binnen static/), "alt" (beschrijf wat zichtbaar is)
 # en vul alleen metadata in die de klant heeft bevestigd. None = placeholder.
-# layout: "lead" (groot liggend), "side" (klein), "wide" (breed).
-# De ratio's zijn afgestemd op het mozaïek (8/4 kolommen); wijzig ze samen.
+# layout: "lead" (70% beeld + info), "pair-wide"/"pair-narrow" (ongelijk paar),
+# "full" (schermbreed panorama). Ratio's zijn afgestemd op elkaar; wijzig ze samen.
+# service: id uit SERVICES; linkt het project naar die dienstpagina.
 # position: object-position, zodat machines/sparingen niet wegvallen bij crop.
 PROJECTS = [
     {
-        "id": "001", "layout": "lead", "ratio": "16:10", "min_width": 1800,
+        "id": "001", "layout": "lead", "ratio": "16:9", "min_width": 2400,
         "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
-        "type": None, "location": None, "detail": None,
+        "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "002", "layout": "side", "ratio": "4:5", "min_width": 1200,
-        "orientation": "staand",
+        "id": "002", "layout": "pair-wide", "ratio": "16:10", "min_width": 1800,
+        "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
-        "type": None, "location": None, "detail": None,
+        "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "003", "layout": "side", "ratio": "1:1", "min_width": 1200,
-        "orientation": "vierkant",
+        "id": "003", "layout": "pair-narrow", "ratio": "8:7", "min_width": 1400,
+        "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
-        "type": None, "location": None, "detail": None,
+        "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "004", "layout": "wide", "ratio": "2:1", "min_width": 2000,
-        "orientation": "breed liggend",
+        "id": "004", "layout": "full", "ratio": "21:9", "min_width": 2800,
+        "orientation": "panorama",
         "src": None, "alt": "", "position": "50% 50%",
-        "type": None, "location": None, "detail": None,
+        "type": None, "location": None, "detail": None, "service": None,
     },
 ]
 

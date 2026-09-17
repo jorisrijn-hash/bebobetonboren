@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_components.html" import icon, page_head, area_map, cta_band %}
+
+{% block content %}
+{{ page_head("BEBO / Werkgebied", "Werkgebied", "Actief in Berkel en Rodenrijs, Rotterdam en de omliggende regio. Vanuit onze vestiging aan de Industrieweg werken we in de plaatsen hieronder.") }}
+
+<section class="area-full" aria-label="Kaart van het werkgebied">
+  {{ area_map(work_areas, hq, map_data, variant="full") }}
+</section>
+
+<section class="section area-info" aria-labelledby="area-info-title">
+  <div class="wrap area-info__grid">
+    <div>
+      <p class="label reveal"><span class="label__n">01</span>Vestiging</p>
+      <h2 id="area-info-title" class="h2 h2--sm reveal">{{ company.name }}</h2>
+      <address class="area-info__addr reveal">
+        {{ company.street }}<br>{{ company.postal_code }} {{ company.city }}
+      </address>
+      <a class="textlink reveal" href="{{ company.maps_url }}" target="_blank" rel="noopener">Route plannen {{ icon('arrow') }}</a>
+    </div>
+    <div>
+      <p class="label reveal"><span class="label__n">02</span>Twijfel?</p>
+      <p class="area-info__text reveal">Weet je niet zeker of jouw locatie binnen het werkgebied valt? Bel of app ons even.</p>
+      <div class="area-info__actions reveal">
+        <a class="btn btn--ghost" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>
+        <a class="btn btn--ghost" href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }} WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ cta_band(company) }}
+{% endblock %}

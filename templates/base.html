@@ -5,29 +5,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <script>document.documentElement.classList.add('js');</script>
-  <title>{% block title %}BEBO Betonboren & Zagen | Berkel en Rodenrijs en Rotterdam{% endblock %}</title>
-  <meta name="description" content="{% block description %}BEBO Betonboren & Zagen uit Berkel en Rodenrijs: betonboren, wand- en vloerzagen, frezen en precisiesloop in Rotterdam en regio. Schoon werk, strak resultaat.{% endblock %}">
+  <title>{{ page.title }}</title>
+  <meta name="description" content="{{ page.description }}">
   {% if noindex %}
   <meta name="robots" content="noindex, nofollow">
   {% else %}
   <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
   {% endif %}
-  <link rel="canonical" href="{{ site_url }}{% block canonical_path %}{{ request.path }}{% endblock %}">
+  {% set canonical = site_url ~ request.path %}
+  <link rel="canonical" href="{{ canonical }}">
 
   <!-- Open Graph / social previews -->
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{{ page.og_type }}">
   <meta property="og:site_name" content="{{ company.name }}">
   <meta property="og:locale" content="nl_NL">
-  <meta property="og:title" content="{{ self.title() }}">
-  <meta property="og:description" content="{{ self.description() }}">
-  <meta property="og:url" content="{{ site_url }}{{ self.canonical_path() }}">
+  <meta property="og:title" content="{{ page.title }}">
+  <meta property="og:description" content="{{ page.description }}">
+  <meta property="og:url" content="{{ canonical }}">
   <meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BEBO Betonboren & Zagen – boren, zagen, frezen en gericht slopen in beton en steen">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ self.title() }}">
-  <meta name="twitter:description" content="{{ self.description() }}">
+  <meta name="twitter:title" content="{{ page.title }}">
+  <meta name="twitter:description" content="{{ page.description }}">
   <meta name="twitter:image" content="{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}">
 
   <!-- Favicons: officieel BEBO-merkteken -->
@@ -44,37 +45,113 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap">
   <link rel="stylesheet" href="{{ static_v('css/style.css') }}">
+
+  <!-- Structured data: bedrijf (alle pagina's) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GeneralContractor",
+    "@id": "{{ site_url }}/#bedrijf",
+    "name": {{ company.name|tojson }},
+    "url": "{{ site_url }}/",
+    "logo": "{{ site_url }}{{ url_for('static', filename='img/brand/bebo-logo.png') }}",
+    "image": "{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}",
+    "telephone": {{ company.phone_intl|tojson }},
+    "email": {{ company.email|tojson }},
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": {{ company.street|tojson }},
+      "postalCode": {{ company.postal_code|tojson }},
+      "addressLocality": {{ company.city|tojson }},
+      "addressCountry": "NL"
+    },
+    "geo": {"@type": "GeoCoordinates", "latitude": {{ hq_geo.lat }}, "longitude": {{ hq_geo.lon }}},
+    "identifier": {"@type": "PropertyValue", "propertyID": "KvK", "value": {{ company.kvk|tojson }}},
+    "areaServed": [{% for a in all_work_areas %}{"@type": "City", "name": {{ a.name|tojson }}}{% if not loop.last %}, {% endif %}{% endfor %}],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Werkzaamheden",
+      "itemListElement": [{% for s in services %}{"@type": "Offer", "itemOffered": {"@type": "Service", "name": {{ s.title|tojson }}, "url": "{{ site_url }}{{ url_for('dienst', slug=s.id) }}"}}{% if not loop.last %}, {% endif %}{% endfor %}]
+    }
+  }
+  </script>
+  {% if page.breadcrumbs %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ site_url }}/"}{% for label, href in page.breadcrumbs %},
+      {"@type": "ListItem", "position": {{ loop.index + 1 }}, "name": {{ label|tojson }}, "item": "{{ site_url }}{{ href or request.path }}"}{% endfor %}
+    ]
+  }
+  </script>
+  {% endif %}
   {% block head %}{% endblock %}
+
+  <!-- React Bits TargetCursor (BEBO-richtkruis): alleen muis/trackpad, geen reduced motion.
+       Touch-apparaten downloaden de bundel niet. -->
+  <script>
+    (function () {
+      var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!fine || reduced) return;
+      var load = function () {
+        var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = {{ static_v('bundle/cursor.css')|tojson }};
+        document.head.appendChild(l);
+        var s = document.createElement('script'); s.type = 'module'; s.src = {{ static_v('bundle/cursor.js')|tojson }};
+        document.head.appendChild(s);
+      };
+      if ('requestIdleCallback' in window) window.addEventListener('load', function () { requestIdleCallback(load, { timeout: 1500 }); });
+      else window.addEventListener('load', load);
+    })();
+  </script>
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="page-{{ page.nav or 'other' }}">
   <a class="skip" href="#main">Naar de inhoud</a>
 
   {% set home = url_for('index') %}
-  {% set nav_items = [
-    ('werk', 'Werk'),
-    ('werkzaamheden', 'Werkzaamheden'),
-    ('waarom', 'Waarom BEBO'),
-    ('werkgebied', 'Werkgebied'),
-    ('contact', 'Contact'),
-  ] %}
+  {% set nav = page.nav %}
 
   <header class="nav" id="nav">
     <div class="wrap nav__bar">
-      <a href="{{ home }}" class="nav__logo">
+      <a href="{{ home }}" class="nav__logo"{% if nav == 'home' %} aria-current="page"{% endif %}>
         <img src="{{ url_for('static', filename='img/brand/bebo-logo.svg') }}" width="128" height="44" alt="BEBO Betonboren & Zagen – naar de homepage">
       </a>
 
       <nav class="nav__links" aria-label="Hoofdmenu">
         <ul>
-          {% for id, label in nav_items %}
-          <li><a href="{{ home }}#{{ id }}" data-nav="{{ id }}">{{ label }}</a></li>
-          {% endfor %}
+          <li class="nav__item nav__item--drop">
+            <a href="{{ url_for('werkzaamheden') }}" class="nav__link{% if nav == 'werkzaamheden' %} is-active{% endif %}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page"{% endif %}>Werkzaamheden</a>
+            <button class="nav__drop-btn" type="button" aria-expanded="false" aria-controls="drop-diensten">
+              <span class="visually-hidden">Toon alle werkzaamheden</span>
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+            <div class="drop" id="drop-diensten" hidden>
+              <ul class="drop__list">
+                {% for s in services %}
+                {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
+                <li>
+                  <a href="{{ url_for('dienst', slug=s.id) }}" class="drop__link{% if here %} is-active{% endif %}"{% if here %} aria-current="page"{% endif %}>
+                    <span class="drop__n">{{ s.index }}</span>
+                    <span class="drop__t">{{ s.title }}</span>
+                    <span class="drop__s">{{ s.spec }}</span>
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+              <a class="drop__all" href="{{ url_for('werkzaamheden') }}">Alle werkzaamheden {{ icon('arrow') }}</a>
+            </div>
+          </li>
+          <li class="nav__item"><a href="{{ url_for('werkgebied') }}" class="nav__link{% if nav == 'werkgebied' %} is-active{% endif %}"{% if nav == 'werkgebied' %} aria-current="page"{% endif %}>Werkgebied</a></li>
+          <li class="nav__item"><a href="{{ home }}#waarom" class="nav__link">Waarom BEBO</a></li>
+          <li class="nav__item"><a href="{{ url_for('offerte_page') }}#contact" class="nav__link{% if nav == 'offerte' %} is-active{% endif %}">Contact</a></li>
         </ul>
       </nav>
 
       <div class="nav__cta">
         <a class="nav__phone" href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a>
-        <a class="btn btn--red btn--sm" href="{{ home }}#offerte">Offerte</a>
+        <a class="btn btn--red btn--sm" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>Offerte</a>
       </div>
 
       <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu openen">
@@ -87,13 +164,21 @@
   <div class="menu" id="menu" hidden>
     <div class="menu__inner wrap">
       <nav aria-label="Mobiel menu">
-        <ol class="menu__list">
-          {% for id, label in nav_items %}
-          <li><a href="{{ home }}#{{ id }}"><span class="menu__n">{{ '%02d'|format(loop.index) }}</span>{{ label }}</a></li>
+        <p class="menu__label">Werkzaamheden</p>
+        <ul class="menu__services">
+          {% for s in services %}
+          {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
+          <li><a href="{{ url_for('dienst', slug=s.id) }}"{% if here %} aria-current="page" class="is-active"{% endif %}><span class="menu__n">{{ s.index }}</span>{{ s.title }}</a></li>
           {% endfor %}
-        </ol>
+        </ul>
+        <ul class="menu__list">
+          <li><a href="{{ url_for('werkzaamheden') }}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page" class="is-active"{% endif %}>Alle werkzaamheden</a></li>
+          <li><a href="{{ url_for('werkgebied') }}"{% if nav == 'werkgebied' %} aria-current="page" class="is-active"{% endif %}>Werkgebied</a></li>
+          <li><a href="{{ home }}#waarom">Waarom BEBO</a></li>
+          <li><a href="{{ url_for('offerte_page') }}#contact">Contact</a></li>
+        </ul>
       </nav>
-      <a class="btn btn--red btn--block menu__cta" href="{{ home }}#offerte">Offerte aanvragen {{ icon('arrow') }}</a>
+      <a class="btn btn--red btn--block menu__cta" href="{{ url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
       <div class="menu__contact">
         <a href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a>
         <a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a>
@@ -103,6 +188,16 @@
   </div>
 
   <main id="main">
+    {% if page.breadcrumbs %}
+    <nav class="crumbs wrap" aria-label="Kruimelpad">
+      <ol>
+        <li><a href="{{ home }}">Home</a></li>
+        {% for label, href in page.breadcrumbs %}
+        <li>{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
+        {% endfor %}
+      </ol>
+    </nav>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 
@@ -113,7 +208,16 @@
           <img src="{{ url_for('static', filename='img/brand/bebo-logo.svg') }}" width="186" height="64" alt="BEBO Betonboren & Zagen" loading="lazy">
         </a>
         <p>Boren, zagen, frezen en gericht slopen in beton en steen. Gevestigd in Berkel en Rodenrijs.</p>
-        <a class="btn btn--red" href="{{ home }}#offerte">Offerte aanvragen {{ icon('arrow') }}</a>
+        <a class="btn btn--red" href="{{ url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
+      </div>
+
+      <div class="footer__col">
+        <h2 class="footer__h">Werkzaamheden</h2>
+        <ul>
+          {% for s in services %}
+          <li><a href="{{ url_for('dienst', slug=s.id) }}">{{ s.title }}</a></li>
+          {% endfor %}
+        </ul>
       </div>
 
       <div class="footer__col">
@@ -129,17 +233,9 @@
       </div>
 
       <div class="footer__col">
-        <h2 class="footer__h">Werkzaamheden</h2>
-        <ul>
-          {% for s in services %}
-          <li><a href="{{ home }}#dienst-{{ s.id }}">{{ s.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <div class="footer__col">
-        <h2 class="footer__h">Werkgebied</h2>
+        <h2 class="footer__h"><a href="{{ url_for('werkgebied') }}">Werkgebied</a></h2>
         <p>Berkel en Rodenrijs, Rotterdam, Lansingerland, Pijnacker, Delft, Den Haag en Zoetermeer.</p>
+        <a href="{{ url_for('werkgebied') }}">Bekijk de kaart</a>
       </div>
     </div>
 
@@ -156,10 +252,10 @@
   <nav class="mbar" aria-label="Snel contact">
     <a class="mbar__btn" href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>Bel direct</span></a>
     <a class="mbar__btn" href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a>
-    <a class="mbar__btn mbar__btn--primary" href="{{ home }}#offerte" data-mbar="offerte">{{ icon('quote') }}<span>Offerte</span></a>
+    <a class="mbar__btn mbar__btn--primary{% if nav == 'offerte' %} is-current{% endif %}" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>{{ icon('quote') }}<span>Offerte</span></a>
   </nav>
 
-  <script src="{{ static_v('js/main.js') }}" defer></script>
+  <script src="{{ static_v('js/main.js') }}" defer data-map-js="{{ static_v('bundle/map.js') }}" data-map-css="{{ static_v('bundle/map.css') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
