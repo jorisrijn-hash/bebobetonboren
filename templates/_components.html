@@ -1,35 +1,46 @@
 {#
   BEBO - herbruikbare componenten (Jinja-macro's)
   -----------------------------------------------
-  media()                     echte foto óf ProjectMediaPlaceholder
-  project_media_placeholder() neutrale, merkeigen placeholder voor projectbeeld
+  media()                     echte foto óf MediaPlaceholderBlock
+  media_placeholder_block()   contentslot: label + beschrijving + placeholder-afbeelding
   client_logo_placeholder()   placeholder voor een opdrachtgever-logo
   review_placeholder()        placeholder voor een klantreview
   case_field()                één regel projectdata (toont "Wordt aangeleverd" bij None)
 #}
 
-{# ProjectMediaPlaceholder
-   CLIENT ASSET REQUIRED
-   Content: BEBO-projectfoto (echt werk, geen stock)
-   Vervangen: zet "src" + "alt" in content.py; deze macro rendert dan een <img>. #}
-{% macro project_media_placeholder(ratio="16:10", title="Projectbeeld", code="BEBO / MEDIA", min_width=None, orientation=None) -%}
-<div class="ph" style="--ratio: {{ ratio|replace(':', ' / ') }}" aria-hidden="true">
-  <span class="ph__crop ph__crop--tl"></span><span class="ph__crop ph__crop--tr"></span>
-  <span class="ph__crop ph__crop--bl"></span><span class="ph__crop ph__crop--br"></span>
-  <span class="ph__axis ph__axis--h"></span><span class="ph__axis ph__axis--v"></span>
-  <div class="ph__meta">
-    <span class="ph__code">{{ code }}</span>
-    <span class="ph__title">{{ title }}</span>
-    <span class="ph__spec">{{ ratio }}{% if orientation %} · {{ orientation }}{% endif %}{% if min_width %} · min. {{ min_width }} px{% endif %}</span>
-    <span class="ph__status"><i></i>Wordt aangeleverd</span>
+{# MediaPlaceholderBlock
+   CLIENT ASSET REQUIRED - vaste contentslot zolang er geen klantfoto is.
+   Opbouw:  [ LABEL · code · ratio ]
+            [ korte beschrijving van wat hier hoort ]
+            [ wireframe-vlak met placeholder-afbeelding ]
+   - title: label boven het beeld (bijv. "Projectbeeld")
+   - desc:  één zin: welke foto hier komt
+   - ratio: beeldverhouding van het vlak ("16:9", "4:5", ...); de afbeelding
+            zelf wordt nooit vervormd (object-fit: contain, gecentreerd)
+   - code:  optioneel technisch label (bijv. "WERK / 001")
+   - img:   placeholder-afbeelding (standaard img/placeholder/media-placeholder.svg)
+   Vervangen: zet "src" + "alt" in content.py; media() rendert dan de echte foto. #}
+{% macro media_placeholder_block(ratio="16:10", title="Projectbeeld", desc="Hier komt een projectfoto van werk in uitvoering of het eindresultaat.", code=None, img="img/placeholder/media-placeholder.svg", tone="light") -%}
+<figure class="mph mph--{{ tone }}">
+  <figcaption class="mph__head">
+    <span class="mph__label"><i aria-hidden="true"></i>{{ title }}{% if code %}<span class="mph__code">{{ code }}</span>{% endif %}<span class="mph__ratio">{{ ratio }}</span></span>
+    <span class="mph__desc">{{ desc }}</span>
+  </figcaption>
+  <div class="mph__frame" style="--ratio: {{ ratio|replace(':', ' / ') }}">
+    <span class="mph__crop mph__crop--tl" aria-hidden="true"></span><span class="mph__crop mph__crop--tr" aria-hidden="true"></span>
+    <span class="mph__crop mph__crop--bl" aria-hidden="true"></span><span class="mph__crop mph__crop--br" aria-hidden="true"></span>
+    <span class="mph__lines" aria-hidden="true"><i></i><i></i><i></i></span>
+    <img class="mph__img" src="{{ url_for('static', filename=img) }}" alt="" width="680" height="520" loading="lazy" decoding="async">
+    <span class="mph__status" aria-hidden="true">Beeld wordt aangeleverd</span>
   </div>
-</div>
+</figure>
 {%- endmacro %}
 
-{# Echte foto (als src gezet is) of placeholder.
+{# Echte foto (als src gezet is) of MediaPlaceholderBlock.
    item: dict met src, alt, position (object-position), optioneel width/height.
-   eager=True alleen voor het grootste beeld boven de vouw (LCP). #}
-{% macro media(item, ratio="16:10", title="Projectbeeld", code="BEBO / MEDIA", sizes="100vw", eager=False) -%}
+   eager=True alleen voor het grootste beeld boven de vouw (LCP).
+   Echte foto's krijgen een wireframe-laadstaat tot het beeld geladen is. #}
+{% macro media(item, ratio="16:10", title="Projectbeeld", desc="Hier komt een projectfoto van werk in uitvoering of het eindresultaat.", code=None, sizes="100vw", eager=False, tone="light") -%}
 {% if item and item.src %}
 <div class="media" style="--ratio: {{ ratio|replace(':', ' / ') }}">
   <img src="{{ url_for('static', filename=item.src) }}"
@@ -40,7 +51,7 @@
        {% if eager %}fetchpriority="high"{% else %}loading="lazy" decoding="async"{% endif %}>
 </div>
 {% else %}
-{{ project_media_placeholder(ratio=ratio, title=title, code=code, min_width=item.min_width if item else None, orientation=item.orientation if item else None) }}
+{{ media_placeholder_block(ratio=ratio, title=(item.placeholder_title if item and item.placeholder_title else title), desc=(item.placeholder_desc if item and item.placeholder_desc else desc), code=code, tone=tone) }}
 {% endif %}
 {%- endmacro %}
 
@@ -203,10 +214,7 @@
       {# CLIENT ASSET REQUIRED
          Content: BEBO op de bouwplaats (ploeg/machine in actie, liefst met zichtbare water- of stofafzuiging)
          Oriëntatie: liggend · Ratio: 4:3 · Minimale breedte: 2000px #}
-      {{ media(none, ratio="4:3", title="Werkplaats / ploeg", code="BEBO / SITE") }}
-      <div class="why__pins" aria-hidden="true">
-        {% for w in why %}<span class="why__pin why__pin--{{ loop.index }}">{{ w.index }}</span>{% endfor %}
-      </div>
+      {{ media(none, ratio="4:3", title="Ploeg / werkplek", desc="Hier komt een foto van de BEBO-ploeg of machine op de bouwplaats, liefst met zichtbare water- of stofafzuiging.", code="BEBO / SITE", tone="dark") }}
     </div>
     {% endif %}
     <div class="why__body">

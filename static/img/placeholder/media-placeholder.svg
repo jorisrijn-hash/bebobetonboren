@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 110 680 520" width="680" height="520" role="img" aria-label="Afbeelding volgt">
+  <!-- Placeholder-afbeelding voor mediaslots zonder klantfoto.
+       Vervang dit bestand door het originele asset als dat beschikbaar is
+       (zelfde pad); alle slots gebruiken het automatisch. -->
+  <defs>
+    <clipPath id="inner">
+      <rect x="75" y="155" width="590" height="428" rx="66"/>
+    </clipPath>
+  </defs>
+  <rect x="75" y="155" width="590" height="428" rx="66" fill="#FFFFFF"/>
+  <circle cx="332" cy="281" r="65" fill="#C4C4C4"/>
+  <path clip-path="url(#inner)" fill="#505050"
+        d="M62 548 L176 426 C204 396 250 390 286 414 L318 440 C338 456 360 458 378 440 L446 368 C480 334 520 336 552 366 L690 496 L690 600 L62 600 Z"/>
+  <rect x="60" y="140" width="620" height="458" rx="80" fill="none" stroke="#CFCFCF" stroke-width="30"/>
+</svg>

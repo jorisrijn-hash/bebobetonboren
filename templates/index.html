@@ -23,7 +23,7 @@
          Content: sterkste BEBO-projectfoto (bijv. kernboring of wandzaag in actie)
          Oriëntatie: staand/vierkant · Wordt schermhoog uitgesneden · Minimale breedte: 2000px
          Vervangen: media({"src": "img/werk/...jpg", "alt": "...", "position": "50% 40%"}, ratio="4:5", eager=True) #}
-      {{ media(none, ratio="4:5", title="Hero / projectbeeld", code="BEBO / 000", eager=True) }}
+      {{ media(none, ratio="4:5", title="Projectbeeld", desc="Hier komt een foto van uitgevoerd betonboorwerk, zaagwerk of een doorbraak.", code="BEBO / 000", eager=True) }}
       <figure class="bore" aria-hidden="true">
         <svg viewBox="0 0 220 220" class="bore__svg">
           <circle class="bore__ring" cx="110" cy="110" r="78"/>
@@ -73,7 +73,7 @@
     {# CLIENT ASSET REQUIRED - project {{ p.id }}: zie content.PROJECTS #}
     {% if p.layout == 'lead' %}
     <figure class="work__item work__item--lead">
-      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, title="Projectbeeld", code="WERK / " ~ p.id, sizes="75vw") }}</div>
+      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, code="WERK / " ~ p.id, sizes="75vw") }}</div>
       <figcaption class="work__info reveal">
         <span class="work__id">Werk / {{ p.id }}</span>
         {{ project_meta(p) }}
@@ -83,7 +83,7 @@
     </figure>
     {% else %}
     <figure class="work__item work__item--{{ p.layout }}">
-      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, title="Projectbeeld", code="WERK / " ~ p.id, sizes="(min-width: 1000px) 60vw, 100vw") }}</div>
+      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, code="WERK / " ~ p.id, sizes="(min-width: 1000px) 60vw, 100vw") }}</div>
       <figcaption class="work__meta">
         <span class="work__id">Werk / {{ p.id }}</span>
         {{ project_meta(p) }}
@@ -145,12 +145,12 @@
   {% for c in case_list %}
   <article class="case wrap">
     <div class="case__media">
-      <div class="case__primary reveal-mask">{{ media(c.image, ratio="16:10", title="Hoofdbeeld project", code="PROJECT / " ~ c.id) }}</div>
-      <div class="case__detail reveal-mask" data-delay="1">{{ media(c.detail_image, ratio="1:1", title="Detailbeeld", code="DETAIL / " ~ c.id) }}</div>
+      <div class="case__primary reveal-mask">{{ media(c.image, ratio="16:10", title="Projectbeeld", desc="Hier komt het hoofdbeeld van dit project: werk in uitvoering of het eindresultaat.", code="PROJECT / " ~ c.id) }}</div>
+      <div class="case__detail reveal-mask" data-delay="1">{{ media(c.detail_image, ratio="1:1", title="Detailfoto", desc="Hier komt een detailbeeld van het resultaat of de uitvoering.", code="DETAIL / " ~ c.id) }}</div>
       {% if c.before_image or c.after_image or not cases %}
       <div class="case__ba">
-        <div class="reveal-mask">{{ media(c.before_image, ratio="4:3", title="Voor", code="VOOR / " ~ c.id) }}</div>
-        <div class="reveal-mask" data-delay="1">{{ media(c.after_image, ratio="4:3", title="Na", code="NA / " ~ c.id) }}</div>
+        <div class="reveal-mask">{{ media(c.before_image, ratio="4:3", title="Voor", desc="Hier komt een foto van de situatie vóór de werkzaamheden.", code="VOOR / " ~ c.id) }}</div>
+        <div class="reveal-mask" data-delay="1">{{ media(c.after_image, ratio="4:3", title="Na", desc="Hier komt een foto van het eindresultaat.", code="NA / " ~ c.id) }}</div>
       </div>
       {% endif %}
     </div>

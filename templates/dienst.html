@@ -24,7 +24,7 @@
       {# CLIENT ASSET REQUIRED
          Content: BEBO-foto van {{ s.title|lower }} in uitvoering
          Zet content.SERVICES[{{ s.id }}].media.src; bestandsnaam bijv. bebo-{{ s.id }}-project.jpg #}
-      {{ media(s.media, ratio=("21:9" if s.layout == 'c' else "4:5"), title=s.title ~ " / hoofdbeeld", code="SERVICE / " ~ s.index, eager=True) }}
+      {{ media(s.media, ratio=("21:9" if s.layout == 'c' else "4:5"), title="Werkzaamheid beeld", desc="Hier komt een relevante foto van " ~ s.title|lower ~ " in uitvoering.", code="SERVICE / " ~ s.index, eager=True) }}
     </div>
   </header>
 
@@ -57,13 +57,12 @@
   <section class="sp-work" aria-label="Werk in beeld: {{ s.title|lower }}">
     <div class="sp-work__grid">
       <figure class="sp-work__a reveal-mask">
-        {{ media(none, ratio="16:10", title=s.title ~ " / werk in uitvoering", code="WERK / " ~ s.index ~ "A") }}
+        {{ media(none, ratio="16:10", title="Locatie / project", desc="Hier komt een projectfoto van " ~ s.title|lower ~ ": werk in uitvoering of het eindresultaat.", code="WERK / " ~ s.index ~ "A") }}
       </figure>
       <figure class="sp-work__b reveal-mask" data-delay="1">
-        {{ media(s.detail_media, ratio="4:5", title=s.title ~ " / detail", code="WERK / " ~ s.index ~ "B") }}
+        {{ media(s.detail_media, ratio="4:5", title="Detailfoto", desc="Hier komt een detailbeeld van het resultaat of de uitvoering.", code="WERK / " ~ s.index ~ "B") }}
       </figure>
     </div>
-    <p class="sp-work__cap wrap"><span>Werk / {{ s.title }}</span><span>Projectbeelden worden aangeleverd</span></p>
   </section>
 
   {# 04 · WAAROM BEBO (compact) #}

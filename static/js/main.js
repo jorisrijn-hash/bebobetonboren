@@ -126,6 +126,13 @@
     els.forEach(function (el) { obs.observe(el); });
   });
 
+  /* Echte foto's: wireframe-achtergrond tot het beeld geladen is */
+  document.querySelectorAll('.media img').forEach(function (img) {
+    var done = function () { img.classList.add('is-loaded'); };
+    if (img.complete && img.naturalWidth) done();
+    else { img.addEventListener('load', done); img.addEventListener('error', done); }
+  });
+
   /* ---------------------------------------------------------------------
      2. Reveals
      --------------------------------------------------------------------- */

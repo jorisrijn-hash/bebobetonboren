@@ -317,28 +317,37 @@ PROCESS = [
 # layout: "lead" (70% beeld + info), "pair-wide"/"pair-narrow" (ongelijk paar),
 # "full" (schermbreed panorama). Ratio's zijn afgestemd op elkaar; wijzig ze samen.
 # service: id uit SERVICES; linkt het project naar die dienstpagina.
+# placeholder_title / placeholder_desc: tekst boven de placeholder zolang src leeg is.
 # position: object-position, zodat machines/sparingen niet wegvallen bij crop.
 PROJECTS = [
     {
-        "id": "001", "layout": "lead", "ratio": "16:9", "min_width": 2400,
+        "id": "001", "layout": "lead",
+        "placeholder_title": "Projectbeeld",
+        "placeholder_desc": "Hier komt een foto van uitgevoerd betonboorwerk, zaagwerk of een doorbraak.", "ratio": "16:9", "min_width": 2400,
         "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
         "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "002", "layout": "pair-wide", "ratio": "16:10", "min_width": 1800,
+        "id": "002", "layout": "pair-wide",
+        "placeholder_title": "Locatie / project",
+        "placeholder_desc": "Hier komt een projectfoto van werk in uitvoering of het eindresultaat.", "ratio": "16:10", "min_width": 1800,
         "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
         "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "003", "layout": "pair-narrow", "ratio": "8:7", "min_width": 1400,
+        "id": "003", "layout": "pair-narrow",
+        "placeholder_title": "Detailfoto",
+        "placeholder_desc": "Hier komt een detailbeeld van het resultaat of de uitvoering.", "ratio": "8:7", "min_width": 1400,
         "orientation": "liggend",
         "src": None, "alt": "", "position": "50% 50%",
         "type": None, "location": None, "detail": None, "service": None,
     },
     {
-        "id": "004", "layout": "full", "ratio": "21:9", "min_width": 2800,
+        "id": "004", "layout": "full",
+        "placeholder_title": "Projectbeeld panorama",
+        "placeholder_desc": "Hier komt een brede foto van een werklocatie, zoals een doorbraak of een volledig ingezaagde vloer.", "ratio": "21:9", "min_width": 2800,
         "orientation": "panorama",
         "src": None, "alt": "", "position": "50% 50%",
         "type": None, "location": None, "detail": None, "service": None,

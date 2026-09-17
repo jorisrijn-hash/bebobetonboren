@@ -46,6 +46,15 @@ vectoren in de stijlguide; niet hertekenen of aanpassen.
   automatisch.
 - **Logo's / reviews:** `CLIENT_LOGOS`, `REVIEWS`, `REVIEW_RATING`. Alleen echte content.
 
+## Mediaslots zonder foto (MediaPlaceholderBlock)
+Elk beeldvlak zonder klantfoto toont `media_placeholder_block()` uit `templates/_components.html`:
+label + korte beschrijving van welke foto er hoort, daarboven een wireframe-vlak met
+`static/img/placeholder/media-placeholder.svg` (nooit vervormd, `object-fit: contain`).
+- Andere placeholder-afbeelding? Vervang dat bestand (zelfde pad) of geef `img=` mee.
+- Teksten per slot: in de `media(...)`-aanroepen, of `placeholder_title` / `placeholder_desc`
+  in `content.PROJECTS`.
+- Zodra `src` gevuld is, verschijnt de echte foto (met wireframe-laadstaat tot hij geladen is).
+
 ## Placeholder-secties
 Projectcase, opdrachtgevers en reviews zijn verborgen tot er echte content is. Voor review:
 `SHOW_PLACEHOLDERS=1`, `?placeholders=1` achter de URL, of lokaal in debug.

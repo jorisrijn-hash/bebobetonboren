@@ -10,7 +10,7 @@
     {% for s in services %}
     <article class="svc svc--{{ loop.index }}" id="{{ s.id }}" aria-labelledby="svc-{{ s.id }}">
       <a class="svc__media reveal-mask" href="{{ url_for('dienst', slug=s.id) }}" tabindex="-1" aria-hidden="true">
-        {{ media(s.media, ratio=s.media.ratio, title=s.title, code="SERVICE / " ~ s.index, sizes="(min-width: 1000px) 60vw, 100vw") }}
+        {{ media(s.media, ratio=s.media.ratio, title="Werkzaamheid beeld", desc="Hier komt een relevante foto van " ~ s.title|lower ~ ".", code="SERVICE / " ~ s.index, sizes="(min-width: 1000px) 60vw, 100vw") }}
       </a>
       <div class="svc__body">
         <p class="svc__id reveal">{{ s.index }} / {{ s.title }}</p>
