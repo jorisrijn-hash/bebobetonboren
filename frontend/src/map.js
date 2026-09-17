@@ -2,7 +2,7 @@
    - Leaflet (open source, geen API-sleutel)
    - Ondergrond: BRT-Achtergrondkaart grijs van PDOK/Kadaster (officiële
      Nederlandse topografie, open data, CC BY 4.0)
-   - Alleen bevestigde plaatsen; geen verzonnen werkgebied-grens.
+   - Alleen bevestigde plaatsen als markers; geen lijnen of werkgebied-grens.
    Wordt door static/js/main.js lazy geladen zodra een kaart in beeld komt. */
 
 import L from 'leaflet';
@@ -48,14 +48,6 @@ function initMap(el) {
   const hq = data.hq;
   const hqLatLng = L.latLng(hq.lat, hq.lon);
   const markers = {};
-
-  // Verbindingslijnen BEBO-basis → plaatsen (indicatief, geen grens).
-  data.places.forEach((p) => {
-    if (p.base) return;
-    L.polyline([hqLatLng, [p.lat, p.lon]], {
-      color: '#D2051E', weight: 1.25, opacity: 0.55, dashArray: '4 6', interactive: false
-    }).addTo(map);
-  });
 
   data.places.forEach((p) => {
     const icon = L.divIcon({

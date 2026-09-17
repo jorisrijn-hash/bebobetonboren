@@ -6,8 +6,8 @@
 }
 .bebo-map .leaflet-tile-pane { filter: saturate(0) contrast(1.02); }
 
-/* Plaatsen */
-.bebo-pin { position: relative; }
+/* Plaatsen. Let op: geen position op .bebo-pin/.bebo-hq zelf; Leaflet positioneert
+   de icon-elementen absoluut op de exacte coördinaat. */
 .bebo-pin__dot {
   position: absolute; left: 1px; top: 1px;
   width: 10px; height: 10px;
@@ -26,7 +26,6 @@
 .bebo-pin--town-base .bebo-pin__label { top: 16px; left: -6px; }
 
 /* BEBO-basis */
-.bebo-hq { position: relative; }
 .bebo-hq__ring {
   position: absolute; inset: 0;
   border: 2px solid #D2051E; border-radius: 50%;
