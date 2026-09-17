@@ -330,19 +330,3 @@
 {% endif %}
 {%- endmacro %}
 
-{# Schermbrede typografische strip (React Bits ScrollVelocity).
-   Server rendert een statische versie; die blijft staan bij reduced motion. #}
-{% macro velocity_strip(rows, label) -%}
-<section class="velo" aria-label="{{ label }}">
-  <p class="visually-hidden">{{ label }}</p>
-  <div class="velo__mount" data-velocity="{{ rows|tojson|forceescape }}" aria-hidden="true">
-    <section>
-      {% for row in rows %}
-      <div class="parallax velo__row"><div class="scroller velo__scroller">
-        {% for _ in range(4) %}<span class="velo__text">{{ row }}&nbsp;</span>{% endfor %}
-      </div></div>
-      {% endfor %}
-    </section>
-  </div>
-</section>
-{%- endmacro %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_components.html" import media, client_logo_placeholder, review_placeholder, case_field, icon, why_block, area_map, cta_band, velocity_strip %}
+{% from "_components.html" import media, client_logo_placeholder, review_placeholder, case_field, icon, why_block, area_map, cta_band %}
 
 {% block content %}
 
@@ -94,12 +94,6 @@
     {% endfor %}
   </div>
 </section>
-
-{# Scroll Velocity: de sterke typografische overgang tussen werk en werkzaamheden #}
-{{ velocity_strip([
-  "Betonboren • Wandzagen • Vloerzagen • Sleuven & frezen • Precisiesloop • Ankers & verlijmen •",
-  "Boren • Zagen • Frezen • Slopen • Verankeren •"
-], "Boren, zagen, frezen, slopen en verankeren") }}
 
 {# ======================================================================
    03 · WERKZAAMHEDEN - index met links naar de dienstpagina's
@@ -221,7 +215,6 @@
   {{ area_map(work_areas, hq, map_data, variant="compact") }}
 </section>
 
-{# Laatste CTA · Shape Blur als ingetogen achtergrond #}
-{{ cta_band(company, variant="blur", cid="cta-end") }}
+{# De footer-CTA ("Offerte aanvragen") is het afsluitende moment van de pagina. #}
 
 {% endblock %}

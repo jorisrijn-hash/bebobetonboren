@@ -104,13 +104,11 @@
   }
 
   /* React Bits-effecten per sectie, lazy en alleen waar passend:
-     - Scroll Velocity: niet bij reduced motion (statische strip blijft staan)
      - Spotlight Card: alleen muis/trackpad (op touch is de kaart al compleet)
      - Shape Blur: alleen desktop met muis, geen reduced motion */
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var wide = window.matchMedia('(min-width: 1101px)').matches;
   [
-    { sel: '[data-velocity]', attr: 'data-velocity-js', ok: !reduceMotion, margin: '300px 0px' },
     { sel: '[data-spotlight]', attr: 'data-spotlight-js', ok: fine && !reduceMotion, margin: '300px 0px' },
     { sel: '[data-shape-blur]', attr: 'data-shapeblur-js', ok: fine && wide && !reduceMotion, margin: '200px 0px' }
   ].forEach(function (island) {

@@ -92,7 +92,7 @@
   <!-- React Bits-eilanden. Alleen laden waar ze nodig zijn:
        - CardNav: desktop (vanaf 1101px)
        - TargetCursor: muis/trackpad en geen reduced motion (touch downloadt niets)
-       Scroll Velocity, Spotlight Card en Shape Blur laadt main.js per sectie. -->
+       Spotlight Card en Shape Blur laadt main.js per sectie. -->
   <script>
     (function () {
       var mm = function (q) { return window.matchMedia(q).matches; };
@@ -116,7 +116,7 @@
     })();
   </script>
 </head>
-<body class="page-{{ page.nav or 'other' }}">
+<body class="page-{{ page.nav or 'other' }}" id="top">
   <a class="skip" href="#main">Naar de inhoud</a>
 
   {% set home = url_for('index') %}
@@ -215,51 +215,74 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer__top">
-      <div class="footer__brand">
-        <a href="{{ home }}" class="footer__logo">
-          <img src="{{ url_for('static', filename='img/brand/bebo-logo.svg') }}" width="186" height="64" alt="BEBO Betonboren & Zagen" loading="lazy">
+  {# ------------------------------------------------------------------
+     FOOTER - BEBO-bewerking van de React Bits Pro "Footer 3"-structuur:
+     schermbrede CTA, beschrijving, linkkolommen, bedrijfsgegevens, onderstrook.
+     Puur HTML/CSS (geen extra JS); rood vervangt de gele demo-hover.
+     ------------------------------------------------------------------ #}
+  <footer class="ft" aria-label="Footer">
+    <div class="ft__meta ft__pad" aria-hidden="true">
+      <span><i class="ft__tick"></i>BEBO / Offerte</span>
+      <span>LOC / {{ company.city }} · {{ hq_geo.coords }}</span>
+    </div>
+
+    <a class="ft__cta" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>
+      <span class="ft__cta-fill" aria-hidden="true"></span>
+      <span class="ft__cta-text"><span class="ft__cta-word">Offerte</span> <span class="ft__cta-word">aanvragen</span></span>
+      <svg class="ft__cta-arrow" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36L36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="3.5"/></svg>
+    </a>
+
+    <div class="ft__grid ft__pad">
+      <div class="ft__intro">
+        <a href="{{ home }}" class="ft__logo">
+          <img src="{{ logo_src }}" width="220" height="76" alt="BEBO Betonboren & Zagen – naar de homepage" loading="lazy">
         </a>
-        <p>Boren, zagen, frezen en gericht slopen in beton en steen. Gevestigd in Berkel en Rodenrijs.</p>
-        <a class="btn btn--red" href="{{ url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
+        <p class="ft__desc">Boren, zagen, frezen en gericht slopen in beton en steen. Schoon werk, een strak resultaat en een ploeg die nakomt wat is afgesproken.</p>
       </div>
 
-      <div class="footer__col">
-        <h2 class="footer__h">Werkzaamheden</h2>
-        <ul>
+      <nav class="ft__col" aria-labelledby="ft-h-diensten">
+        <h2 class="ft__h" id="ft-h-diensten"><span>01</span>Werkzaamheden</h2>
+        <ul class="ft__links">
           {% for s in services %}
-          <li><a href="{{ url_for('dienst', slug=s.id) }}">{{ s.title }}</a></li>
+          {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
+          <li><a href="{{ url_for('dienst', slug=s.id) }}"{% if here %} aria-current="page"{% endif %}>{{ s.title }}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
           {% endfor %}
         </ul>
-      </div>
+      </nav>
 
-      <div class="footer__col">
-        <h2 class="footer__h">Contact</h2>
-        <address>
-          <strong>{{ company.name }}</strong><br>
+      <nav class="ft__col" aria-labelledby="ft-h-bebo">
+        <h2 class="ft__h" id="ft-h-bebo"><span>02</span>BEBO</h2>
+        <ul class="ft__links">
+          <li><a href="{{ url_for('werkzaamheden') }}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page"{% endif %}>Werkzaamheden<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
+          <li><a href="{{ home }}#waarom">Waarom BEBO<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
+          <li><a href="{{ url_for('werkgebied') }}"{% if nav == 'werkgebied' %} aria-current="page"{% endif %}>Werkgebied<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
+          <li><a href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>Offerte<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
+        </ul>
+      </nav>
+
+      <div class="ft__col ft__contact">
+        <h2 class="ft__h"><span>03</span>Contact</h2>
+        <ul class="ft__links ft__links--contact">
+          <li><a href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a></li>
+          <li><a href="mailto:{{ company.email }}">{{ icon('mail') }}<span>{{ company.email }}</span></a></li>
+          <li><a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a></li>
+        </ul>
+        <address class="ft__company">
+          <strong>{{ company.name }}</strong>
           <a href="{{ company.maps_url }}" target="_blank" rel="noopener">{{ company.street }}<br>{{ company.postal_code }} {{ company.city }}</a>
+          <span class="ft__kvk">KvK / {{ company.kvk }}</span>
         </address>
-        <a href="tel:{{ company.phone_tel }}">{{ company.phone }}</a>
-        <a href="mailto:{{ company.email }}">{{ company.email }}</a>
-        <a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
-        <p class="footer__kvk">KvK {{ company.kvk }}</p>
-      </div>
-
-      <div class="footer__col">
-        <h2 class="footer__h"><a href="{{ url_for('werkgebied') }}">Werkgebied</a></h2>
-        <p>Berkel en Rodenrijs, Rotterdam, Lansingerland, Pijnacker, Delft, Den Haag en Zoetermeer.</p>
-        <a href="{{ url_for('werkgebied') }}">Bekijk de kaart</a>
       </div>
     </div>
 
-    <div class="wrap"><div class="footer__bottom">
+    <div class="ft__bottom ft__pad">
       <span>© {{ current_year }} {{ company.name }} · KvK {{ company.kvk }}</span>
       <a class="ident" href="https://jorisvrrwebdev.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Website gemaakt door jorisvrr">
         <span class="ident__name">website: jorisvrr</span>
         <img class="ident__cur" src="{{ url_for('static', filename='img/jorisvrr-cursor.png') }}" alt="" width="17" height="24" loading="lazy">
       </a>
-    </div></div>
+      <a class="ft__totop" href="#top">Terug naar boven <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+    </div>
   </footer>
 
   <!-- Mobiele contactbalk -->
@@ -271,7 +294,6 @@
 
   <script src="{{ static_v('js/main.js') }}" defer
           data-map-js="{{ static_v('bundle/map.js') }}" data-map-css="{{ static_v('bundle/map.css') }}"
-          data-velocity-js="{{ static_v('bundle/velocity.js') }}"
           data-spotlight-js="{{ static_v('bundle/spotlight.js') }}"
           data-shapeblur-js="{{ static_v('bundle/shapeblur.js') }}"></script>
   {% block scripts %}{% endblock %}

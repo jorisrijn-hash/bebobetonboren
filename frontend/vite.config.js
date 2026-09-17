@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react';
 // - cursor.js: React Bits TargetCursor (alleen desktop met muis)
 // - map.js:    Leaflet-kaart (alleen op pagina's met een kaart, lazy)
 // - nav.js:    React Bits CardNav (desktopnavigatie)
-// - spotlight.js / velocity.js / shapeblur.js: React Bits-effecten, lazy per sectie
+// - spotlight.js / shapeblur.js: React Bits-effecten, lazy per sectie
 export default defineConfig({
   plugins: [react()],
   base: '/static/bundle/',
@@ -20,7 +20,6 @@ export default defineConfig({
         map: 'src/map.js',
         nav: 'src/nav.jsx',
         spotlight: 'src/spotlight.jsx',
-        velocity: 'src/velocity.jsx',
         shapeblur: 'src/shapeblur.jsx'
       },
       output: {

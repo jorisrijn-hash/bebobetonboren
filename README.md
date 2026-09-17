@@ -46,6 +46,11 @@ vectoren in de stijlguide; niet hertekenen of aanpassen.
   automatisch.
 - **Logo's / reviews:** `CLIENT_LOGOS`, `REVIEWS`, `REVIEW_RATING`. Alleen echte content.
 
+## Footer
+BEBO-bewerking van de React Bits Pro *Footer 3*-structuur (schermbrede CTA, beschrijving,
+linkkolommen, bedrijfsgegevens, onderstrook) in `templates/base.html`; puur HTML/CSS.
+Nog geen privacyverklaring: voeg een link toe in `.ft__bottom` zodra die pagina bestaat.
+
 ## Mediaslots zonder foto (MediaPlaceholderBlock)
 Elk beeldvlak zonder klantfoto toont `media_placeholder_block()` uit `templates/_components.html`:
 label + korte beschrijving van welke foto er hoort, daarboven een wireframe-vlak met
@@ -92,9 +97,8 @@ Elke bundel laadt alleen waar hij nodig is:
 |---|---|---|---|
 | `nav.js` | React Bits **CardNav** | alle pagina's | desktop ≥1101px (server rendert identieke markup vooraf) |
 | `cursor.js` | React Bits **TargetCursor** | alle pagina's | muis/trackpad, geen reduced motion |
-| `velocity.js` | React Bits **ScrollVelocity** | home, tussen Ons werk en Werkzaamheden | in beeld, geen reduced motion; pauzeert buiten beeld |
 | `spotlight.js` | React Bits **SpotlightCard** | CTA-kaarten (home, werkzaamheden, dienstpagina's, werkgebied) | muis/trackpad; op touch blijft de statische kaart |
-| `shapeblur.js` | React Bits **ShapeBlur** (three.js) | alleen laatste CTA op home | desktop met muis, geen reduced motion; pauzeert buiten beeld |
+| `shapeblur.js` | React Bits **ShapeBlur** (three.js) | nu nergens geplaatst (`cta_band(..., variant="blur")`) | desktop met muis, geen reduced motion; pauzeert buiten beeld |
 | `map.js` | Leaflet + PDOK BRT-Achtergrondkaart | home, /werkgebied | zodra de kaart in beeld komt |
 
 De originele React Bits-bestanden staan in `frontend/src/components/`; aanpassingen zijn
