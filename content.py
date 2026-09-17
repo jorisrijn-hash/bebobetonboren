@@ -220,15 +220,16 @@ for _s in SERVICES:
 
 # ---------------------------------------------------------------------------
 # Werkgebied (bevestigd): alleen deze plaatsen.
-# Coördinaten: PDOK Locatieserver (Kadaster), woonplaats-centroïden;
+# Coördinaten plaatsen: PDOK Locatieserver (Kadaster), woonplaats-centroïden;
+# vestiging (HQ): handmatig gecorrigeerd;
 # Lansingerland = gemeente-centroïde. Geen afstanden, reistijden of grenzen.
 # ---------------------------------------------------------------------------
 HQ = {
     "name": "BEBO / basis",
     "street": COMPANY["street"],
     "postal": "{} {}".format(COMPANY["postal_code"], COMPANY["city"]),
-    "lat": 51.98169851,
-    "lon": 4.45390567,
+    "lat": 51.981799,   # gecorrigeerde vestigingscoördinaten (handmatig aangeleverd)
+    "lon": 4.453937,
     "route_url": COMPANY["maps_url"],
 }
 WORK_AREAS = [
