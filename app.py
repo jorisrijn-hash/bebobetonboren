@@ -141,12 +141,25 @@ def show_placeholders() -> bool:
     return app.debug or VERCEL_ENV in ("preview", "development")
 
 
+_STATIC_HASHES = {}
+
+
 def static_v(filename: str) -> str:
-    """url_for('static') met ?v=<mtime> zodat CSS/JS-updates niet in de cache blijven hangen."""
+    """url_for('static') met ?v=<inhoudshash>. Een hash i.p.v. mtime: op Vercel
+    hebben alle bestanden dezelfde mtime, waardoor browsers oude CSS/JS bleven
+    gebruiken. De hash verandert alleen als de inhoud verandert."""
+    import hashlib
+
+    path = STATIC_DIR / filename
     try:
-        version = int((STATIC_DIR / filename).stat().st_mtime)
+        stat = path.stat()
     except OSError:
-        version = 0
+        return url_for("static", filename=filename)
+    key = (filename, stat.st_mtime_ns, stat.st_size)
+    version = _STATIC_HASHES.get(key)
+    if version is None:
+        version = hashlib.sha1(path.read_bytes()).hexdigest()[:10]
+        _STATIC_HASHES[key] = version
     return url_for("static", filename=filename, v=version)
 
 
