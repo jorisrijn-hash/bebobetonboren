@@ -1261,12 +1261,25 @@ html:not(.js) .upload__drop { display: none; }
   font-size: .8rem; color: var(--on-dark-muted);
 }
 .ft__bottom > span { font-variant-numeric: tabular-nums; }
-.ident { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; opacity: .8; transition: opacity .3s; }
+/* Maker-credit: standaard alleen het logo. Bij hover/focus klapt de naam open;
+   omdat de credit aan de rechterkant verankerd staat, schuift het logo naar
+   links en verschijnt "jorisvrr" op zijn plek. */
+.ident {
+  display: inline-flex; align-items: center; justify-content: flex-end;
+  text-decoration: none; opacity: .75; transition: opacity .3s var(--ease);
+}
 .ident:hover, .ident:focus-visible { opacity: 1; }
-.ident__cur { height: 20px; width: auto; }
+.ident__cur { height: 24px; width: 24px; flex: none; }
+.ident__name {
+  display: inline-block; overflow: hidden; white-space: nowrap;
+  max-width: 0; margin-left: 0; opacity: 0;
+  font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+  transition: max-width .4s var(--ease-out), margin-left .4s var(--ease-out), opacity .25s var(--ease);
+}
+.ident:hover .ident__name, .ident:focus-visible .ident__name { max-width: 6.5rem; margin-left: .5rem; opacity: 1; }
 .ft .ident { color: var(--on-dark-muted); margin-left: auto; min-height: 44px; }
-.ft .ident:hover { color: var(--on-dark); }
-.ft .ident__cur { filter: grayscale(1) brightness(1.6); }
+.ft .ident:hover, .ft .ident:focus-visible { color: var(--on-dark); }
+.ft .ident__cur { filter: invert(1); }
 .ft__totop {
   display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 .9rem;
   border: 1px solid var(--line-dark);
@@ -1298,6 +1311,7 @@ html:not(.js) .upload__drop { display: none; }
   .ft__links a { min-height: 44px; }
   .ft__bottom { flex-direction: column; align-items: flex-start; }
   .ft .ident { margin-left: 0; }
+  .ft .ident__name { transition: none; }
   .ft__totop { order: -1; }
 }
 @media (prefers-reduced-motion: reduce) {
