@@ -270,21 +270,71 @@
 <script type="application/json" id="map-data">{{ map_data|tojson }}</script>
 {%- endmacro %}
 
-{# Offerte-CTA (alle pagina's behalve /offerte) #}
-{% macro cta_band(company, service=None, title="Klus in beton of steen?") -%}
-<section class="cta-band" aria-labelledby="cta-title">
+{# Offerte-CTA.
+   variant="spotlight": donkere kaart met React Bits SpotlightCard (muis/trackpad).
+     De server rendert de volledige kaart; op touch of zonder JS is hij compleet.
+   variant="blur": schermbrede donkere band met React Bits ShapeBlur als
+     ingetogen achtergrond (alleen de laatste CTA op home). #}
+{% macro cta_band(company, service=None, title="Klus in beton of steen?", text="Vertel wat er moet gebeuren. Met een paar foto's kunnen we de klus vaak sneller inschatten.", variant="spotlight", label="Offerte", primary=None, secondary=None, cid="cta") -%}
+{% set primary = primary or {"label": "Offerte aanvragen", "href": url_for('offerte_page', dienst=service.id) if service else url_for('offerte_page')} %}
+{% if variant == "blur" %}
+<section class="cta-band cta-band--blur" aria-labelledby="{{ cid }}-title">
+  <div class="cta-band__fx" data-shape-blur aria-hidden="true"></div>
   <div class="wrap cta-band__grid">
     <div>
-      <p class="label label--dark"><span class="label__tick" aria-hidden="true"></span>Offerte</p>
-      <h2 id="cta-title" class="h2 cta-band__title">{{ title }}</h2>
+      <p class="label label--dark"><span class="label__tick" aria-hidden="true"></span>{{ label }}</p>
+      <h2 id="{{ cid }}-title" class="h2 cta-band__title">{{ title }}</h2>
     </div>
     <div class="cta-band__body">
-      <p>Vertel wat er moet gebeuren. Met een paar foto's kunnen we de klus vaak sneller inschatten.</p>
+      <p>{{ text }}</p>
       <div class="cta-band__actions">
-        <a class="btn btn--red btn--lg" href="{{ url_for('offerte_page', dienst=service.id) if service else url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
+        <a class="btn btn--red btn--lg" href="{{ primary.href }}">{{ primary.label }} {{ icon('arrow') }}</a>
         <a class="btn btn--line btn--lg" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>
       </div>
     </div>
+  </div>
+</section>
+{% else %}
+<section class="section cta-spot" aria-labelledby="{{ cid }}-title">
+  <div class="wrap">
+    <div class="spot-mount" data-spotlight="rgba(210, 5, 30, 0.22)">
+      <div class="card-spotlight bebo-spot">
+        <div class="bebo-spot__grid">
+          <div class="bebo-spot__head">
+            <p class="bebo-spot__label"><span class="label__tick" aria-hidden="true"></span>{{ label }}</p>
+            <h2 id="{{ cid }}-title" class="bebo-spot__title">{{ title }}</h2>
+          </div>
+          <div class="bebo-spot__body">
+            <p>{{ text }}</p>
+            <div class="bebo-spot__actions">
+              <a class="bebo-spot__cta" href="{{ primary.href }}">{{ primary.label }} {{ icon('arrow') }}</a>
+              {% if secondary %}<a class="bebo-spot__alt" href="{{ secondary.href }}">{{ secondary.label }}</a>
+              {% else %}<a class="bebo-spot__alt" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>{% endif %}
+            </div>
+          </div>
+        </div>
+        <span class="bebo-spot__corner bebo-spot__corner--tl" aria-hidden="true"></span>
+        <span class="bebo-spot__corner bebo-spot__corner--br" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{# Schermbrede typografische strip (React Bits ScrollVelocity).
+   Server rendert een statische versie; die blijft staan bij reduced motion. #}
+{% macro velocity_strip(rows, label) -%}
+<section class="velo" aria-label="{{ label }}">
+  <p class="visually-hidden">{{ label }}</p>
+  <div class="velo__mount" data-velocity="{{ rows|tojson|forceescape }}" aria-hidden="true">
+    <section>
+      {% for row in rows %}
+      <div class="parallax velo__row"><div class="scroller velo__scroller">
+        {% for _ in range(4) %}<span class="velo__text">{{ row }}&nbsp;</span>{% endfor %}
+      </div></div>
+      {% endfor %}
+    </section>
   </div>
 </section>
 {%- endmacro %}

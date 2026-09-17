@@ -89,21 +89,30 @@
   {% endif %}
   {% block head %}{% endblock %}
 
-  <!-- React Bits TargetCursor (BEBO-richtkruis): alleen muis/trackpad, geen reduced motion.
-       Touch-apparaten downloaden de bundel niet. -->
+  <!-- React Bits-eilanden. Alleen laden waar ze nodig zijn:
+       - CardNav: desktop (vanaf 1101px)
+       - TargetCursor: muis/trackpad en geen reduced motion (touch downloadt niets)
+       Scroll Velocity, Spotlight Card en Shape Blur laadt main.js per sectie. -->
   <script>
     (function () {
-      var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!fine || reduced) return;
-      var load = function () {
-        var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = {{ static_v('bundle/cursor.css')|tojson }};
-        document.head.appendChild(l);
-        var s = document.createElement('script'); s.type = 'module'; s.src = {{ static_v('bundle/cursor.js')|tojson }};
+      var mm = function (q) { return window.matchMedia(q).matches; };
+      var addModule = function (src) {
+        if (document.querySelector('script[data-island="' + src + '"]')) return;
+        var s = document.createElement('script'); s.type = 'module'; s.src = src; s.setAttribute('data-island', src);
         document.head.appendChild(s);
       };
-      if ('requestIdleCallback' in window) window.addEventListener('load', function () { requestIdleCallback(load, { timeout: 1500 }); });
-      else window.addEventListener('load', load);
+      var navSrc = {{ static_v('bundle/nav.js')|tojson }};
+      if (mm('(min-width: 1101px)')) addModule(navSrc);
+      else window.matchMedia('(min-width: 1101px)').addEventListener('change', function (e) { if (e.matches) addModule(navSrc); });
+
+      if (!mm('(hover: hover) and (pointer: fine)') || mm('(prefers-reduced-motion: reduce)')) return;
+      var loadCursor = function () {
+        var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = {{ static_v('bundle/cursor.css')|tojson }};
+        document.head.appendChild(l);
+        addModule({{ static_v('bundle/cursor.js')|tojson }});
+      };
+      if ('requestIdleCallback' in window) window.addEventListener('load', function () { requestIdleCallback(loadCursor, { timeout: 1500 }); });
+      else window.addEventListener('load', loadCursor);
     })();
   </script>
 </head>
@@ -113,47 +122,63 @@
   {% set home = url_for('index') %}
   {% set nav = page.nav %}
 
+  {% set cards = nav_cards() %}
+  {% set on_offerte = nav == 'offerte' %}
+  {% set logo_src = url_for('static', filename='img/brand/bebo-logo.svg') %}
+
+  {# ------------------------------------------------------------------
+     DESKTOP: React Bits CardNav. De server rendert exact de markup van de
+     component (gesloten staat), zodat mounten niets laat verspringen.
+     ------------------------------------------------------------------ #}
+  <div class="cardnav-host" id="card-nav-root">
+    <div class="card-nav-container">
+      <nav class="card-nav" aria-label="Hoofdmenu">
+        <div class="card-nav-top">
+          <a class="logo-container" href="{{ home }}"><img src="{{ logo_src }}" alt="BEBO Betonboren & Zagen – naar de homepage" class="logo" width="128" height="44"></a>
+          <div class="card-nav-actions">
+            <a class="card-nav-phone" href="tel:{{ company.phone_tel }}"><span class="card-nav-phone-dot" aria-hidden="true"></span>{{ company.phone }}</a>
+            <button type="button" class="hamburger-menu" aria-label="Menu openen" aria-expanded="false" aria-controls="card-nav-content">
+              <span class="hamburger-lines" aria-hidden="true"><span class="hamburger-line"></span><span class="hamburger-line"></span></span>
+              <span class="hamburger-text" aria-hidden="true">Menu</span>
+            </button>
+            <a class="card-nav-cta-button{% if on_offerte %} is-current{% endif %}" href="{{ url_for('offerte_page') }}"{% if on_offerte %} aria-current="page"{% endif %}>Offerte</a>
+          </div>
+        </div>
+        <div class="card-nav-content" id="card-nav-content" aria-hidden="true">
+          {% for card in cards %}
+          <div class="nav-card nav-card--{{ card.tone }}">
+            <div class="nav-card-label"><span class="nav-card-num">{{ '%02d'|format(loop.index) }}</span>{{ card.label }}</div>
+            <ul class="nav-card-links">
+              {% for l in card.links %}
+              <li><a class="nav-card-link{% if l.current %} is-current{% endif %}" href="{{ l.href }}" tabindex="-1"{% if l.current %} aria-current="page"{% endif %}{% if l.external %} target="_blank" rel="noopener"{% endif %}>{% if l.index %}<span class="nav-card-link-n">{{ l.index }}</span>{% endif %}<span class="nav-card-link-t">{{ l.label }}</span><svg class="nav-card-link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg></a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        </div>
+      </nav>
+    </div>
+  </div>
+  <script type="application/json" id="card-nav-data">{{ {
+    "logo": logo_src,
+    "logoAlt": "BEBO Betonboren & Zagen – naar de homepage",
+    "homeHref": home,
+    "items": cards,
+    "phone": {"label": company.phone, "href": "tel:" ~ company.phone_tel},
+    "cta": {"label": "Offerte", "href": url_for('offerte_page'), "current": on_offerte}
+  }|tojson }}</script>
+
+  {# ------------------------------------------------------------------
+     MOBIEL / TABLET: compacte balk + menu in dezelfde kaartentaal
+     ------------------------------------------------------------------ #}
   <header class="nav" id="nav">
     <div class="wrap nav__bar">
       <a href="{{ home }}" class="nav__logo"{% if nav == 'home' %} aria-current="page"{% endif %}>
-        <img src="{{ url_for('static', filename='img/brand/bebo-logo.svg') }}" width="128" height="44" alt="BEBO Betonboren & Zagen – naar de homepage">
+        <img src="{{ logo_src }}" width="128" height="44" alt="BEBO Betonboren & Zagen – naar de homepage">
       </a>
-
-      <nav class="nav__links" aria-label="Hoofdmenu">
-        <ul>
-          <li class="nav__item nav__item--drop">
-            <a href="{{ url_for('werkzaamheden') }}" class="nav__link{% if nav == 'werkzaamheden' %} is-active{% endif %}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page"{% endif %}>Werkzaamheden</a>
-            <button class="nav__drop-btn" type="button" aria-expanded="false" aria-controls="drop-diensten">
-              <span class="visually-hidden">Toon alle werkzaamheden</span>
-              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            </button>
-            <div class="drop" id="drop-diensten" hidden>
-              <ul class="drop__list">
-                {% for s in services %}
-                {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
-                <li>
-                  <a href="{{ url_for('dienst', slug=s.id) }}" class="drop__link{% if here %} is-active{% endif %}"{% if here %} aria-current="page"{% endif %}>
-                    <span class="drop__n">{{ s.index }}</span>
-                    <span class="drop__t">{{ s.title }}</span>
-                    <span class="drop__s">{{ s.spec }}</span>
-                  </a>
-                </li>
-                {% endfor %}
-              </ul>
-              <a class="drop__all" href="{{ url_for('werkzaamheden') }}">Alle werkzaamheden {{ icon('arrow') }}</a>
-            </div>
-          </li>
-          <li class="nav__item"><a href="{{ url_for('werkgebied') }}" class="nav__link{% if nav == 'werkgebied' %} is-active{% endif %}"{% if nav == 'werkgebied' %} aria-current="page"{% endif %}>Werkgebied</a></li>
-          <li class="nav__item"><a href="{{ home }}#waarom" class="nav__link">Waarom BEBO</a></li>
-          <li class="nav__item"><a href="{{ url_for('offerte_page') }}#contact" class="nav__link{% if nav == 'offerte' %} is-active{% endif %}">Contact</a></li>
-        </ul>
-      </nav>
-
       <div class="nav__cta">
-        <a class="nav__phone" href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a>
-        <a class="btn btn--red btn--sm" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>Offerte</a>
+        <a class="btn btn--red btn--sm" href="{{ url_for('offerte_page') }}"{% if on_offerte %} aria-current="page"{% endif %}>Offerte</a>
       </div>
-
       <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu openen">
         <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
         <span class="burger__txt" aria-hidden="true">Menu</span>
@@ -162,29 +187,18 @@
   </header>
 
   <div class="menu" id="menu" hidden>
-    <div class="menu__inner wrap">
-      <nav aria-label="Mobiel menu">
-        <p class="menu__label">Werkzaamheden</p>
-        <ul class="menu__services">
-          {% for s in services %}
-          {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
-          <li><a href="{{ url_for('dienst', slug=s.id) }}"{% if here %} aria-current="page" class="is-active"{% endif %}><span class="menu__n">{{ s.index }}</span>{{ s.title }}</a></li>
+    <nav class="menu__inner wrap" aria-label="Mobiel menu">
+      {% for card in cards %}
+      <div class="nav-card nav-card--{{ card.tone }} menu__card">
+        <div class="nav-card-label"><span class="nav-card-num">{{ '%02d'|format(loop.index) }}</span>{{ card.label }}</div>
+        <ul class="nav-card-links">
+          {% for l in card.links %}
+          <li><a class="nav-card-link{% if l.current %} is-current{% endif %}" href="{{ l.href }}"{% if l.current %} aria-current="page"{% endif %}{% if l.external %} target="_blank" rel="noopener"{% endif %}>{% if l.index %}<span class="nav-card-link-n">{{ l.index }}</span>{% endif %}<span class="nav-card-link-t">{{ l.label }}</span><svg class="nav-card-link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg></a></li>
           {% endfor %}
         </ul>
-        <ul class="menu__list">
-          <li><a href="{{ url_for('werkzaamheden') }}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page" class="is-active"{% endif %}>Alle werkzaamheden</a></li>
-          <li><a href="{{ url_for('werkgebied') }}"{% if nav == 'werkgebied' %} aria-current="page" class="is-active"{% endif %}>Werkgebied</a></li>
-          <li><a href="{{ home }}#waarom">Waarom BEBO</a></li>
-          <li><a href="{{ url_for('offerte_page') }}#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <a class="btn btn--red btn--block menu__cta" href="{{ url_for('offerte_page') }}">Offerte aanvragen {{ icon('arrow') }}</a>
-      <div class="menu__contact">
-        <a href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a>
-        <a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a>
-        <a href="mailto:{{ company.email }}">{{ icon('mail') }}<span>{{ company.email }}</span></a>
       </div>
-    </div>
+      {% endfor %}
+    </nav>
   </div>
 
   <main id="main">
@@ -255,7 +269,11 @@
     <a class="mbar__btn mbar__btn--primary{% if nav == 'offerte' %} is-current{% endif %}" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>{{ icon('quote') }}<span>Offerte</span></a>
   </nav>
 
-  <script src="{{ static_v('js/main.js') }}" defer data-map-js="{{ static_v('bundle/map.js') }}" data-map-css="{{ static_v('bundle/map.css') }}"></script>
+  <script src="{{ static_v('js/main.js') }}" defer
+          data-map-js="{{ static_v('bundle/map.js') }}" data-map-css="{{ static_v('bundle/map.css') }}"
+          data-velocity-js="{{ static_v('bundle/velocity.js') }}"
+          data-spotlight-js="{{ static_v('bundle/spotlight.js') }}"
+          data-shapeblur-js="{{ static_v('bundle/shapeblur.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

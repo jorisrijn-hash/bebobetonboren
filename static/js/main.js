@@ -72,41 +72,14 @@
       if (e.shiftKey && (i <= 0)) { e.preventDefault(); items[items.length - 1].focus(); }
       else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
     });
-    window.matchMedia('(min-width: 1101px)').addEventListener('change', function (mq) {
+    window.matchMedia('(min-width: 1101px)').addEventListener('change', function (mq) { /* desktop gebruikt CardNav */
       if (mq.matches && burger.getAttribute('aria-expanded') === 'true') closeMenu(false);
     });
   }
 
-  /* Dropdown "Werkzaamheden" (desktop): klik, hover met muis, Esc */
-  var dropItem = document.querySelector('.nav__item--drop');
-  if (dropItem) {
-    var dropBtn = dropItem.querySelector('.nav__drop-btn');
-    var drop = dropItem.querySelector('.drop');
-    var closeTimer = null;
-    var setDrop = function (open) {
-      clearTimeout(closeTimer);
-      dropBtn.setAttribute('aria-expanded', String(open));
-      drop.hidden = !open;
-      dropItem.classList.toggle('is-open', open);
-    };
-    dropBtn.addEventListener('click', function () {
-      setDrop(dropBtn.getAttribute('aria-expanded') !== 'true');
-      if (!drop.hidden) { var first = drop.querySelector('a'); if (first) first.focus(); }
-    });
-    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      dropItem.addEventListener('mouseenter', function () { setDrop(true); });
-      dropItem.addEventListener('mouseleave', function () { closeTimer = setTimeout(function () { setDrop(false); }, 160); });
-    }
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !drop.hidden) { setDrop(false); dropBtn.focus(); }
-    });
-    document.addEventListener('click', function (e) { if (!dropItem.contains(e.target)) setDrop(false); });
-    dropItem.addEventListener('focusout', function (e) { if (!dropItem.contains(e.relatedTarget)) setDrop(false); });
-  }
-
   /* Kaart (Leaflet + PDOK) pas laden als hij bijna in beeld is */
-  var mapEls = document.querySelectorAll('[data-bebo-map]');
   var mainScript = document.querySelector('script[data-map-js]');
+  var mapEls = document.querySelectorAll('[data-bebo-map]');
   if (mapEls.length && mainScript) {
     var mapLoaded = false;
     var loadMap = function () {
@@ -129,6 +102,29 @@
       loadMap();
     }
   }
+
+  /* React Bits-effecten per sectie, lazy en alleen waar passend:
+     - Scroll Velocity: niet bij reduced motion (statische strip blijft staan)
+     - Spotlight Card: alleen muis/trackpad (op touch is de kaart al compleet)
+     - Shape Blur: alleen desktop met muis, geen reduced motion */
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var wide = window.matchMedia('(min-width: 1101px)').matches;
+  [
+    { sel: '[data-velocity]', attr: 'data-velocity-js', ok: !reduceMotion, margin: '300px 0px' },
+    { sel: '[data-spotlight]', attr: 'data-spotlight-js', ok: fine && !reduceMotion, margin: '300px 0px' },
+    { sel: '[data-shape-blur]', attr: 'data-shapeblur-js', ok: fine && wide && !reduceMotion, margin: '200px 0px' }
+  ].forEach(function (island) {
+    var els = document.querySelectorAll(island.sel);
+    if (!els.length || !island.ok || !mainScript) return;
+    var src = mainScript.getAttribute(island.attr);
+    var done = false;
+    var load = function () { if (done) return; done = true; import(src).catch(function () {}); };
+    if (!('IntersectionObserver' in window)) { load(); return; }
+    var obs = new IntersectionObserver(function (entries) {
+      if (entries.some(function (en) { return en.isIntersecting; })) { obs.disconnect(); load(); }
+    }, { rootMargin: island.margin });
+    els.forEach(function (el) { obs.observe(el); });
+  });
 
   /* ---------------------------------------------------------------------
      2. Reveals

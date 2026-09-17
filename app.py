@@ -1,7 +1,7 @@
 """
 BEBO Betonboren & Zagen - Flask website
 ----------------------------------------
-Een lead-genererende one-page site met een offerte-aanvraag als kern.
+Een lead-genererende multi-page site met een offerte-aanvraag als kern.
 Alle inhoud staat in content.py.
 
 Deployment
@@ -150,6 +150,34 @@ def static_v(filename: str) -> str:
     return url_for("static", filename=filename, v=version)
 
 
+def nav_cards():
+    """Kaarten voor de React Bits CardNav (desktop) en het mobiele menu.
+    Eén bron, echte routes, actieve pagina gemarkeerd."""
+    ep = request.endpoint
+    slug = (request.view_args or {}).get("slug")
+    services = [
+        {"index": s["index"], "label": s["title"], "href": url_for("dienst", slug=s["id"]),
+         "current": ep == "dienst" and slug == s["id"]}
+        for s in content.SERVICES
+    ]
+    company_links = [
+        {"label": "Alle werkzaamheden", "href": url_for("werkzaamheden"), "current": ep == "werkzaamheden"},
+        {"label": "Waarom BEBO", "href": url_for("index") + "#waarom", "current": False},
+        {"label": "Werkgebied", "href": url_for("werkgebied"), "current": ep == "werkgebied"},
+        {"label": "Contact", "href": url_for("offerte_page") + "#contact", "current": False},
+    ]
+    actions = [
+        {"label": "Offerte aanvragen", "href": url_for("offerte_page"), "current": ep == "offerte_page"},
+        {"label": "Bel direct", "href": "tel:" + content.COMPANY["phone_tel"], "current": False},
+        {"label": "WhatsApp", "href": content.COMPANY["whatsapp_url"], "current": False, "external": True},
+    ]
+    return [
+        {"label": "Werkzaamheden", "tone": "red", "links": services},
+        {"label": "Bedrijf", "tone": "dark", "links": company_links},
+        {"label": "Actie", "tone": "concrete", "links": actions},
+    ]
+
+
 @app.context_processor
 def inject_globals():
     return {
@@ -161,6 +189,7 @@ def inject_globals():
         "all_work_areas": content.WORK_AREAS,
         "static_v": static_v,
         "current_year": datetime.date.today().year,
+        "nav_cards": nav_cards,
     }
 
 

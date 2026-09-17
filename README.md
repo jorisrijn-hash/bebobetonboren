@@ -1,7 +1,7 @@
 # BEBO Betonboren & Zagen – website
 
 Multi-page site met offerte-aanvraag (incl. foto's). Flask + Jinja, vanilla JS, één CSS-bestand,
-plus twee kleine Vite-bundels (React Bits TargetCursor en de Leaflet-kaart).
+plus losse Vite-bundels voor React Bits-componenten en de Leaflet-kaart.
 
 ## Pagina's
 `/` · `/werkzaamheden` · `/werkzaamheden/<dienst>` (6) · `/werkgebied` · `/offerte` · `/bedankt`
@@ -73,10 +73,22 @@ Projectcase, opdrachtgevers en reviews zijn verborgen tot er echte content is. V
 - **Vercel:** Flask-runtime. Requestlimiet ±4,5 MB; de upload is daarom client-side
   beperkt tot 4 MB totaal.
 
-## Frontend-bundels herbouwen
+## Frontend-bundels (React Bits + kaart)
 ```bash
-cd frontend && npm install && npm run build   # → static/bundle/
+cd frontend && npm install && npm run build   # → static/bundle/ (gecommit)
 ```
-- `cursor.js`: React Bits TargetCursor, alleen geladen bij muis/trackpad en zonder reduced motion.
-- `map.js`: Leaflet + PDOK BRT-Achtergrondkaart (grijs), lazy geladen zodra de kaart in beeld komt.
-  Coördinaten (PDOK Locatieserver) staan in `content.HQ` en `content.WORK_AREAS`.
+Elke bundel laadt alleen waar hij nodig is:
+
+| Bundel | Component | Waar | Wanneer |
+|---|---|---|---|
+| `nav.js` | React Bits **CardNav** | alle pagina's | desktop ≥1101px (server rendert identieke markup vooraf) |
+| `cursor.js` | React Bits **TargetCursor** | alle pagina's | muis/trackpad, geen reduced motion |
+| `velocity.js` | React Bits **ScrollVelocity** | home, tussen Ons werk en Werkzaamheden | in beeld, geen reduced motion; pauzeert buiten beeld |
+| `spotlight.js` | React Bits **SpotlightCard** | CTA-kaarten (home, werkzaamheden, dienstpagina's, werkgebied) | muis/trackpad; op touch blijft de statische kaart |
+| `shapeblur.js` | React Bits **ShapeBlur** (three.js) | alleen laatste CTA op home | desktop met muis, geen reduced motion; pauzeert buiten beeld |
+| `map.js` | Leaflet + PDOK BRT-Achtergrondkaart | home, /werkgebied | zodra de kaart in beeld komt |
+
+De originele React Bits-bestanden staan in `frontend/src/components/`; aanpassingen zijn
+in de bestanden gemarkeerd (BEBO). Styling van de componenten staat in `static/css/style.css`,
+zodat de server-gerenderde versie er vóór het laden al hetzelfde uitziet.
+Coördinaten (PDOK Locatieserver) staan in `content.HQ` en `content.WORK_AREAS`.

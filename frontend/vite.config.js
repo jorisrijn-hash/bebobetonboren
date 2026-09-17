@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Flask serveert de output onder /static/bundle/. Twee losse entries, zodat
+// Flask serveert de output onder /static/bundle/. Losse entries, zodat
 // pagina's alleen laden wat ze nodig hebben:
 // - cursor.js: React Bits TargetCursor (alleen desktop met muis)
 // - map.js:    Leaflet-kaart (alleen op pagina's met een kaart, lazy)
+// - nav.js:    React Bits CardNav (desktopnavigatie)
+// - spotlight.js / velocity.js / shapeblur.js: React Bits-effecten, lazy per sectie
 export default defineConfig({
   plugins: [react()],
   base: '/static/bundle/',
@@ -13,7 +15,14 @@ export default defineConfig({
     emptyOutDir: true,
     cssCodeSplit: true,
     rollupOptions: {
-      input: { cursor: 'src/cursor.jsx', map: 'src/map.js' },
+      input: {
+        cursor: 'src/cursor.jsx',
+        map: 'src/map.js',
+        nav: 'src/nav.jsx',
+        spotlight: 'src/spotlight.jsx',
+        velocity: 'src/velocity.jsx',
+        shapeblur: 'src/shapeblur.jsx'
+      },
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: 'chunk-[name]-[hash].js',

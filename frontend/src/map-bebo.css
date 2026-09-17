@@ -21,7 +21,9 @@
   background: rgba(61, 56, 51, .92); color: #F4F4F2;
   font-size: 13px; font-weight: 600; letter-spacing: .02em; line-height: 18px;
 }
-/* Alleen de BEBO-vestiging is rood; de woonplaats zelf krijgt dezelfde stijl als de rest. */
+/* Alleen de BEBO-vestiging is rood; de woonplaats krijgt dezelfde stijl, label onder de stip
+   zodat het niet botst met Lansingerland/Pijnacker. */
+.bebo-pin--town-base .bebo-pin__label { top: 16px; left: -6px; }
 
 /* BEBO-basis */
 .bebo-hq { position: relative; }
