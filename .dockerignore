@@ -4,5 +4,7 @@ __pycache__/
 .git/
 .env
 data/leads.jsonl
+data/intake.jsonl
+data/uploads/
 .DS_Store
 node_modules/

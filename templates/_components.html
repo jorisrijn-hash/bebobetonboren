@@ -1,0 +1,85 @@
+{#
+  BEBO - herbruikbare componenten (Jinja-macro's)
+  -----------------------------------------------
+  media()                     echte foto óf ProjectMediaPlaceholder
+  project_media_placeholder() neutrale, merkeigen placeholder voor projectbeeld
+  client_logo_placeholder()   placeholder voor een opdrachtgever-logo
+  review_placeholder()        placeholder voor een klantreview
+  case_field()                één regel projectdata (toont "Wordt aangeleverd" bij None)
+#}
+
+{# ProjectMediaPlaceholder
+   CLIENT ASSET REQUIRED
+   Content: BEBO-projectfoto (echt werk, geen stock)
+   Vervangen: zet "src" + "alt" in content.py; deze macro rendert dan een <img>. #}
+{% macro project_media_placeholder(ratio="16:10", title="Projectbeeld", code="BEBO / MEDIA", min_width=None, orientation=None) -%}
+<div class="ph" style="--ratio: {{ ratio|replace(':', ' / ') }}" aria-hidden="true">
+  <span class="ph__crop ph__crop--tl"></span><span class="ph__crop ph__crop--tr"></span>
+  <span class="ph__crop ph__crop--bl"></span><span class="ph__crop ph__crop--br"></span>
+  <span class="ph__axis ph__axis--h"></span><span class="ph__axis ph__axis--v"></span>
+  <div class="ph__meta">
+    <span class="ph__code">{{ code }}</span>
+    <span class="ph__title">{{ title }}</span>
+    <span class="ph__spec">{{ ratio }}{% if orientation %} · {{ orientation }}{% endif %}{% if min_width %} · min. {{ min_width }} px{% endif %}</span>
+    <span class="ph__status"><i></i>Wordt aangeleverd</span>
+  </div>
+</div>
+{%- endmacro %}
+
+{# Echte foto (als src gezet is) of placeholder.
+   item: dict met src, alt, position (object-position), optioneel width/height.
+   eager=True alleen voor het grootste beeld boven de vouw (LCP). #}
+{% macro media(item, ratio="16:10", title="Projectbeeld", code="BEBO / MEDIA", sizes="100vw", eager=False) -%}
+{% if item and item.src %}
+<div class="media" style="--ratio: {{ ratio|replace(':', ' / ') }}">
+  <img src="{{ url_for('static', filename=item.src) }}"
+       alt="{{ item.alt }}"
+       {% if item.width %}width="{{ item.width }}" height="{{ item.height }}"{% endif %}
+       sizes="{{ sizes }}"
+       style="object-position: {{ item.position or '50% 50%' }}"
+       {% if eager %}fetchpriority="high"{% else %}loading="lazy" decoding="async"{% endif %}>
+</div>
+{% else %}
+{{ project_media_placeholder(ratio=ratio, title=title, code=code, min_width=item.min_width if item else None, orientation=item.orientation if item else None) }}
+{% endif %}
+{%- endmacro %}
+
+{# ClientLogoPlaceholder
+   CLIENT ASSET REQUIRED - logo van een echte opdrachtgever, met toestemming.
+   Formaat: SVG of transparante PNG, liggend. #}
+{% macro client_logo_placeholder(n) -%}
+<li class="logo-ph" aria-hidden="true">
+  <span class="logo-ph__n">{{ '%02d'|format(n) }}</span>
+  <span class="logo-ph__t">Logo opdrachtgever</span>
+</li>
+{%- endmacro %}
+
+{# ReviewPlaceholder
+   CLIENT ASSET REQUIRED - echte review (Google of schriftelijk, met toestemming).
+   NOOIT een verzonnen quote plaatsen. #}
+{% macro review_placeholder(n) -%}
+<figure class="review review--ph" aria-hidden="true">
+  <span class="review__n">Review / {{ '%02d'|format(n) }}</span>
+  <div class="review__lines"><i></i><i></i><i></i></div>
+  <figcaption>Naam · rol · bron <span>Wordt aangeleverd</span></figcaption>
+</figure>
+{%- endmacro %}
+
+{# ProjectDetailPlaceholder - één dataregel van een projectcase. #}
+{% macro case_field(label, value) -%}
+<div class="case__row">
+  <dt>{{ label }}</dt>
+  {% if value %}<dd>{{ value }}</dd>{% else %}<dd class="is-pending">Wordt aangeleverd</dd>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Iconen (inline, decoratief) #}
+{% macro icon(name) -%}
+{% if name == 'phone' %}<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z" fill="currentColor"/></svg>
+{%- elif name == 'whatsapp' %}<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.16c-.24.68-1.4 1.3-1.94 1.38-.5.07-1.13.1-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.8-4.17-4.94-4.37-.15-.2-1.19-1.58-1.19-3.01s.75-2.13 1.02-2.42c.27-.29.58-.36.78-.36h.56c.18.01.42-.07.66.5.24.59.83 2.02.9 2.17.07.15.12.32.02.51-.09.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.29-.12.57.16.29.73 1.2 1.56 1.94 1.07.95 1.97 1.25 2.26 1.39.28.15.45.12.61-.07.16-.2.7-.82.89-1.1.19-.29.37-.24.62-.14.25.09 1.6.76 1.87.9.27.14.45.21.52.32.07.12.07.69-.17 1.37z"/></svg>
+{%- elif name == 'mail' %}<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3.5 5.5h17v13h-17zM3.8 6l8.2 7 8.2-7"/></svg>
+{%- elif name == 'pin' %}<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3" fill="currentColor"/></svg>
+{%- elif name == 'quote' %}<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M5 3.5h14v17H5zM8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+{%- elif name == 'arrow' %}<svg class="ico ico--arrow" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 12h15M13 6l6 6-6 6"/></svg>
+{%- endif %}
+{%- endmacro %}

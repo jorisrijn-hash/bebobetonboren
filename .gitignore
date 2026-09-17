@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 .env
 data/leads.jsonl
+data/intake.jsonl
+data/uploads/
 venv/
 .DS_Store
 
