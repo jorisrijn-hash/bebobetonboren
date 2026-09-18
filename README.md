@@ -65,6 +65,17 @@ Projectcase, opdrachtgevers en reviews zijn verborgen tot er echte content is. V
 `SHOW_PLACEHOLDERS=1`, `?placeholders=1` achter de URL, of lokaal in debug.
 "Ons werk" toont altijd nette placeholders zolang er geen foto's zijn.
 
+## Blur Highlight (tekstnadruk)
+BEBO-versie van React Bits Pro *Blur Highlight* (zelfde props; de Pro-broncode is niet
+openbaar). Bewust op 6 plekken: hero-intro, Waarom BEBO (01), /werkgebied-intro,
+/offerte stap 03 en de dienstpagina's Betonboren en Precisiesloop.
+- Macro `bh(text, bits)` in `templates/_components.html`; het zinsdeel wordt een `<mark>`.
+- BEBO-standaarden centraal in `static/js/main.js` (`BH_DEFAULTS`); per element te
+  overschrijven met `data-bh-*`.
+- Extra dienst inschakelen: zet `"highlight"` in `content.SERVICE_DETAILS` (letterlijk
+  zinsdeel uit de bestaande tekst).
+- Zonder JS of met reduced motion: meteen scherp, markering in eindstaat.
+
 ## Offerte-wizard (/offerte)
 Vijf stappen: 01 Werk · 02 Details · 03 Foto's · 04 Gegevens · 05 Controle.
 UX-patronen uit React Bits Pro (Forms 7, Wizard 2/4/5), in BEBO-stijl nagebouwd;

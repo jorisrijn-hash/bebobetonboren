@@ -163,6 +163,21 @@ def static_v(filename: str) -> str:
     return url_for("static", filename=filename, v=version)
 
 
+@app.template_filter("bh_mark")
+def bh_mark(text, bits):
+    """Blur Highlight: zet de gemarkeerde zinsdelen als <mark> in de tekst
+    (eerste voorkomen). Server-side, zodat de nadruk ook zonder JS/animatie
+    en voor schermlezers gewoon in de zin staat."""
+    from markupsafe import Markup, escape
+
+    out = str(escape(text))
+    for bit in bits or []:
+        e = str(escape(bit))
+        if e in out:
+            out = out.replace(e, '<mark class="bh__mark">' + e + "</mark>", 1)
+    return Markup(out)
+
+
 def nav_cards():
     """Kaarten voor de React Bits CardNav (desktop) en het mobiele menu.
     Eén bron, echte routes, actieve pagina gemarkeerd."""

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_components.html" import media, icon, diagram, why_block, cta_band %}
+{% from "_components.html" import media, icon, diagram, why_block, cta_band, bh %}
 {% block content %}
 {% set s = service %}
 <article class="sp sp--{{ s.layout }}" aria-labelledby="sp-title">
@@ -14,7 +14,7 @@
         <span class="sp-spec__val">{{ s.spec }}</span>
         <span class="svc__rule" aria-hidden="true"></span>
       </p>
-      <p class="sp-hero__text reveal" data-delay="2">{{ s.text }}</p>
+      {% if s.highlight %}{{ bh(s.text, [s.highlight], cls="sp-hero__text") }}{% else %}<p class="sp-hero__text reveal" data-delay="2">{{ s.text }}</p>{% endif %}
       <div class="hero__actions reveal" data-delay="3">
         <a class="btn btn--red btn--lg" href="{{ url_for('offerte_page', dienst=s.id) }}">Offerte aanvragen {{ icon('arrow') }}</a>
         <a class="btn btn--ghost btn--lg" href="tel:{{ company.phone_tel }}">{{ icon('phone') }} {{ company.phone }}</a>

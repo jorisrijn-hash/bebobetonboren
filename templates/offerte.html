@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_components.html" import icon %}
+{% from "_components.html" import icon, bh %}
 
 {% set steps = [
   ('werk', 'Werk'),
@@ -128,7 +128,7 @@
         <div class="qz-step__head">
           <p class="qz-step__n"><span>03</span> / 05</p>
           <h2 class="qz-step__title" id="qz-t-2" tabindex="-1">Foto's van de situatie</h2>
-          <p class="qz-step__intro">Met een paar foto's kunnen we de klus vaak sneller inschatten. Foto's zijn optioneel.</p>
+          {{ bh("Met een paar foto's kunnen we de klus vaak sneller inschatten. Foto's zijn optioneel.", ["sneller inschatten"], cls="qz-step__intro") }}
         </div>
         <div class="qz-step__body">
           <div class="upload qz-upload" id="upload">

@@ -148,5 +148,67 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
+  /* ---------------------------------------------------------------------
+     Blur Highlight (BEBO-versie van React Bits Pro "Blur Highlight")
+     Zelfde props als het origineel; hier de centrale BEBO-standaarden.
+     Per element te overschrijven met data-bh-<prop> (bijv. data-bh-highlight-delay).
+     Tekst en <mark> komen van de server; de beginstaat staat in CSS (html.js),
+     dit script zet timing en .bh--in zodra het element in beeld komt.
+     --------------------------------------------------------------------- */
+  var BH_DEFAULTS = {
+    blurAmount: 5,          // px   (origineel: 8)
+    inactiveOpacity: 0.55,  //      (origineel: 0.3 - te zwak voor leesbare tekst)
+    blurDelay: 0,           // s
+    blurDuration: 0.7,      // s    (origineel: 0.8)
+    highlightDelay: 0.4,    // s
+    highlightDuration: 0.85,// s    (origineel: 1)
+    highlightDirection: 'left',
+    once: true,             // origineel: false; eenmalig voelt rustiger
+    amount: 0.45            // deel zichtbaar vóór start (origineel 0.5, marge -20%)
+  };
+  var bhEls = document.querySelectorAll('[data-bh]');
+  if (bhEls.length) {
+    var bhOpt = function (el, key) {
+      var attr = 'bh' + key.charAt(0).toUpperCase() + key.slice(1);
+      var v = el.dataset[attr];
+      if (v === undefined) return BH_DEFAULTS[key];
+      if (typeof BH_DEFAULTS[key] === 'number') return parseFloat(v);
+      if (typeof BH_DEFAULTS[key] === 'boolean') return v !== 'false';
+      return v;
+    };
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      // Meteen scherp, markering in eindstaat.
+      bhEls.forEach(function (el) { el.classList.add('bh--static'); });
+    } else {
+      var byAmount = {};
+      bhEls.forEach(function (el) {
+        var st = el.style;
+        st.setProperty('--bh-blur', bhOpt(el, 'blurAmount') + 'px');
+        st.setProperty('--bh-inactive', bhOpt(el, 'inactiveOpacity'));
+        st.setProperty('--bh-blur-delay', bhOpt(el, 'blurDelay') + 's');
+        st.setProperty('--bh-blur-dur', bhOpt(el, 'blurDuration') + 's');
+        st.setProperty('--bh-hl-delay', (bhOpt(el, 'blurDelay') + bhOpt(el, 'highlightDelay')) + 's');
+        st.setProperty('--bh-hl-dur', bhOpt(el, 'highlightDuration') + 's');
+        el.classList.add('bh--dir-' + bhOpt(el, 'highlightDirection'));
+        var amt = bhOpt(el, 'amount');
+        (byAmount[amt] = byAmount[amt] || []).push(el);
+      });
+      Object.keys(byAmount).forEach(function (amt) {
+        var bio = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            var el = e.target;
+            if (e.isIntersecting) {
+              el.classList.add('bh--in');
+              if (bhOpt(el, 'once')) bio.unobserve(el);
+            } else if (!bhOpt(el, 'once')) {
+              el.classList.remove('bh--in');
+            }
+          });
+        }, { threshold: parseFloat(amt), rootMargin: '-20% 0px -20% 0px' });
+        byAmount[amt].forEach(function (el) { bio.observe(el); });
+      });
+    }
+  }
+
   /* 3. Offerteformulier: zie static/js/offerte.js (alleen geladen op /offerte) */
 })();

@@ -99,13 +99,24 @@
    PAGINA-ONDERDELEN (multi-page)
    ====================================================================== #}
 
+{# BeboBlurHighlight - BEBO-versie van React Bits Pro "Blur Highlight".
+   Zelfde props als het origineel, als data-attributen; BEBO-standaarden staan
+   centraal in static/js/main.js (BH_DEFAULTS). Tekst blijft één <p>; het
+   zinsdeel is een <mark>. Zonder JS of bij reduced motion: meteen scherp,
+   markering in eindstaat. Bewust spaarzaam gebruiken (4-6 plekken).
+   Overrides: bijv. attrs=' data-bh-highlight-delay="0.6"'. #}
+{% macro bh(text, bits, tag="p", cls="", attrs="") -%}
+<{{ tag }} class="bh {{ cls }}" data-bh{{ attrs|safe }}>{{ text|bh_mark(bits) }}</{{ tag }}>
+{%- endmacro %}
+
 {# Paginakop voor subpagina's #}
-{% macro page_head(code, title, lede=None, aside=None) -%}
+{% macro page_head(code, title, lede=None, aside=None, lede_highlight=None) -%}
 <header class="page-head wrap">
   <p class="label reveal"><span class="label__tick" aria-hidden="true"></span>{{ code }}</p>
   <div class="page-head__grid">
     <h1 class="h1 page-head__title reveal" data-delay="1">{{ title }}</h1>
-    {% if lede %}<p class="page-head__lede reveal" data-delay="2">{{ lede }}</p>{% endif %}
+    {% if lede and lede_highlight %}{{ bh(lede, [lede_highlight], cls="page-head__lede") }}
+    {% elif lede %}<p class="page-head__lede reveal" data-delay="2">{{ lede }}</p>{% endif %}
   </div>
   {% if aside %}<p class="page-head__aside reveal" data-delay="2">{{ aside }}</p>{% endif %}
 </header>
@@ -228,7 +239,7 @@
           <span class="why__n" aria-hidden="true">{{ w.index }} /</span>
           <div>
             <h{{ heading_level + 1 }} class="why__title">{{ w.title }}</h{{ heading_level + 1 }}>
-            <p>{{ w.text }}</p>
+            {% if w.highlight and not compact %}{{ bh(w.text, [w.highlight]) }}{% else %}<p>{{ w.text }}</p>{% endif %}
           </div>
         </li>
         {% endfor %}

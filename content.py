@@ -150,6 +150,7 @@ FORM_OTHER = {"id": "anders", "title": "Anders / weet ik niet"}
 # ---------------------------------------------------------------------------
 # Detailpagina's per dienst
 # ---------------------------------------------------------------------------
+# highlight: optioneel zinsdeel voor Blur Highlight (bewust maar op 1-2 diensten).
 # applications: letterlijk afgeleid uit de bevestigde omschrijving hierboven.
 #   Geen nieuwe toepassingen of capaciteiten toevoegen zonder bevestiging.
 # diagram: welke schematische tekening de pagina toont (alleen bevestigde maten).
@@ -163,6 +164,8 @@ SERVICE_DETAILS = {
         "applications": ["Sparingen", "Leidingen", "Ventilatie", "Kernen"],
         "facts": [("Methode", "Diamantboren"), ("Diameter", "Ø 12–900 mm"), ("Ook", "stofvrij waar geen water mag")],
         "related": ["wandzagen", "vloerzagen", "ankers-verlijmen"],
+        # Blur Highlight (opt-in per dienst): letterlijk zinsdeel uit "text".
+        "highlight": "waar geen water mag",
         "meta_description": "Betonboren Ø 12–900 mm: diamantboren voor sparingen, leidingen, ventilatie en kernen. BEBO Betonboren & Zagen uit Berkel en Rodenrijs.",
     },
     "wandzagen": {
@@ -199,6 +202,7 @@ SERVICE_DETAILS = {
         "applications_label": "Verwijderen van",
         "applications": ["Vloeren", "Wanden", "Tegelwerk"],
         "steps": ["Loszagen", "Uitbreken", "Puin afvoeren"],
+        "highlight": "voeren het puin af",
         "facts": [("Afvoer", "incl. puinafvoer")],
         "related": ["wandzagen", "vloerzagen", "sleuven-frezen"],
         "meta_description": "Precisiesloop van vloeren, wanden en tegelwerk: we zagen het werk los, breken het uit en voeren het puin af. BEBO Betonboren & Zagen.",
@@ -263,6 +267,7 @@ WHY = [
         "index": "01",
         "title": "Schoon en stofbeperkt",
         "text": "We werken met water- en stofafzuiging, ook in bewoonde situaties.",
+        "highlight": "ook in bewoonde situaties",  # Blur Highlight (alleen volledige Waarom-sectie)
     },
     {
         "index": "02",
