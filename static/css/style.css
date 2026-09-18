@@ -1964,3 +1964,29 @@ html:not(.js) .qz-nav__next, html:not(.js) .qz-nav__back, html:not(.js) .qz-prog
   .js .bh:not(.bh--in):not(.bh--static) { filter: none; opacity: 1; }
   .js .bh:not(.bh--in):not(.bh--static) .bh__mark { color: #fff; background-size: 100% 90%; }
 }
+
+/* ======================================================================== */
+/* KORREL / GRAIN - zeer subtiele textuur (beton × drukwerk)                 */
+/* Eén vaste laag over het scherm, zonder animatie. De SVG-ruis wordt één    */
+/* keer gerasterd en daarna alleen herhaald. Alleen zwarte korrel met lage   */
+/* alfa: kleurt niets, valt weg op donkergrijs, zichtbaar als "diepte" op    */
+/* de lichte vlakken. Uitzetten voor vergelijking: <html class="no-grain">.  */
+/* ======================================================================== */
+:root {
+  --grain-opacity: .04;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.4 0 0 0 -1.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+html::after {
+  content: "";
+  position: fixed; inset: 0;
+  z-index: 20;               /* boven de pagina-inhoud, onder nav/menu/balken/cursor */
+  pointer-events: none;
+  background-image: var(--grain);
+  background-size: 220px 220px;
+  opacity: var(--grain-opacity);
+  transform: translateZ(0);  /* eigen compositielaag: geen repaint bij scrollen */
+}
+html.no-grain::after { display: none; }
+/* Kaart blijft volledig scherp: eigen laag boven de korrel. */
+.amap { position: relative; z-index: 21; }
+@media print { html::after { display: none; } }

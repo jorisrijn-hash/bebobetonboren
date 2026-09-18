@@ -65,6 +65,13 @@ Projectcase, opdrachtgevers en reviews zijn verborgen tot er echte content is. V
 `SHOW_PLACEHOLDERS=1`, `?placeholders=1` achter de URL, of lokaal in debug.
 "Ons werk" toont altijd nette placeholders zolang er geen foto's zijn.
 
+## Korrel / grain
+Zeer subtiele textuur over de hele site: één vaste laag (`html::after` in `style.css`)
+met een inline SVG-ruis (feTurbulence, 220px tegel), één keer gerasterd, niet
+geanimeerd. Alleen zwarte korrel met lage alfa, dus geen kleur en nauwelijks zichtbaar
+op donkergrijs. Sterkte: `--grain-opacity` (nu .04). De kaart ligt erboven en blijft
+scherp. Vergelijken: zet class `no-grain` op `<html>`.
+
 ## Blur Highlight (tekstnadruk)
 BEBO-versie van React Bits Pro *Blur Highlight* (zelfde props; de Pro-broncode is niet
 openbaar). Bewust op 6 plekken: hero-intro, Waarom BEBO (01), /werkgebied-intro,
