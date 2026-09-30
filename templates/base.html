@@ -1,301 +1,145 @@
-{% from "_components.html" import icon %}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script>document.documentElement.classList.add('js');</script>
-  <title>{{ page.title }}</title>
-  <meta name="description" content="{{ page.description }}">
-  {% if noindex %}
-  <meta name="robots" content="noindex, nofollow">
-  {% else %}
-  <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
-  {% endif %}
-  {% set canonical = site_url ~ request.path %}
-  <link rel="canonical" href="{{ canonical }}">
+  <title>{% block title %}BEBO Betonboren & Zagen - boren, zagen & frezen in regio Rotterdam{% endblock %}</title>
+  <meta name="description" content="{% block description %}BEBO Betonboren & Zagen: vakkundig betonboren, wand- en vloerzagen, frezen en precisiesloop in de regio Rotterdam. Schoon, recht en op maat. Vraag vrijblijvend een offerte aan.{% endblock %}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ site_url }}{{ request.path }}">
 
-  <!-- Open Graph / social previews -->
-  <meta property="og:type" content="{{ page.og_type }}">
-  <meta property="og:site_name" content="{{ company.name }}">
+  <!-- Open Graph / sociale media (link-previews op WhatsApp, LinkedIn, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BEBO Betonboren & Zagen">
   <meta property="og:locale" content="nl_NL">
-  <meta property="og:title" content="{{ page.title }}">
-  <meta property="og:description" content="{{ page.description }}">
-  <meta property="og:url" content="{{ canonical }}">
-  <meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="BEBO Betonboren & Zagen – boren, zagen, frezen en gericht slopen in beton en steen">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.description() }}">
+  <meta property="og:url" content="{{ site_url }}{{ request.path }}">
+  <meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='img/og-image.jpg') }}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title }}">
-  <meta name="twitter:description" content="{{ page.description }}">
-  <meta name="twitter:image" content="{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}">
+  <meta name="twitter:title" content="{{ self.title() }}">
+  <meta name="twitter:description" content="{{ self.description() }}">
+  <meta name="twitter:image" content="{{ site_url }}{{ url_for('static', filename='img/og-image.jpg') }}">
 
-  <!-- Favicons: officieel BEBO-merkteken -->
-  <link rel="icon" href="/favicon.ico" sizes="48x48">
-  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/icons/favicon.svg') }}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/icons/favicon-32x32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/icons/favicon-16x16.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/icons/apple-touch-icon.png') }}">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#D2051E">
+  <meta name="theme-color" content="#E9E8E4">
 
-  <!-- Titillium Web (officieel BEBO-lettertype) -->
+  <!-- Favicons (BEBO-merkteken). SVG voor moderne browsers, PNG-fallbacks,
+       apple-touch-icon voor iOS, .ico voor oudere browsers. -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/bebo-mark.svg') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap">
-  <link rel="stylesheet" href="{{ static_v('css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- React Bits-bundel (TargetCursor + Beams). Wordt gegenereerd met
+       `npm run build` in /frontend; ontbreekt-ie, dan werkt de site gewoon door. -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='bundle/reactbits.css') }}">
 
-  <!-- Structured data: bedrijf (alle pagina's) -->
+  <!-- Structured data voor lokale SEO (Google rich results) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "GeneralContractor",
-    "@id": "{{ site_url }}/#bedrijf",
-    "name": {{ company.name|tojson }},
+    "name": "BEBO Betonboren & Zagen",
+    "description": "Vakkundig betonboren, wand- en vloerzagen, frezen en precisiesloop in de regio Rotterdam. Schoon, recht en op maat.",
+    "image": "{{ site_url }}{{ url_for('static', filename='img/og-image.jpg') }}",
     "url": "{{ site_url }}/",
-    "logo": "{{ site_url }}{{ url_for('static', filename='img/brand/bebo-logo.png') }}",
-    "image": "{{ site_url }}{{ url_for('static', filename='img/social/bebo-og.jpg') }}",
-    "telephone": {{ company.phone_intl|tojson }},
-    "email": {{ company.email|tojson }},
+    "telephone": "{{ bedrijf.tel_link }}",
+    "email": "{{ bedrijf.email }}",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": {{ company.street|tojson }},
-      "postalCode": {{ company.postal_code|tojson }},
-      "addressLocality": {{ company.city|tojson }},
+      "streetAddress": "{{ bedrijf.straat }}",
+      "postalCode": "2651 BC",
+      "addressLocality": "Berkel en Rodenrijs",
       "addressCountry": "NL"
     },
-    "geo": {"@type": "GeoCoordinates", "latitude": {{ hq_geo.lat }}, "longitude": {{ hq_geo.lon }}},
-    "identifier": {"@type": "PropertyValue", "propertyID": "KvK", "value": {{ company.kvk|tojson }}},
-    "areaServed": [{% for a in all_work_areas %}{"@type": "City", "name": {{ a.name|tojson }}}{% if not loop.last %}, {% endif %}{% endfor %}],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Werkzaamheden",
-      "itemListElement": [{% for s in services %}{"@type": "Offer", "itemOffered": {"@type": "Service", "name": {{ s.title|tojson }}, "url": "{{ site_url }}{{ url_for('dienst', slug=s.id) }}"}}{% if not loop.last %}, {% endif %}{% endfor %}]
-    }
+    "areaServed": ["Rotterdam", "Berkel en Rodenrijs", "Lansingerland", "Pijnacker", "Zoetermeer", "Delft", "Den Haag"]
   }
   </script>
-  {% if page.breadcrumbs %}
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ site_url }}/"}{% for label, href in page.breadcrumbs %},
-      {"@type": "ListItem", "position": {{ loop.index + 1 }}, "name": {{ label|tojson }}, "item": "{{ site_url }}{{ href or request.path }}"}{% endfor %}
-    ]
-  }
-  </script>
-  {% endif %}
+
   {% block head %}{% endblock %}
-
-  <!-- React Bits-eilanden. Alleen laden waar ze nodig zijn:
-       - CardNav: desktop (vanaf 1101px)
-       - TargetCursor: muis/trackpad en geen reduced motion (touch downloadt niets)
-       Spotlight Card en Shape Blur laadt main.js per sectie. -->
-  <script>
-    (function () {
-      var mm = function (q) { return window.matchMedia(q).matches; };
-      var addModule = function (src) {
-        if (document.querySelector('script[data-island="' + src + '"]')) return;
-        var s = document.createElement('script'); s.type = 'module'; s.src = src; s.setAttribute('data-island', src);
-        document.head.appendChild(s);
-      };
-      var navSrc = {{ static_v('bundle/nav.js')|tojson }};
-      if (mm('(min-width: 1101px)')) addModule(navSrc);
-      else window.matchMedia('(min-width: 1101px)').addEventListener('change', function (e) { if (e.matches) addModule(navSrc); });
-
-      if (!mm('(hover: hover) and (pointer: fine)') || mm('(prefers-reduced-motion: reduce)')) return;
-      var loadCursor = function () {
-        var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = {{ static_v('bundle/cursor.css')|tojson }};
-        document.head.appendChild(l);
-        addModule({{ static_v('bundle/cursor.js')|tojson }});
-      };
-      if ('requestIdleCallback' in window) window.addEventListener('load', function () { requestIdleCallback(loadCursor, { timeout: 1500 }); });
-      else window.addEventListener('load', loadCursor);
-    })();
-  </script>
 </head>
-<body class="page-{{ page.nav or 'other' }}" id="top">
-  <a class="skip" href="#main">Naar de inhoud</a>
+<body>
 
-  {% set home = url_for('index') %}
-  {% set nav = page.nav %}
-
-  {% set cards = nav_cards() %}
-  {% set on_offerte = nav == 'offerte' %}
-  {% set logo_src = url_for('static', filename='img/brand/bebo-logo.svg') %}
-
-  {# ------------------------------------------------------------------
-     DESKTOP: React Bits CardNav. De server rendert exact de markup van de
-     component (gesloten staat), zodat mounten niets laat verspringen.
-     ------------------------------------------------------------------ #}
-  <div class="cardnav-host" id="card-nav-root">
-    <div class="card-nav-container">
-      <nav class="card-nav" aria-label="Hoofdmenu">
-        <div class="card-nav-top">
-          <a class="logo-container" href="{{ home }}"><img src="{{ logo_src }}" alt="BEBO Betonboren & Zagen – naar de homepage" class="logo" width="128" height="44"></a>
-          <div class="card-nav-actions">
-            <a class="card-nav-phone" href="tel:{{ company.phone_tel }}"><span class="card-nav-phone-dot" aria-hidden="true"></span>{{ company.phone }}</a>
-            <button type="button" class="hamburger-menu" aria-label="Menu openen" aria-expanded="false" aria-controls="card-nav-content">
-              <span class="hamburger-lines" aria-hidden="true"><span class="hamburger-line"></span><span class="hamburger-line"></span></span>
-              <span class="hamburger-text" aria-hidden="true">Menu</span>
-            </button>
-            <a class="card-nav-cta-button{% if on_offerte %} is-current{% endif %}" href="{{ url_for('offerte_page') }}"{% if on_offerte %} aria-current="page"{% endif %}>Offerte</a>
-          </div>
-        </div>
-        <div class="card-nav-content" id="card-nav-content" aria-hidden="true">
-          {% for card in cards %}
-          <div class="nav-card nav-card--{{ card.tone }}">
-            <div class="nav-card-label"><span class="nav-card-num">{{ '%02d'|format(loop.index) }}</span>{{ card.label }}</div>
-            <ul class="nav-card-links">
-              {% for l in card.links %}
-              <li><a class="nav-card-link{% if l.current %} is-current{% endif %}" href="{{ l.href }}" tabindex="-1"{% if l.current %} aria-current="page"{% endif %}{% if l.external %} target="_blank" rel="noopener"{% endif %}>{% if l.index %}<span class="nav-card-link-n">{{ l.index }}</span>{% endif %}<span class="nav-card-link-t">{{ l.label }}</span><svg class="nav-card-link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg></a></li>
-              {% endfor %}
-            </ul>
-          </div>
-          {% endfor %}
-        </div>
-      </nav>
-    </div>
-  </div>
-  <script type="application/json" id="card-nav-data">{{ {
-    "logo": logo_src,
-    "logoAlt": "BEBO Betonboren & Zagen – naar de homepage",
-    "homeHref": home,
-    "items": cards,
-    "phone": {"label": company.phone, "href": "tel:" ~ company.phone_tel},
-    "cta": {"label": "Offerte", "href": url_for('offerte_page'), "current": on_offerte}
-  }|tojson }}</script>
-
-  {# ------------------------------------------------------------------
-     MOBIEL / TABLET: compacte balk + menu in dezelfde kaartentaal
-     ------------------------------------------------------------------ #}
-  <header class="nav" id="nav">
-    <div class="wrap nav__bar">
-      <a href="{{ home }}" class="nav__logo"{% if nav == 'home' %} aria-current="page"{% endif %}>
-        <img src="{{ logo_src }}" width="128" height="44" alt="BEBO Betonboren & Zagen – naar de homepage">
-      </a>
-      <div class="nav__cta">
-        <a class="btn btn--red btn--sm" href="{{ url_for('offerte_page') }}"{% if on_offerte %} aria-current="page"{% endif %}>Offerte</a>
-      </div>
-      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu openen">
-        <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
-        <span class="burger__txt" aria-hidden="true">Menu</span>
-      </button>
-    </div>
-  </header>
-
-  <div class="menu" id="menu" hidden>
-    <nav class="menu__inner wrap" aria-label="Mobiel menu">
-      {% for card in cards %}
-      <div class="nav-card nav-card--{{ card.tone }} menu__card">
-        <div class="nav-card-label"><span class="nav-card-num">{{ '%02d'|format(loop.index) }}</span>{{ card.label }}</div>
-        <ul class="nav-card-links">
-          {% for l in card.links %}
-          <li><a class="nav-card-link{% if l.current %} is-current{% endif %}" href="{{ l.href }}"{% if l.current %} aria-current="page"{% endif %}{% if l.external %} target="_blank" rel="noopener"{% endif %}>{% if l.index %}<span class="nav-card-link-n">{{ l.index }}</span>{% endif %}<span class="nav-card-link-t">{{ l.label }}</span><svg class="nav-card-link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2"/></svg></a></li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endfor %}
+  <!-- Navigatie: React Bits StaggeredMenu (gemount via de bundel in main.jsx).
+       Zonder JS valt de site terug op het eenvoudige menu hieronder. -->
+  <div id="staggered-menu"
+       data-tel="{{ bedrijf.tel }}"
+       data-tel-link="{{ bedrijf.tel_link }}"
+       data-email="{{ bedrijf.email }}"
+       data-whatsapp="{{ bedrijf.whatsapp }}"></div>
+  <noscript>
+    <nav class="nav-fallback" aria-label="Menu">
+      <a href="#diensten">Werkzaamheden</a>
+      <a href="#werkwijze">Werkwijze</a>
+      <a href="#waarom">Waarom BEBO</a>
+      <a href="#werkgebied">Werkgebied</a>
+      <a href="#offerte">Offerte aanvragen</a>
     </nav>
-  </div>
+  </noscript>
 
-  <main id="main">
-    {% if page.breadcrumbs %}
-    <nav class="crumbs wrap" aria-label="Kruimelpad">
-      <ol>
-        <li><a href="{{ home }}">Home</a></li>
-        {% for label, href in page.breadcrumbs %}
-        <li>{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
-        {% endfor %}
-      </ol>
-    </nav>
-    {% endif %}
+
+  <main>
     {% block content %}{% endblock %}
   </main>
 
-  {# ------------------------------------------------------------------
-     FOOTER - BEBO-bewerking van de React Bits Pro "Footer 3"-structuur:
-     schermbrede CTA, beschrijving, linkkolommen, bedrijfsgegevens, onderstrook.
-     Puur HTML/CSS (geen extra JS); rood vervangt de gele demo-hover.
-     ------------------------------------------------------------------ #}
-  <footer class="ft" aria-label="Footer">
-    <div class="ft__meta ft__pad" aria-hidden="true">
-      <span><i class="ft__tick"></i>BEBO / Offerte</span>
-      <span>LOC / {{ company.city }} · {{ hq_geo.coords }}</span>
-    </div>
-
-    <a class="ft__cta" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>
-      <span class="ft__cta-fill" aria-hidden="true"></span>
-      <span class="ft__cta-text"><span class="ft__cta-word">Offerte</span> <span class="ft__cta-word">aanvragen</span></span>
-      <svg class="ft__cta-arrow" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36L36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="3.5"/></svg>
-    </a>
-
-    <div class="ft__grid ft__pad">
-      <div class="ft__intro">
-        <a href="{{ home }}" class="ft__logo">
-          <img src="{{ logo_src }}" width="220" height="76" alt="BEBO Betonboren & Zagen – naar de homepage" loading="lazy">
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <div class="footer__col">
+        <a href="{{ url_for('index') }}" class="brand" style="margin-bottom:1.4rem;">
+          <span class="brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="brand__txt">
+            <span class="brand__name">BEBO</span>
+            <span class="brand__sub">betonboren &amp; zagen</span>
+          </span>
         </a>
-        <p class="ft__desc">Boren, zagen, frezen en gericht slopen in beton en steen. Schoon werk, een strak resultaat en een ploeg die nakomt wat is afgesproken.</p>
+        <p style="color:var(--ink-2);max-width:32ch;">Boren, zagen, frezen en precisiesloop in beton en steen. Schoon, recht en op maat - voor aannemers, installateurs en particulieren.</p>
       </div>
 
-      <nav class="ft__col" aria-labelledby="ft-h-diensten">
-        <h2 class="ft__h" id="ft-h-diensten"><span>01</span>Werkzaamheden</h2>
-        <ul class="ft__links">
-          {% for s in services %}
-          {% set here = request.endpoint == 'dienst' and request.view_args.slug == s.id %}
-          <li><a href="{{ url_for('dienst', slug=s.id) }}"{% if here %} aria-current="page"{% endif %}>{{ s.title }}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
-          {% endfor %}
-        </ul>
-      </nav>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <a href="tel:{{ bedrijf.tel_link }}">{{ bedrijf.tel }}</a>
+        <a href="mailto:{{ bedrijf.email }}">{{ bedrijf.email }}</a>
+        <p>{{ bedrijf.straat }}<br>{{ bedrijf.postcode_plaats }}</p>
+      </div>
 
-      <nav class="ft__col" aria-labelledby="ft-h-bebo">
-        <h2 class="ft__h" id="ft-h-bebo"><span>02</span>BEBO</h2>
-        <ul class="ft__links">
-          <li><a href="{{ url_for('werkzaamheden') }}"{% if request.endpoint == 'werkzaamheden' %} aria-current="page"{% endif %}>Werkzaamheden<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
-          <li><a href="{{ home }}#waarom">Waarom BEBO<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
-          <li><a href="{{ url_for('werkgebied') }}"{% if nav == 'werkgebied' %} aria-current="page"{% endif %}>Werkgebied<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
-          <li><a href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>Offerte<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a></li>
-        </ul>
-      </nav>
-
-      <div class="ft__col ft__contact">
-        <h2 class="ft__h"><span>03</span>Contact</h2>
-        <ul class="ft__links ft__links--contact">
-          <li><a href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>{{ company.phone }}</span></a></li>
-          <li><a href="mailto:{{ company.email }}">{{ icon('mail') }}<span>{{ company.email }}</span></a></li>
-          <li><a href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a></li>
-        </ul>
-        <address class="ft__company">
-          <strong>{{ company.name }}</strong>
-          <a href="{{ company.maps_url }}" target="_blank" rel="noopener">{{ company.street }}<br>{{ company.postal_code }} {{ company.city }}</a>
-          <span class="ft__kvk">KvK / {{ company.kvk }}</span>
-        </address>
+      <div class="footer__col">
+        <h4>Werkzaamheden</h4>
+        <a href="#diensten">Betonboren</a>
+        <a href="#diensten">Wand- &amp; vloerzagen</a>
+        <a href="#diensten">Sleuven &amp; frezen</a>
+        <a href="#diensten">Precisiesloop</a>
       </div>
     </div>
-
-    <div class="ft__bottom ft__pad">
-      <span>© {{ current_year }} {{ company.name }} · KvK {{ company.kvk }}</span>
-      <a class="ident" href="https://jorisvrr.com/" target="_blank" rel="noopener noreferrer" aria-label="Website gemaakt door jorisvrr">
-        <img class="ident__cur" src="{{ static_v('img/jorisvrr-cursor2.png') }}" alt="" width="24" height="24" loading="lazy">
-        <span class="ident__name"><span>jorisvrr</span></span>
-      </a>
-      <a class="ft__totop" href="#top">Terug naar boven <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+    <div class="wrap footer__bottom">
+      <span>© {{ 2026 }} {{ bedrijf.naam }} · KvK {{ bedrijf.kvk }}</span>
+      <span>Berkel en Rodenrijs · regio Rotterdam</span>
     </div>
   </footer>
 
-  <!-- Mobiele contactbalk -->
-  <nav class="mbar" aria-label="Snel contact">
-    <a class="mbar__btn" href="tel:{{ company.phone_tel }}">{{ icon('phone') }}<span>Bel direct</span></a>
-    <a class="mbar__btn" href="{{ company.whatsapp_url }}" target="_blank" rel="noopener">{{ icon('whatsapp') }}<span>WhatsApp</span></a>
-    <a class="mbar__btn mbar__btn--primary{% if nav == 'offerte' %} is-current{% endif %}" href="{{ url_for('offerte_page') }}"{% if nav == 'offerte' %} aria-current="page"{% endif %}>{{ icon('quote') }}<span>Offerte</span></a>
-  </nav>
+  <div class="float" id="float">
+    <a href="https://wa.me/{{ bedrijf.whatsapp }}" class="wa" aria-label="WhatsApp" target="_blank" rel="noopener">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.16c-.24.68-1.4 1.3-1.94 1.38-.5.07-1.13.1-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.8-4.17-4.94-4.37-.15-.2-1.19-1.58-1.19-3.01 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.83 2.02.9 2.17.07.15.12.32.02.51-.09.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.29-.12.57.16.29.73 1.2 1.56 1.94 1.07.95 1.97 1.25 2.26 1.39.28.15.45.12.61-.07.16-.2.7-.82.89-1.1.19-.29.37-.24.62-.14.25.09 1.6.76 1.87.9.27.14.45.21.52.32.07.12.07.69-.17 1.37z"/></svg>
+    </a>
+    <a href="tel:{{ bedrijf.tel_link }}" aria-label="Bel BEBO">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+    </a>
+  </div>
 
-  <script src="{{ static_v('js/main.js') }}" defer
-          data-map-js="{{ static_v('bundle/map.js') }}" data-map-css="{{ static_v('bundle/map.css') }}"
-          data-spotlight-js="{{ static_v('bundle/spotlight.js') }}"
-          data-shapeblur-js="{{ static_v('bundle/shapeblur.js') }}"></script>
+  <!-- Maker-signature ("ident"): verschijnt alleen bij de footer, op dezelfde
+       plek/hoogte en grootte als de WhatsApp-knop. Hover onthult "jorisvrr". -->
+  <div class="ident__wrap" id="ident">
+    <a class="ident" href="https://jorisvrr.com/" target="_blank" rel="noopener noreferrer" aria-label="Website gemaakt door jorisvrr">
+      <span class="ident__name">jorisvrr</span>
+      <img class="ident__cur" src="{{ url_for('static', filename='img/jorisvrr-cursor.png') }}" alt="" width="35" height="48">
+    </a>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='bundle/reactbits.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

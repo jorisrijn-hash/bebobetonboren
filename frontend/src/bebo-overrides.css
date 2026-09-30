@@ -1,0 +1,42 @@
+/* BEBO-thematisering van de React Bits-componenten.
+   De componentbestanden zelf blijven ongewijzigd (echte React Bits-code);
+   we sturen kleur/gedrag bij via deze overrides. */
+
+/* Target cursor in BEBO-rood, zonder difference-blend (past op licht én donker). */
+.target-cursor-wrapper { mix-blend-mode: normal; }
+.target-cursor-dot {
+  background: #D8201F;
+  width: 5px;
+  height: 5px;
+}
+.target-cursor-corner {
+  border-color: #D8201F;
+  border-width: 2px;
+}
+
+/* Verberg de OS-cursor volledig zodra de target-cursor actief is - overal,
+   inclusief links, knoppen, formuliervelden en tijdens tekstselectie.
+   Alleen actief op desktop (de class wordt enkel daar gezet). */
+html.bebo-cursor-on,
+html.bebo-cursor-on *,
+html.bebo-cursor-on *::before,
+html.bebo-cursor-on *::after {
+  cursor: none !important;
+}
+
+/* LightRays-laag in het hero-paneel (#hero-fx wordt in style.css gepositioneerd). */
+#hero-fx { position: absolute; inset: 0; z-index: 1; }
+#hero-fx canvas,
+#hero-fx .light-rays-container {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Beams-canvas vult de offerte-laag. #beams-root zelf wordt in style.css
+   gepositioneerd (zodat de site ook zonder deze bundel klopt). */
+#beams-root canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

@@ -1,220 +1,335 @@
 {% extends "base.html" %}
-{% from "_components.html" import media, client_logo_placeholder, review_placeholder, case_field, icon, why_block, area_map, cta_band, bh %}
 
 {% block content %}
 
-{# ======================================================================
-   01 · HERO - schermbreed: tekst op het grid, beeld tot de rand
-   ====================================================================== #}
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero__grid">
-    <div class="hero__copy">
-      <p class="label hero__kicker reveal"><span class="label__tick" aria-hidden="true"></span>Berkel en Rodenrijs · regio Rotterdam</p>
-      <h1 id="hero-title" class="h1 hero__title reveal" data-delay="1">Betonboren <span class="h1__amp">&amp;</span> zagen in beton en steen.</h1>
-      {{ bh(hero_intro, ["een strak resultaat"], cls="hero__intro") }}
-      <div class="hero__actions reveal" data-delay="3">
-        <a href="{{ url_for('offerte_page') }}" class="btn btn--red btn--lg">Offerte aanvragen {{ icon('arrow') }}</a>
-        <a href="{{ url_for('werkzaamheden') }}" class="btn btn--ghost btn--lg">Werkzaamheden</a>
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <!-- Volledige hero-achtergrond: React Bits Particles ("betonstof").
+       Wil je een ander effect, LightRays of een foto? Zie frontend/src/main.jsx
+       (de mount) en deze sectie. -->
+  <div id="hero-bg" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="hero__loc reveal">
+          <span class="crosshair" style="width:14px;height:14px;position:relative;display:inline-block">
+            <span class="h"></span><span class="v"></span>
+          </span>
+          <span class="hero__loc-text">Berkel en Rodenrijs <b>·&nbsp;regio Rotterdam</b></span>
+        </p>
+
+        <h1 class="display reveal" data-delay="1">
+          Een gat in beton.<br>
+          Tot op de <span class="accent">millimeter</span> waar het hoort.
+        </h1>
+
+        <p class="lede hero__lede reveal" data-delay="2">
+          Boren, zagen, frezen en gericht slopen in beton en steen.
+          Schoon werk, rechte kanten en een ploeg die nakomt wat is afgesproken.
+        </p>
+
+        <div class="hero__actions reveal" data-delay="3">
+          <a href="#offerte" class="btn btn--red btn--lg">Offerte aanvragen <span class="arrow">→</span></a>
+          <a href="#diensten" class="textlink">Bekijk werkzaamheden</a>
+        </div>
+      </div>
+
+      <!-- Zwevende merk-marker over het stofveld (geen kader) -->
+      <div class="hero__marker reveal" data-delay="2" aria-hidden="true">
+        <span class="crosshair crosshair--lg"><span class="h"></span><span class="v"></span><span class="ring"></span></span>
+        <span class="hero__tag">kernboring · <b>Ø&nbsp;132&nbsp;mm</b></span>
       </div>
     </div>
 
-    <div class="hero__visual reveal-mask">
-      {# CLIENT ASSET REQUIRED
-         Content: sterkste BEBO-projectfoto (bijv. kernboring of wandzaag in actie)
-         Oriëntatie: staand/vierkant · Wordt schermhoog uitgesneden · Minimale breedte: 2000px
-         Vervangen: media({"src": "img/werk/...jpg", "alt": "...", "position": "50% 40%"}, ratio="4:5", eager=True) #}
-      {{ media(none, ratio="4:5", title="Projectbeeld", desc="Hier komt een foto van uitgevoerd betonboorwerk, zaagwerk of een doorbraak.", code="BEBO / 000", eager=True) }}
-      <figure class="bore" aria-hidden="true">
-        <svg viewBox="0 0 220 220" class="bore__svg">
-          <circle class="bore__ring" cx="110" cy="110" r="78"/>
-          <circle class="bore__core" cx="110" cy="110" r="3"/>
-          <path class="bore__dim" d="M32 110 H188"/>
-          <path class="bore__tick" d="M32 100 V120 M188 100 V120"/>
-          <path class="bore__cross" d="M110 20 V44 M110 176 V200 M20 110 H26 M194 110 H200"/>
-        </svg>
-        <figcaption class="bore__label">Ø 12–900 mm</figcaption>
-      </figure>
-      <p class="hero__coords" aria-hidden="true"><span>BEBO / basis</span>{{ hq.coords }}</p>
+    <!-- Terughoudende trust-feiten -->
+    <div class="hero__facts reveal">
+      <div class="fact"><div class="n">25+</div><div class="l">jaar ervaring in de bouwsector</div></div>
+      <div class="fact"><div class="n">Ø900</div><div class="l">mm max. boordiameter</div></div>
+      <div class="fact"><div class="n">Stofvrij</div><div class="l">droogboren met afzuiging</div></div>
+      <div class="fact"><div class="n">60&nbsp;cm</div><div class="l">max. zaagdiepte wandzagen</div></div>
     </div>
   </div>
+</section>
 
+<!-- ================= DIENSTEN ================= -->
+<div class="trust reveal">
+  <div class="wrap trust__row">
+    {% for u in usps %}
+    <div class="trust__item">
+      <span class="trust__label">{{ u.label }}</span>
+      <span class="trust__sub">{{ u.sub }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<section class="section" id="diensten">
   <div class="wrap">
-    <dl class="specbar reveal">
-      <div><dt>Betonboren</dt><dd>Ø 12–900 mm</dd></div>
-      <div><dt>Wandzagen</dt><dd>tot 60 cm diep</dd></div>
-      <div><dt>Ankers &amp; verlijmen</dt><dd>Hilti HIT-systeem</dd></div>
-      <div><dt>Ervaring</dt><dd>25+ jaar in de bouwsector</dd></div>
-    </dl>
-  </div>
-</section>
-
-{# ======================================================================
-   02 · ONS WERK - schermbreed mozaïek (data: content.PROJECTS)
-   ====================================================================== #}
-{% set projects_pending = projects|selectattr('src')|list|length == 0 %}
-{% macro project_meta(p) -%}
-<dl class="pmeta">
-  <div><dt>Type</dt><dd>{{ p.type or '—' }}</dd></div>
-  <div><dt>Locatie</dt><dd>{{ p.location or '—' }}</dd></div>
-  {% if p.detail %}<div><dt>Detail</dt><dd>{{ p.detail }}</dd></div>{% endif %}
-</dl>
-{%- endmacro %}
-<section class="section work" id="werk" aria-labelledby="werk-title">
-  <header class="sec-head wrap">
-    <p class="label reveal"><span class="label__n">02</span>Ons werk</p>
-    <h2 id="werk-title" class="h2 reveal" data-delay="1">Werk in beeld.</h2>
-    {% if projects_pending %}
-    <p class="sec-head__aside reveal" data-delay="2">Projectfoto's van uitgevoerd werk worden op dit moment verzameld en hier geplaatst.</p>
-    {% endif %}
-  </header>
-
-  <div class="work__grid wrap">
-    {% for p in projects %}
-    {# CLIENT ASSET REQUIRED - project {{ p.id }}: zie content.PROJECTS #}
-    {% if p.layout == 'lead' %}
-    <figure class="work__item work__item--lead">
-      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, code="WERK / " ~ p.id, sizes="75vw") }}</div>
-      <figcaption class="work__info reveal">
-        <span class="work__id">Werk / {{ p.id }}</span>
-        {{ project_meta(p) }}
-        {% if p.service %}<a class="textlink" href="{{ url_for('dienst', slug=p.service) }}">Bekijk de werkzaamheid {{ icon('arrow') }}</a>{% endif %}
-        {% if projects_pending %}<p class="work__note">Beeld en projectgegevens volgen.</p>{% endif %}
-      </figcaption>
-    </figure>
-    {% else %}
-    <figure class="work__item work__item--{{ p.layout }}">
-      <div class="work__media reveal-mask">{{ media(p, ratio=p.ratio, code="WERK / " ~ p.id, sizes="(min-width: 1000px) 60vw, 100vw") }}</div>
-      <figcaption class="work__meta">
-        <span class="work__id">Werk / {{ p.id }}</span>
-        {{ project_meta(p) }}
-        {% if p.service %}<a class="textlink" href="{{ url_for('dienst', slug=p.service) }}">Werkzaamheid {{ icon('arrow') }}</a>{% endif %}
-      </figcaption>
-    </figure>
-    {% endif %}
-    {% endfor %}
-  </div>
-</section>
-
-{# ======================================================================
-   03 · WERKZAAMHEDEN - index met links naar de dienstpagina's
-   ====================================================================== #}
-<section class="section sindex-sec" aria-labelledby="diensten-title">
-  <header class="sec-head wrap">
-    <p class="label reveal"><span class="label__n">03</span>Werkzaamheden</p>
-    <h2 id="diensten-title" class="h2 reveal" data-delay="1">Zes specialismen in beton en steen.</h2>
-    <p class="sec-head__aside reveal" data-delay="2"><a class="textlink" href="{{ url_for('werkzaamheden') }}">Alle werkzaamheden {{ icon('arrow') }}</a></p>
-  </header>
-  <ol class="sindex wrap">
-    {% for s in services %}
-    <li class="reveal" data-delay="{{ loop.index0 % 3 }}">
-      <a class="sindex__row" href="{{ url_for('dienst', slug=s.id) }}">
-        <span class="sindex__n">{{ s.index }}</span>
-        <span class="sindex__t">{{ s.title }}</span>
-        <span class="sindex__s"><small>{{ s.spec_key }}</small>{{ s.spec }}</span>
-        <span class="sindex__go" aria-hidden="true">{{ icon('arrow') }}</span>
-      </a>
-    </li>
-    {% endfor %}
-  </ol>
-</section>
-
-{# CTA · Spotlight Card (één keer midden op de pagina) #}
-{{ cta_band(company, title="Project in beton of steen?", text="Stuur foto's van de situatie mee. Daarmee kunnen we de klus vaak sneller inschatten.", label="Project bespreken", cid="cta-mid") }}
-
-{# ======================================================================
-   UITGELICHT PROJECT - projectcase-systeem (data: content.CASES)
-   Zichtbaar met echte cases of in preview (SHOW_PLACEHOLDERS=1 / ?placeholders=1).
-   ====================================================================== #}
-{% set case_list = cases if cases else ([case_template] if show_placeholders else []) %}
-{% if case_list %}
-<section class="section cases" id="project" aria-labelledby="case-title">
-  <header class="sec-head wrap">
-    <p class="label reveal"><span class="label__n">—</span>Uitgelicht project</p>
-    <h2 id="case-title" class="h2 reveal" data-delay="1">Projectdossier.</h2>
-    {% if not cases %}
-    <p class="sec-head__aside preview-note reveal" data-delay="2">Voorbeeldstructuur – alleen zichtbaar in preview. Projectgegevens worden aangeleverd door BEBO.</p>
-    {% endif %}
-  </header>
-
-  {% for c in case_list %}
-  <article class="case wrap">
-    <div class="case__media">
-      <div class="case__primary reveal-mask">{{ media(c.image, ratio="16:10", title="Projectbeeld", desc="Hier komt het hoofdbeeld van dit project: werk in uitvoering of het eindresultaat.", code="PROJECT / " ~ c.id) }}</div>
-      <div class="case__detail reveal-mask" data-delay="1">{{ media(c.detail_image, ratio="1:1", title="Detailfoto", desc="Hier komt een detailbeeld van het resultaat of de uitvoering.", code="DETAIL / " ~ c.id) }}</div>
-      {% if c.before_image or c.after_image or not cases %}
-      <div class="case__ba">
-        <div class="reveal-mask">{{ media(c.before_image, ratio="4:3", title="Voor", desc="Hier komt een foto van de situatie vóór de werkzaamheden.", code="VOOR / " ~ c.id) }}</div>
-        <div class="reveal-mask" data-delay="1">{{ media(c.after_image, ratio="4:3", title="Na", desc="Hier komt een foto van het eindresultaat.", code="NA / " ~ c.id) }}</div>
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Werkzaamheden</p>
+        <h2 class="display">Eén ploeg voor elke<br>doorbraak in beton.</h2>
       </div>
-      {% endif %}
+      <p class="sec-head__aside">Van een enkele kernboring tot complete sparingen en sloop - droog of nat, binnen of buiten.</p>
     </div>
-    <div class="case__body">
-      <p class="svc__id">Project / {{ c.id }}</p>
-      <h3 class="case__title{% if not c.title %} is-pending{% endif %}">{{ c.title or 'Projecttitel' }}</h3>
-      <dl class="case__data">
-        {{ case_field('Locatie', c.location) }}
-        {{ case_field('Werkzaamheid', c.service) }}
-        {{ case_field('Afmeting', c.dimensions) }}
-        {{ case_field('Materiaal', c.material) }}
-        {{ case_field('Situatie', c.situation) }}
-        {% for t in c.technical %}{{ case_field(t.label, t.value) }}{% endfor %}
-      </dl>
-      {% if c.description %}<p class="case__text">{{ c.description }}</p>{% else %}<p class="case__text is-pending">Projectomschrijving wordt aangeleverd.</p>{% endif %}
+
+    <div class="diensten">
+      {% for d in diensten %}
+      <article class="dienst reveal" data-delay="{{ loop.index0 % 3 }}">
+        <div class="dienst__top">
+          <span class="dienst__spec">{{ d.spec }}</span>
+        </div>
+        <h3 class="display">{{ d.titel }}</h3>
+        <p>{{ d.tekst }}</p>
+        <a href="#offerte" class="dienst__mark">Aanvragen</a>
+      </article>
+      {% endfor %}
     </div>
-  </article>
-  {% endfor %}
+  </div>
 </section>
-{% endif %}
 
-{# 04 · WAAROM BEBO #}
-{{ why_block(why, experience, num="04") }}
-
-{# OPDRACHTGEVERS & REVIEWS - alleen echte content of preview #}
-{% if client_logos or reviews or show_placeholders %}
-<section class="section trust" id="opdrachtgevers" aria-labelledby="trust-title">
-  <header class="sec-head wrap">
-    <p class="label reveal"><span class="label__n">—</span>Opdrachtgevers</p>
-    <h2 id="trust-title" class="h2 h2--sm reveal" data-delay="1">Voor wie we werken.</h2>
-    {% if review_rating %}
-    <p class="sec-head__aside">{{ review_rating.score }} / 5 op basis van {{ review_rating.count }} reviews op {{ review_rating.source }}</p>
-    {% elif not client_logos and not reviews %}
-    <p class="sec-head__aside preview-note">Voorbeeldstructuur – alleen zichtbaar in preview. Logo's en reviews worden aangeleverd.</p>
-    {% endif %}
-  </header>
+<!-- ================= WERKWIJZE (echte sequentie → nummering terecht) ===== -->
+<section class="section werkwijze" id="werkwijze">
   <div class="wrap">
-    <ul class="logos" role="list">
-      {% if client_logos %}
-        {% for l in client_logos %}<li class="logos__item"><img src="{{ url_for('static', filename=l.src) }}" alt="{{ l.name }}" loading="lazy"></li>{% endfor %}
-      {% else %}
-        {% for n in range(1, placeholder_logo_slots + 1) %}{{ client_logo_placeholder(n) }}{% endfor %}
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Werkwijze</p>
+        <h2 class="display">Van aanvraag tot<br>opgeruimde werkplek.</h2>
+      </div>
+      <p class="sec-head__aside">Vier stappen, geen verrassingen. Je weet vooraf wat er gebeurt, wat het kost en wanneer we klaar zijn.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal" data-delay="0">
+        <span class="step__n">01</span>
+        <h3 class="display">Aanvraag</h3>
+        <p>Je stuurt je vraag en locatie door. Je krijgt een reactie en vaak al een richtprijs.</p>
+      </div>
+      <div class="step reveal" data-delay="1">
+        <span class="step__n">02</span>
+        <h3 class="display">Inmeten & advies</h3>
+        <p>We bepalen de juiste techniek, diameter en aanpak - droog of nat, mét of zonder stofafzuiging.</p>
+      </div>
+      <div class="step reveal" data-delay="2">
+        <span class="step__n">03</span>
+        <h3 class="display">Uitvoering</h3>
+        <p>Strak en stofbeperkt op locatie, ook in bewoonde situaties. Rechte kanten, geen scheurwerk.</p>
+      </div>
+      <div class="step reveal" data-delay="3">
+        <span class="step__n">04</span>
+        <h3 class="display">Oplevering</h3>
+        <p>We ruimen op, voeren puin af en laten de werkplek netjes achter. Klaar voor de volgende ploeg.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WAAROM BEBO (proof + één quote) ================= -->
+<section class="section" id="waarom">
+  <div class="wrap proof__grid">
+    <div class="reveal">
+      <p class="eyebrow">Waarom BEBO</p>
+      <h2 class="display">Vakwerk dat je<br>niet hoeft over te doen.</h2>
+      <ul class="usp">
+        <li><span class="usp__plus">+</span><div><b>Schoon en stofvrij.</b> <span>Droogboren met afzuiging waar geen water mag komen.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Recht op maat.</b> <span>Diamanttechniek voor strakke kanten, zonder scheuren of breukschade.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Eén aanspreekpunt.</b> <span>Korte lijnen, duidelijke afspraken en een ploeg die op tijd staat.</span></div></li>
+        <li><span class="usp__plus">+</span><div><b>Heel de regio.</b> <span>Snel ter plaatse in Rotterdam, Lansingerland en omgeving Den Haag.</span></div></li>
+      </ul>
+    </div>
+
+    <!-- Beeldvlak. De quote hier stond eerder was niet van een echte klant en is
+         daarom weggelaten; zet hem terug zodra er een echte referentie is
+         (REVIEWS in app.py vult de reviewsectie automatisch). -->
+    <figure class="quote quote--img reveal" data-delay="1">
+      <img class="quote__img" src="{{ url_for('static', filename='img/ploeg.jpg') }}"
+           alt="Handen met een diamantkernboor">
+    </figure>
+  </div>
+</section>
+
+<!-- ================= WERKGEBIED ================= -->
+<section class="section" id="sectoren">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Voor wie</p>
+        <h2 class="display">Werk voor wie<br>erop rekent.</h2>
+      </div>
+      <p class="sec-head__aside">Van een losse opdracht tot doorlopende samenwerking, voor bouw, techniek en particulier.</p>
+    </div>
+    <div class="sectoren">
+      {% for s in sectoren %}
+      <div class="sector reveal" data-delay="{{ loop.index0 % 3 }}">
+        <h3 class="sector__titel">{{ s.titel }}</h3>
+        <p>{{ s.tekst }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if reviews %}
+<section class="section werkwijze" id="reviews">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Reviews</p>
+        <h2 class="display">Wat opdrachtgevers<br>ervan vinden.</h2>
+      </div>
+      {% if review_rating %}
+      <p class="sec-head__aside"><strong>{{ review_rating.score }}/5</strong> uit {{ review_rating.aantal }} reviews op {{ review_rating.bron }}</p>
       {% endif %}
-    </ul>
+    </div>
     <div class="reviews">
-      {% if reviews %}
-        {% for r in reviews %}
-        <figure class="review">
-          <blockquote><p>{{ r.text }}</p></blockquote>
-          <figcaption>{{ r.name }}{% if r.role %} · {{ r.role }}{% endif %}{% if r.source %} <span>{{ r.source }}</span>{% endif %}</figcaption>
-        </figure>
-        {% endfor %}
-      {% else %}
-        {% for n in range(1, placeholder_review_slots + 1) %}{{ review_placeholder(n) }}{% endfor %}
-      {% endif %}
+      {% for r in reviews %}
+      <figure class="review reveal" data-delay="{{ loop.index0 % 3 }}">
+        {% if r.ster %}<div class="review__stars" aria-label="{{ r.ster }} van 5 sterren">{% for _ in range(r.ster) %}<span>&#9733;</span>{% endfor %}</div>{% endif %}
+        <blockquote>{{ r.tekst }}</blockquote>
+        <figcaption>{{ r.naam }}{% if r.rol %} · <span>{{ r.rol }}</span>{% endif %}</figcaption>
+      </figure>
+      {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
 
-{# 05 · WERKGEBIED (compact) #}
-<section class="section area-home" aria-labelledby="werkgebied-title">
-  <header class="sec-head wrap">
-    <p class="label reveal"><span class="label__n">05</span>Werkgebied</p>
-    <h2 id="werkgebied-title" class="h2 reveal" data-delay="1">Vanuit Berkel en Rodenrijs.</h2>
-    <p class="sec-head__aside reveal" data-delay="2">Actief in Berkel en Rodenrijs, Rotterdam en de omliggende regio. <a class="textlink" href="{{ url_for('werkgebied') }}">Bekijk het werkgebied {{ icon('arrow') }}</a></p>
-  </header>
-  {{ area_map(work_areas, hq, map_data, variant="compact") }}
+{% if cases %}
+<section class="section" id="cases">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Recent werk</p>
+        <h2 class="display">Een greep uit<br>onze projecten.</h2>
+      </div>
+    </div>
+    <div class="cases">
+      {% for c in cases %}
+      <article class="case reveal" data-delay="{{ loop.index0 % 3 }}">
+        {% if c.img %}<div class="case__img"><img src="{{ url_for('static', filename='img/' + c.img) }}" alt="{{ c.titel }}" loading="lazy"></div>{% endif %}
+        <div class="case__body">
+          {% if c.meta %}<p class="case__meta">{{ c.meta }}</p>{% endif %}
+          <h3 class="display">{{ c.titel }}</h3>
+          <p>{{ c.tekst }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section werkwijze" id="werkgebied">
+  <div class="wrap regio__grid">
+    <div class="reveal">
+      <p class="eyebrow">Werkgebied</p>
+      <h2 class="display">Thuis in de<br>regio Rotterdam.</h2>
+      <p class="lede" style="margin-top:1.4rem;">Gevestigd op de Industrieweg in Berkel en Rodenrijs. Snel ter plaatse in Lansingerland en de wijde omgeving.</p>
+      <div class="regio__list">
+        <span>Rotterdam</span><span>Berkel en Rodenrijs</span><span>Lansingerland</span>
+        <span>Pijnacker</span><span>Zoetermeer</span><span>Delft</span><span>Den Haag</span>
+      </div>
+    </div>
+    <div class="regio__panel reveal" data-delay="1">
+      <img class="regio__img" src="{{ url_for('static', filename='img/werkgebied-beton.jpg') }}"
+           alt="Gekernde sparing in beton">
+    </div>
+  </div>
 </section>
 
-{# De footer-CTA ("Offerte aanvragen") is het afsluitende moment van de pagina. #}
+<!-- ================= OFFERTE (donkere conversiesectie) ================= -->
+<section class="section offerte" id="offerte">
+  <div id="beams-root" aria-hidden="true"></div>
+  <div class="wrap offerte__grid">
+    <div class="offerte__intro reveal">
+      <p class="eyebrow">Offerte</p>
+      <h2 class="display">Vertel ons wat<br>er door moet.</h2>
+      <p>Stuur je klus door - diameter, locatie en planning als je het weet. Je krijgt een reactie, vaak met een richtprijs.</p>
+
+      <div class="offerte__direct">
+        <a href="tel:{{ bedrijf.tel_link }}">
+          <span class="ico">●</span> {{ bedrijf.tel }}
+        </a>
+        <a href="https://wa.me/{{ bedrijf.whatsapp }}" target="_blank" rel="noopener">
+          <span class="ico">●</span> WhatsApp ons direct
+        </a>
+        <a href="mailto:{{ bedrijf.email }}">
+          <span class="ico">●</span> {{ bedrijf.email }}
+        </a>
+      </div>
+    </div>
+
+    <div class="reveal" data-delay="1">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash" style="margin-bottom:1.5rem;">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form class="form" action="{{ url_for('offerte') }}" method="post" novalidate>
+        <div>
+          <span class="form__chips-label">Wat moet er gebeuren? (meerdere mogelijk)</span>
+          <div class="chips" id="chips">
+            {% for d in diensten %}
+            <button type="button" class="chip" aria-pressed="false" data-value="{{ d.id }}">{{ d.titel }}</button>
+            {% endfor %}
+          </div>
+          <div id="chipInputs"></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="naam">Naam *</label>
+            <input type="text" id="naam" name="naam" placeholder="Voor- en achternaam" required>
+          </div>
+          <div class="field">
+            <label for="telefoon">Telefoon</label>
+            <input type="tel" id="telefoon" name="telefoon" placeholder="06 - ...">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="naam@bedrijf.nl">
+          </div>
+          <div class="field">
+            <label for="plaats">Plaats / locatie</label>
+            <input type="text" id="plaats" name="plaats" placeholder="Waar staat de klus?">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="omschrijving">Omschrijving</label>
+          <textarea id="omschrijving" name="omschrijving" placeholder="Bijv. kernboring Ø150 door betonvloer, 2e etage, t.b.v. ventilatie."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="planning">Gewenste planning</label>
+          <select id="planning" name="planning">
+            <option value="">Maakt niet uit / weet ik nog niet</option>
+            <option>Zo snel mogelijk</option>
+            <option>Binnen 2 weken</option>
+            <option>Binnen een maand</option>
+            <option>Later / in overleg</option>
+          </select>
+        </div>
+
+        <!-- Honeypot tegen spam -->
+        <div class="hp" aria-hidden="true">
+          <label>Laat dit leeg<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div class="form__foot">
+          <p class="form__note">Geen verplichtingen. We bellen of mailen je gewoon terug.</p>
+          <button type="submit" class="btn btn--red btn--lg">Verstuur aanvraag <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 
 {% endblock %}

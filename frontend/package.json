@@ -1,15 +1,18 @@
 {
-  "name": "bebo-frontend",
+  "name": "bebo-reactbits",
   "private": true,
-  "version": "2.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Vite-build voor de interactieve eilanden: React Bits TargetCursor (crosshair) en de Leaflet-kaart van het werkgebied.",
+  "description": "Vite-build die echte React Bits-componenten (TargetCursor + Beams) als eilanden in de Flask/Jinja-site mount.",
   "scripts": {
-    "build": "node ./node_modules/vite/bin/vite.js build"
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.4",
+    "@react-three/fiber": "^9.3.0",
     "gsap": "^3.13.0",
-    "leaflet": "^1.9.4",
+    "ogl": "^1.0.11",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "^0.180.0"
